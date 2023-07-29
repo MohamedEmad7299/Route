@@ -16,14 +16,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
 import com.ug.route.ui.theme.DarkBlue
+import kotlinx.coroutines.delay
 
 
-@Preview(showSystemUi = true)
 @Composable
-fun SplashScreen(){
+fun SplashScreen(navController : NavController){
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setStatusBarColor(DarkBlue)
@@ -44,6 +45,9 @@ fun SplashScreen(){
                 }
             )
         )
+
+        delay(750)
+        navController.navigate("signIn_screen")
     }
 
     ConstraintLayout(
