@@ -1,4 +1,4 @@
-package com.ug.route.navigation
+package com.ug.route.ui
 
 
 import android.annotation.SuppressLint
@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.ug.route.sign_in_screen.SignInScreen
-import com.ug.route.splash_screen.SplashScreen
+import com.ug.route.ui.sign_in_screen.SignInScreen
+import com.ug.route.ui.splash_screen.SplashScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.ug.route.sign_in_screen
+package com.ug.route.ui.sign_in_screen
 
 
 import androidx.compose.foundation.Image
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +19,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -26,10 +32,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
 import com.ug.route.design_matrials.text.Text18
@@ -38,7 +48,10 @@ import com.ug.route.ui.theme.DarkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignInScreen(navController: NavController){
+fun SignInScreen(
+    navController: NavController,
+    viewModel: SignInViewModel = hiltViewModel()
+){
 
     ConstraintLayout(
         modifier = Modifier
@@ -90,7 +103,7 @@ fun SignInScreen(navController: NavController){
         )
 
         Text18(
-            text = "User Name",
+            text = "E-mail",
             modifier = Modifier.constrainAs(usernameText) {
                 top.linkTo(welcomeMessage.bottom, 48.dp)
                 start.linkTo(parent.start, 16.dp)
@@ -100,7 +113,7 @@ fun SignInScreen(navController: NavController){
         OutlinedTextField(
             placeholder = {
                 Text(
-                    text = "enter your username",
+                    text = "enter your email",
                     style = TextStyle(
                         fontSize = 18.sp,
                         lineHeight = 18.sp,
@@ -139,7 +152,16 @@ fun SignInScreen(navController: NavController){
             }
         )
 
+        var password by rememberSaveable { mutableStateOf("") }
+        var passwordVisibility by remember { mutableStateOf(false) }
+
+        val icon = if (passwordVisibility)
+            painterResource(id = R.drawable.visibility)
+        else
+            painterResource(id = R.drawable.visibility_off)
+
         OutlinedTextField(
+
             placeholder = {
                 Text(
                     text = "enter your password",
@@ -160,11 +182,11 @@ fun SignInScreen(navController: NavController){
                     start.linkTo(parent.start)
                 },
             shape = RoundedCornerShape(16.dp),
-            value = "",
-            onValueChange = {},
+            value = password,
+            onValueChange = { password = it },
             trailingIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(painter = painterResource(id = R.drawable.visibility_off),
+                IconButton(onClick = { passwordVisibility =! passwordVisibility }) {
+                    Icon(painter = icon,
                         contentDescription = "")
                 }
             },
@@ -176,7 +198,14 @@ fun SignInScreen(navController: NavController){
                 fontSize = 18.sp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
                 fontWeight = FontWeight(300)
-            )
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = if (passwordVisibility)
+                VisualTransformation.None
+            else
+                PasswordVisualTransformation()
         )
 
 

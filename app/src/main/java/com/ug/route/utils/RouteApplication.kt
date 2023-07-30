@@ -1,4 +1,4 @@
-package com.ug.route.app_class
+package com.ug.route.utils
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

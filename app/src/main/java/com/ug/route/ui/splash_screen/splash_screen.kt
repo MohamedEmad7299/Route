@@ -1,4 +1,4 @@
-package com.ug.route.splash_screen
+package com.ug.route.ui.splash_screen
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
