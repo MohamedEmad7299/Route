@@ -59,8 +59,4 @@ class SignInViewModel @Inject constructor(
     fun onClickVisibilityIcon(){
         _passwordVisibility.update { !_passwordVisibility.value }
     }
-
-    fun onChangeStatusCode(){
-
-    }
 }

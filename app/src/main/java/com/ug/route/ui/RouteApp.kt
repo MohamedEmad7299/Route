@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ug.route.ui.sign_in_screen.SignInScreen
+import com.ug.route.ui.sign_up_screen.SignUpScreen
 import com.ug.route.ui.splash_screen.SplashScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -25,6 +26,7 @@ fun RouteApp(){
         ){
             composable("splash_screen"){ SplashScreen(navController) }
             composable("signIn_screen"){ SignInScreen(navController) }
+            composable("signUp_screen"){ SignUpScreen(navController) }
         }
     }
 }
