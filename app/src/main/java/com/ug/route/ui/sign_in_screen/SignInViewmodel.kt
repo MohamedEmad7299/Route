@@ -1,9 +1,8 @@
 package com.ug.route.ui.sign_in_screen
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ug.route.R
 import com.ug.route.data.models.User
 import com.ug.route.data.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,14 +10,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class SignInViewModel @Inject constructor() : ViewModel() {
+class SignInViewModel @Inject constructor(
+    private val repository: Repository
+) : ViewModel() {
 
-    private val _response : MutableLiveData<Response<User>> = MutableLiveData()
-    val response : LiveData<Response<User>> = _response
+
+    val message = MutableStateFlow("")
+    val launchedEffectKey = MutableStateFlow(false)
+    val isLoading = MutableStateFlow(false)
+
+    private val _passwordVisibility = MutableStateFlow(false)
+    val passwordVisibility = _passwordVisibility.asStateFlow()
 
     private val _user = MutableStateFlow(User("",""))
     val user = _user.asStateFlow()
@@ -36,7 +41,26 @@ class SignInViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
 
-            _response.value = Repository().signIn(_user.value)
+            isLoading.update { true }
+            val response = repository.signIn(_user.value)
+            message.update { response.message() }
+            launchedEffectKey.update { !launchedEffectKey.value }
+            isLoading.update { false }
         }
+    }
+
+    fun onChangePasswordVisibility(passwordVisibility : Boolean) : Int{
+
+        return if (passwordVisibility) R.drawable.visibility
+        else R.drawable.visibility_off
+
+    }
+
+    fun onClickVisibilityIcon(){
+        _passwordVisibility.update { !_passwordVisibility.value }
+    }
+
+    fun onChangeStatusCode(){
+
     }
 }

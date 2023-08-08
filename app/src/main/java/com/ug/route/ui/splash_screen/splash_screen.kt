@@ -47,7 +47,11 @@ fun SplashScreen(navController : NavController){
         )
 
         delay(750)
-        navController.navigate("signIn_screen")
+        navController.navigate("signIn_screen"){
+            popUpTo(navController.graph.id){
+                inclusive = true
+            }
+        }
     }
 
     ConstraintLayout(

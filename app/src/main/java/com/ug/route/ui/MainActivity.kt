@@ -1,4 +1,4 @@
-package com.ug.route.activites
+package com.ug.route.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.ug.route.ui.RouteApp
+import com.ug.route.ui.sign_up_screen.SignUpContent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +16,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            RouteApp()
+            SignUpContent()
         }
     }
 }

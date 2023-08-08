@@ -1,4 +1,4 @@
-package com.ug.route.design_matrials.text
+package com.ug.route.ui.design_matrials.text
 
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text

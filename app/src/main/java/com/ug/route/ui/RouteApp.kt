@@ -24,12 +24,7 @@ fun RouteApp(){
             startDestination = "splash_screen"
         ){
             composable("splash_screen"){ SplashScreen(navController) }
-            composable("signIn_screen"){
-
-                BackHandler(true){}
-
-                SignInScreen(navController)
-            }
+            composable("signIn_screen"){ SignInScreen(navController) }
         }
     }
 }
