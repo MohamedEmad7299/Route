@@ -16,8 +16,8 @@ import com.ug.route.R
 
 @Composable
 fun Text18(
-
     modifier: Modifier = Modifier,
+    color: Color = Color(0xFFFFFFFF),
     text : String
 ){
 

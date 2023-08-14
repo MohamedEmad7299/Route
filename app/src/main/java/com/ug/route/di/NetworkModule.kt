@@ -14,21 +14,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkModule {
 
     @Provides
-    fun provideRouteApiService(okHttpClient: OkHttpClient): RouteApiService{
+    fun provideRouteApiService(): RouteApiService{
 
         val baseURL = "https://ecommerce.routemisr.com/api/v1/"
 
         val retrofit = Retrofit.Builder()
             .baseUrl(baseURL)
-            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         return retrofit.create(RouteApiService::class.java)
-    }
-
-    @Provides
-    fun providesClient() : OkHttpClient{
-        return OkHttpClient.Builder().build()
     }
 }

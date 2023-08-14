@@ -1,7 +1,10 @@
 package com.ug.route.ui.design_matrials.text
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun TextWithPasswordTextField(
@@ -12,8 +15,12 @@ fun TextWithPasswordTextField(
     onValueChange : (String) -> Unit,
     passwordVisibility : Boolean,
     onClickVisibilityIcon : () -> Unit,
-    onChangePasswordVisibility : (Boolean) -> Int,
-    textFieldModifier : Modifier = Modifier
+    onChangeVisibility : (Boolean) -> Int,
+    textFieldModifier : Modifier = Modifier,
+    isError : Boolean = false,
+    errorMessage : String,
+    errorModifier : Modifier = Modifier,
+    errorVisibility : Boolean
 ){
 
     Text18(
@@ -22,12 +29,19 @@ fun TextWithPasswordTextField(
     )
 
     PasswordTextField(
+        isError =isError,
         hint = hint,
         value = value,
         onValueChange = onValueChange,
         passwordVisibility = passwordVisibility,
         onClickVisibilityIcon = onClickVisibilityIcon,
-        onChangePasswordVisibility = onChangePasswordVisibility,
+        onChangePasswordVisibility = onChangeVisibility,
         modifier = textFieldModifier
+    )
+
+    Text(
+        text = errorMessage,
+        color = Color.Red,
+        modifier = errorModifier.alpha(if (errorVisibility) 1f else 0f)
     )
 }

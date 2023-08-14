@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
@@ -64,7 +63,7 @@ fun SplashScreen(navController : NavController){
 
         Image(
 
-            painter = painterResource(id = R.drawable.logo),
+            painter = painterResource(id = R.drawable.logo_white),
             contentDescription = "",
             modifier = Modifier
                 .padding(horizontal = 64.dp)

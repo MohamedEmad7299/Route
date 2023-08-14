@@ -25,10 +25,12 @@ fun StandardTextField(
     hint : String,
     modifier: Modifier = Modifier,
     value : String,
-    onValueChange : (String) -> Unit
+    onValueChange : (String) -> Unit,
+    isError : Boolean = false
 ){
 
     OutlinedTextField(
+        isError = isError,
         singleLine = true,
         placeholder = {
             Text(

@@ -10,12 +10,13 @@ import com.ug.route.R
 
 @Composable
 fun Logo(
+    id : Int,
     modifier: Modifier = Modifier
 ){
 
     Image(
 
-        painter = painterResource(id = R.drawable.logo),
+        painter = painterResource(id = id),
         contentDescription = "",
         modifier = modifier
             .padding(horizontal = 64.dp)

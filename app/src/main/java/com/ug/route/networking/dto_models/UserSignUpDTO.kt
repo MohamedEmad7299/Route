@@ -1,9 +1,10 @@
 package com.ug.route.networking.dto_models
 
-data class UserDto(
+data class UserSignUpDTO(
 
     val name : String,
     val email : String,
     val password : String,
+    val rePassword : String = password,
     val phone : String
 )

@@ -3,7 +3,7 @@ package com.ug.route.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class User(
+data class NewUser(
     @SerializedName("email")
     val email: String? = null,
     @SerializedName("name")

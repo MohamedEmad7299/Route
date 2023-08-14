@@ -2,10 +2,10 @@ package com.ug.route.ui.sign_in_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -31,10 +32,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.data.models.User
+import com.ug.route.networking.dto_models.UserSignInDTO
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
-import com.ug.route.ui.design_matrials.text.Text18
 import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
 import com.ug.route.ui.design_matrials.text.TextWithTextField
 import com.ug.route.ui.theme.DarkBlue
@@ -49,9 +49,11 @@ fun SignInScreen(
     val message by viewModel.message.collectAsState()
     val launchedEffectKey by viewModel.launchedEffectKey.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isPasswordError by viewModel.isPasswordError.collectAsState()
+    val isEmailError by viewModel.isEmailError.collectAsState()
 
     SignInContent(
-        user =  user,
+        userSignInDTO =  user,
         passwordVisibility = passwordVisibility,
         onPasswordChange = viewModel::onChangePassword,
         onEmailChange = viewModel::onChangeEmail,
@@ -61,9 +63,11 @@ fun SignInScreen(
         message = message,
         launchedEffectKey = launchedEffectKey,
         isLoading = isLoading,
-        createAccount = {
+        navigateToSignUp = {
             navController.navigate("signUp_screen")
-        }
+        },
+        isEmailError = isEmailError,
+        isPasswordError = isPasswordError
     )
 }
 
@@ -72,7 +76,7 @@ fun SignInScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInContent(
-    user: User,
+    userSignInDTO: UserSignInDTO,
     onPasswordChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onChangePasswordVisibility: (Boolean) -> Int,
@@ -82,7 +86,9 @@ fun SignInContent(
     message: String,
     launchedEffectKey : Boolean,
     isLoading : Boolean,
-    createAccount : () -> Unit
+    navigateToSignUp : () -> Unit,
+    isPasswordError : Boolean,
+    isEmailError : Boolean
 ){
 
     val snackBarHostState = remember { SnackbarHostState() }
@@ -105,9 +111,12 @@ fun SignInContent(
                 forgetPasswordText,
                 loginButton,
                 createAccountText,
+                emailErrorMessage,
+                passwordErrorMessage,
                 passwordText) = createRefs()
 
             Logo(
+                id = R.drawable.logo_white,
                 modifier = Modifier.constrainAs(logo) {
 
                     top.linkTo(parent.top, 48.dp)
@@ -135,24 +144,32 @@ fun SignInContent(
             )
 
             TextWithTextField(
+                isError = isEmailError,
                 text = "E-mail",
                 textModifier = Modifier.constrainAs(usernameText) {
                     top.linkTo(welcomeMessage.bottom, 48.dp)
                     start.linkTo(parent.start, 16.dp)
                 },
                 hint = "enter your e-mail",
-                value = user.email,
+                value = userSignInDTO.email,
                 onValueChange = onEmailChange,
                 textFieldModifier = Modifier.constrainAs(userTextField) {
                     top.linkTo(usernameText.bottom, 16.dp)
                     start.linkTo(parent.start)
+                },
+                errorMessage = "incorrect or field is empty",
+                errorVisibility = isEmailError,
+                errorModifier = Modifier.constrainAs(emailErrorMessage){
+                    top.linkTo(userTextField.bottom, 8.dp)
+                    start.linkTo(parent.start,16.dp)
                 }
             )
 
             TextWithPasswordTextField(
+                isError = isPasswordError,
                 text = "Password",
                 hint = "enter your password",
-                value =  user.password,
+                value =  userSignInDTO.password,
                 textModifier = Modifier.constrainAs(passwordText) {
                     top.linkTo(userTextField.bottom, 32.dp)
                     start.linkTo(parent.start , 16.dp)
@@ -160,16 +177,22 @@ fun SignInContent(
                 onValueChange = onPasswordChange,
                 passwordVisibility = passwordVisibility,
                 onClickVisibilityIcon = onClickVisibilityIcon,
-                onChangePasswordVisibility = onChangePasswordVisibility,
+                onChangeVisibility = onChangePasswordVisibility,
                 textFieldModifier = Modifier
                     .constrainAs(passwordTextField) {
                         top.linkTo(passwordText.bottom, 16.dp)
                         start.linkTo(parent.start)
-                    }
+                    },
+                errorMessage = "field is empty",
+                errorVisibility = isPasswordError,
+                errorModifier = Modifier.constrainAs(passwordErrorMessage){
+                    top.linkTo(passwordTextField.bottom, 8.dp)
+                    start.linkTo(parent.start,16.dp)
+                }
             )
 
             Text(
-                text = "Forget password?",
+                text = "Forgot password?",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -214,15 +237,25 @@ fun SignInContent(
                 }
             }
 
-            Text18(
-                text = "Don’t have an account? Create One",
+            ClickableText(
+                text = AnnotatedString("Don’t have an account? Create One",),
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    lineHeight = 18.sp,
+                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                    fontWeight = FontWeight(500),
+                    color = Color(0xFFFFFFFF),
+                    textAlign = TextAlign.Center,
+                ),
+                onClick = {
+                    navigateToSignUp()
+                },
                 modifier = Modifier
-                    .clickable { createAccount() }
-                    .constrainAs(createAccountText){
-                    top.linkTo(loginButton.bottom,32.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                    .constrainAs(createAccountText) {
+                        top.linkTo(loginButton.bottom, 32.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
             )
 
             if (message != ""){

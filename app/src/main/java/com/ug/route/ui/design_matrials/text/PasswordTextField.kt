@@ -35,10 +35,12 @@ fun PasswordTextField(
     onValueChange : (String) -> Unit,
     passwordVisibility : Boolean,
     onClickVisibilityIcon : () -> Unit,
-    onChangePasswordVisibility : (Boolean) -> Int
+    onChangePasswordVisibility : (Boolean) -> Int,
+    isError : Boolean = false
 ){
 
     OutlinedTextField(
+        isError = isError,
         singleLine = true,
         placeholder = {
             Text(
