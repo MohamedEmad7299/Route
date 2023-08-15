@@ -20,26 +20,34 @@ class SignInViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val message = MutableStateFlow("")
-    val launchedEffectKey = MutableStateFlow(false)
-    val isLoading = MutableStateFlow(false)
-    val isPasswordError = MutableStateFlow(false)
-    val isEmailError = MutableStateFlow(false)
+    private val _message = MutableStateFlow("")
+    val message = _message.asStateFlow()
 
+    private val _launchedEffectKey = MutableStateFlow(false)
+    val launchedEffectKey = _launchedEffectKey.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    private val _isEmailError = MutableStateFlow(false)
+    val isEmailError = _isEmailError.asStateFlow()
+
+    private val _isPasswordError = MutableStateFlow(false)
+    val isPasswordError = _isPasswordError.asStateFlow()
 
     private val _passwordVisibility = MutableStateFlow(false)
     val passwordVisibility = _passwordVisibility.asStateFlow()
 
-    private val _userSignInDTO = MutableStateFlow(UserSignInDTO("",""))
-    val user = _userSignInDTO.asStateFlow()
+    private val _user = MutableStateFlow(UserSignInDTO("",""))
+    val user = _user.asStateFlow()
 
     fun onChangePassword(newPassword : String){
 
-        _userSignInDTO.update { it.copy(password = newPassword) }
+        _user.update { it.copy(password = newPassword) }
     }
     fun onChangeEmail(newEmail : String){
 
-        _userSignInDTO.update { it.copy(email = newEmail) }
+        _user.update { it.copy(email = newEmail) }
     }
 
     fun signIn(){
@@ -47,23 +55,24 @@ class SignInViewModel @Inject constructor(
         if (checkInputError()) return
 
         viewModelScope.launch {
-            isLoading.update { true }
+
+            _isLoading.update { true }
             val response = repository.signIn(user.value)
             val errorResponse: FailResponse? = response.errorBody()?.charStream()?.use {
                 Gson().fromJson(it, FailResponse::class.java)
             }
 
             if (response.isSuccessful) {
-                message.value = "Welcome"
+                _message.value = "Welcome"
             } else {
                 val errorMessage = when (response.code()) {
                     401 -> errorResponse?.message
                     else -> errorResponse?.errors?.msg
                 }
-                message.value = errorMessage ?: "An error occurred"
+                _message.value = errorMessage ?: "An error occurred"
             }
-            launchedEffectKey.update { !launchedEffectKey.value }
-            isLoading.update { false }
+            _launchedEffectKey.update { !launchedEffectKey.value }
+            _isLoading.update { false }
         }
     }
 
@@ -81,9 +90,9 @@ class SignInViewModel @Inject constructor(
     private fun checkInputError() : Boolean{
 
         val user = user.value
-        isPasswordError.value = user.password.isEmpty()
-        isEmailError.value = user.email.isEmpty() || !("@" in user.email && "." in user.email)
+        _isPasswordError.value = user.password.isEmpty()
+        _isEmailError.value = user.email.isEmpty() || !("@" in user.email && "." in user.email)
 
-        return isEmailError.value || isPasswordError.value
+        return _isEmailError.value || _isPasswordError.value
     }
 }

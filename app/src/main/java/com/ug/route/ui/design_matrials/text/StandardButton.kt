@@ -15,8 +15,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun StandardButton(
     modifier : Modifier = Modifier,
+    buttonColor : Color = Color.White,
     onClick : () -> Unit,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ){
 
     Button(
@@ -26,7 +27,7 @@ fun StandardButton(
             .padding(horizontal = 16.dp),
         onClick = onClick ,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White
+            containerColor = buttonColor
         ),
         shape = RoundedCornerShape(16.dp),
         content = content

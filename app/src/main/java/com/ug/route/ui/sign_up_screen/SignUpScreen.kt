@@ -35,7 +35,6 @@ import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
 import com.ug.route.ui.design_matrials.text.TextWithTextField
 import com.ug.route.ui.theme.DarkBlue
-import kotlinx.coroutines.flow.update
 
 @Composable
 fun SignUpScreen(
@@ -45,7 +44,6 @@ fun SignUpScreen(
     val user by viewModel.user.collectAsState()
     val passwordVisibility by viewModel.passwordVisibility.collectAsState()
     val rePasswordVisibility by viewModel.rePasswordVisibility.collectAsState()
-
     val isPasswordError by viewModel.isPasswordError.collectAsState()
     val isEmailError by viewModel.isEmailError.collectAsState()
     val isRePasswordError by viewModel.isRePasswordError.collectAsState()
@@ -66,18 +64,14 @@ fun SignUpScreen(
         isNameError = isNameError,
         isPhoneError = isPhoneError,
         signUp = viewModel::signUp,
-        onClickPasswordVisibilityIcon = {
-            viewModel.passwordVisibility.update { !viewModel.passwordVisibility.value }
-        },
+        onClickPasswordVisibilityIcon = viewModel::onChangePasswordVisibility,
         passwordVisibility = passwordVisibility,
         onChangePasswordVisibility = viewModel::onChangeVisibility,
         isLoading = isLoading,
         message = message,
         launchedEffectKey = launchedEffectKey,
         rePasswordVisibility = rePasswordVisibility,
-        onClickRePasswordVisibilityIcon = {
-            viewModel.rePasswordVisibility.update { !viewModel.rePasswordVisibility.value }
-        },
+        onClickRePasswordVisibilityIcon = viewModel::onChangeRePasswordVisibility,
         isRePasswordError = isRePasswordError,
         onChangeRePassword = viewModel::onChangeRePassword
     )
@@ -168,7 +162,7 @@ fun SignUpContent(
                             top.linkTo(fullNameText.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
-                        errorMessage = "field is empty",
+                        errorMessage = "field is empty or less than 3 characters",
                         errorVisibility = isNameError,
                         errorModifier = Modifier.constrainAs(nameError){
                             top.linkTo(fullNameTextField.bottom, 8.dp)

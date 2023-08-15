@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ug.route.R
+import com.ug.route.ui.theme.DarkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,8 +68,10 @@ fun PasswordTextField(
                     contentDescription = "")
             }
         },
-        colors = TextFieldDefaults.textFieldColors(
+        colors = TextFieldDefaults.outlinedTextFieldColors(
             containerColor = Color.White,
+            cursorColor = DarkBlue,
+            focusedBorderColor = DarkBlue
         ),
         textStyle = TextStyle(
             color = Color.Black,

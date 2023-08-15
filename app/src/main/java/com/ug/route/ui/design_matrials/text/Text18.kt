@@ -17,18 +17,19 @@ import com.ug.route.R
 @Composable
 fun Text18(
     modifier: Modifier = Modifier,
-    color: Color = Color(0xFFFFFFFF),
-    text : String
+    weight: Int = 500,
+    text : String,
+    color: Color = Color(0xFFFFFFFF)
 ){
 
     Text(
         text = text,
+        color = color,
         style = TextStyle(
             fontSize = 18.sp,
             lineHeight = 18.sp,
             fontFamily = FontFamily(Font(R.font.poppins_regular)),
-            fontWeight = FontWeight(500),
-            color = Color(0xFFFFFFFF),
+            fontWeight = FontWeight(weight),
             textAlign = TextAlign.Center,
         ),
         modifier = modifier

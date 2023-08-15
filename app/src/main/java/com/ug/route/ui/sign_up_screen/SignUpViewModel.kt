@@ -22,20 +22,49 @@ class SignUpViewModel @Inject constructor(
     private val _user = MutableStateFlow(UserSignUpDTO("","","","",""))
     val user = _user.asStateFlow()
 
-    val message = MutableStateFlow("")
-    val launchedEffectKey = MutableStateFlow(false)
-    val isLoading = MutableStateFlow(false)
-    val passwordVisibility = MutableStateFlow(false)
-    val rePasswordVisibility = MutableStateFlow(false)
-    val isPasswordError = MutableStateFlow(false)
-    val isEmailError = MutableStateFlow(false)
-    val isNameError = MutableStateFlow(false)
-    val isPhoneError = MutableStateFlow(false)
-    val isRePasswordError = MutableStateFlow(false)
+    private val _message = MutableStateFlow("")
+    val message = _message.asStateFlow()
+
+    private val _launchedEffectKey = MutableStateFlow(false)
+    val launchedEffectKey = _launchedEffectKey.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    private val _passwordVisibility = MutableStateFlow(false)
+    val passwordVisibility = _passwordVisibility.asStateFlow()
+
+    private val _rePasswordVisibility = MutableStateFlow(false)
+    val rePasswordVisibility = _rePasswordVisibility.asStateFlow()
+
+    private val _isPasswordError = MutableStateFlow(false)
+    val isPasswordError = _isPasswordError.asStateFlow()
+
+    private val _isEmailError = MutableStateFlow(false)
+    val isEmailError = _isEmailError.asStateFlow()
+
+    private val _isNameError = MutableStateFlow(false)
+    val isNameError = _isNameError.asStateFlow()
+
+    private val _isPhoneError = MutableStateFlow(false)
+    val isPhoneError = _isPhoneError.asStateFlow()
+
+    private val _isRePasswordError = MutableStateFlow(false)
+    val isRePasswordError = _isRePasswordError.asStateFlow()
 
     fun onChangePassword(newPassword : String){
 
         _user.update { it.copy(password = newPassword) }
+    }
+
+    fun onChangePasswordVisibility(){
+
+        _passwordVisibility.update { !_passwordVisibility.value }
+    }
+
+    fun onChangeRePasswordVisibility(){
+
+        _rePasswordVisibility.update { !_rePasswordVisibility.value }
     }
 
     fun onChangeRePassword(newPassword : String){
@@ -69,12 +98,12 @@ class SignUpViewModel @Inject constructor(
 
         val user = user.value
 
-        isPhoneError.value = user.phone.isEmpty()
-        isNameError.value = user.name.isEmpty()
-        isPasswordError.value = user.password.isEmpty()
-        isRePasswordError.value = user.rePassword.isEmpty() || user.password != user.rePassword
+        _isPhoneError.value = user.phone.isEmpty()
+        _isNameError.value = user.name.isEmpty() || user.name.length < 3
+        _isPasswordError.value = user.password.isEmpty()
+        _isRePasswordError.value = user.rePassword.isEmpty() || user.password != user.rePassword
 
-        isEmailError.value = user.email.isEmpty() || !("@" in user.email && "." in user.email)
+        _isEmailError.value = user.email.isEmpty() || !("@" in user.email && "." in user.email)
 
         return isPhoneError.value ||
                 isNameError.value ||
@@ -89,7 +118,7 @@ class SignUpViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            isLoading.value = true
+            _isLoading.value = true
 
             val response = repository.signUp(user.value)
             val errorResponse: FailResponse? = response.errorBody()?.charStream()?.use {
@@ -97,17 +126,17 @@ class SignUpViewModel @Inject constructor(
             }
 
             if (response.isSuccessful) {
-                message.value = "Account Created Successfully"
+                _message.value = "Account Created Successfully"
             } else {
                 val errorMessage = when (response.code()) {
                     409 -> errorResponse?.message
                     else -> errorResponse?.errors?.msg
                 }
-                message.value = errorMessage ?: "An error occurred"
+                _message.value = errorMessage ?: "An error occurred"
             }
 
-            launchedEffectKey.value = !launchedEffectKey.value
-            isLoading.value = false
+            _launchedEffectKey.value = !launchedEffectKey.value
+            _isLoading.value = false
         }
     }
 }

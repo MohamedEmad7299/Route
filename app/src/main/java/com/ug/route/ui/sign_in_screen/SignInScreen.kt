@@ -67,7 +67,10 @@ fun SignInScreen(
             navController.navigate("signUp_screen")
         },
         isEmailError = isEmailError,
-        isPasswordError = isPasswordError
+        isPasswordError = isPasswordError,
+        onClickForgotPassword = {
+            navController.navigate("reset_password_screen")
+        }
     )
 }
 
@@ -88,7 +91,8 @@ fun SignInContent(
     isLoading : Boolean,
     navigateToSignUp : () -> Unit,
     isPasswordError : Boolean,
-    isEmailError : Boolean
+    isEmailError : Boolean,
+    onClickForgotPassword : () -> Unit
 ){
 
     val snackBarHostState = remember { SnackbarHostState() }
@@ -191,8 +195,8 @@ fun SignInContent(
                 }
             )
 
-            Text(
-                text = "Forgot password?",
+            ClickableText(
+                text = AnnotatedString("Forgot password?"),
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -205,7 +209,9 @@ fun SignInContent(
                         top.linkTo(passwordTextField.bottom,16.dp)
                         end.linkTo(parent.end,16.dp)
                     }
-            )
+            ){
+                onClickForgotPassword()
+            }
 
 
             StandardButton(
