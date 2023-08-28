@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -19,6 +20,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
 import com.ug.route.ui.theme.DarkBlue
+import com.ug.route.utils.Screen
 import kotlinx.coroutines.delay
 
 
@@ -46,7 +48,7 @@ fun SplashScreen(navController : NavController){
         )
 
         delay(750)
-        navController.navigate("signIn_screen"){
+        navController.navigate(Screen.SignInScreen.route){
             popUpTo(navController.graph.id){
                 inclusive = true
             }

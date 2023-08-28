@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -18,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -35,6 +35,7 @@ import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
 import com.ug.route.ui.design_matrials.text.TextWithTextField
 import com.ug.route.ui.theme.DarkBlue
+import com.ug.route.utils.handelInternetError
 
 @Composable
 fun SignUpScreen(
@@ -42,69 +43,44 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel()
 ){
     val user by viewModel.user.collectAsState()
-    val passwordVisibility by viewModel.passwordVisibility.collectAsState()
-    val rePasswordVisibility by viewModel.rePasswordVisibility.collectAsState()
-    val isPasswordError by viewModel.isPasswordError.collectAsState()
-    val isEmailError by viewModel.isEmailError.collectAsState()
-    val isRePasswordError by viewModel.isRePasswordError.collectAsState()
-    val isNameError by viewModel.isNameError.collectAsState()
-    val isPhoneError by viewModel.isPhoneError.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val message by viewModel.message.collectAsState()
-    val launchedEffectKey by viewModel.launchedEffectKey.collectAsState()
+    val screenState by viewModel.screenState.collectAsState()
 
     SignUpContent(
         user = user,
+        screenState = screenState,
         onChangeName = viewModel::onChangeName,
         onChangeEmail = viewModel::onChangeEmail,
         onChangePassword = viewModel::onChangePassword,
         onChangePhone = viewModel::onChangePhone,
-        isPasswordError = isPasswordError,
-        isEmailError = isEmailError,
-        isNameError = isNameError,
-        isPhoneError = isPhoneError,
         signUp = viewModel::signUp,
         onClickPasswordVisibilityIcon = viewModel::onChangePasswordVisibility,
-        passwordVisibility = passwordVisibility,
         onChangePasswordVisibility = viewModel::onChangeVisibility,
-        isLoading = isLoading,
-        message = message,
-        launchedEffectKey = launchedEffectKey,
-        rePasswordVisibility = rePasswordVisibility,
         onClickRePasswordVisibilityIcon = viewModel::onChangeRePasswordVisibility,
-        isRePasswordError = isRePasswordError,
-        onChangeRePassword = viewModel::onChangeRePassword
+        onChangeRePassword = viewModel::onChangeRePassword,
+        onInternetError = viewModel::onInternetError
     )
 }
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpContent(
     user : UserSignUpDTO,
+    screenState: SignUpState,
     onChangeName : (String) -> Unit,
     onChangePhone : (String) -> Unit,
     onChangeEmail : (String) -> Unit,
     onChangePassword : (String) -> Unit,
     onChangeRePassword : (String) -> Unit,
-    isNameError : Boolean,
-    isPhoneError : Boolean,
-    isEmailError : Boolean,
-    isPasswordError : Boolean,
     signUp : () -> Unit,
     onClickPasswordVisibilityIcon :  () -> Unit,
-    passwordVisibility : Boolean,
-    rePasswordVisibility : Boolean,
     onChangePasswordVisibility :  (Boolean) -> Int,
     onClickRePasswordVisibilityIcon :  () -> Unit,
-    isLoading : Boolean,
-    message : String,
-    launchedEffectKey : Boolean,
-    isRePasswordError : Boolean
+    onInternetError : () -> Unit
 ) {
 
     val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
@@ -149,7 +125,7 @@ fun SignUpContent(
 
 
                     TextWithTextField(
-                        isError = isNameError,
+                        isError = screenState.isNameError,
                         text = "Full Name",
                         textModifier = Modifier.constrainAs(fullNameText) {
                             top.linkTo(logo.bottom, 48.dp)
@@ -163,7 +139,7 @@ fun SignUpContent(
                             start.linkTo(parent.start)
                         },
                         errorMessage = "field is empty or less than 3 characters",
-                        errorVisibility = isNameError,
+                        errorVisibility = screenState.isNameError,
                         errorModifier = Modifier.constrainAs(nameError){
                             top.linkTo(fullNameTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -171,7 +147,7 @@ fun SignUpContent(
                     )
 
                     TextWithTextField(
-                        isError = isPhoneError,
+                        isError = screenState.isPhoneError,
                         text = "Mobile Number",
                         textModifier = Modifier.constrainAs(mobileNumberText) {
                             top.linkTo(fullNameTextField.bottom, 32.dp)
@@ -185,7 +161,7 @@ fun SignUpContent(
                             start.linkTo(parent.start)
                         },
                         errorMessage = "field is empty",
-                        errorVisibility = isPhoneError,
+                        errorVisibility = screenState.isPhoneError,
                         errorModifier = Modifier.constrainAs(phoneError){
                             top.linkTo(mobileNumberTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -193,7 +169,7 @@ fun SignUpContent(
                     )
 
                     TextWithTextField(
-                        isError = isEmailError,
+                        isError = screenState.isEmailError,
                         text = "E-mail address",
                         textModifier = Modifier.constrainAs(emailText) {
                             top.linkTo(mobileNumberTextField.bottom, 32.dp)
@@ -207,7 +183,7 @@ fun SignUpContent(
                             start.linkTo(parent.start)
                         },
                         errorMessage = "incorrect or field is empty",
-                        errorVisibility = isEmailError,
+                        errorVisibility = screenState.isEmailError,
                         errorModifier = Modifier.constrainAs(emailError){
                             top.linkTo(emailTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -215,7 +191,7 @@ fun SignUpContent(
                     )
 
                     TextWithPasswordTextField(
-                        isError = isPasswordError,
+                        isError = screenState.isPasswordError,
                         text = "Password",
                         textModifier = Modifier.constrainAs(passwordText) {
                             top.linkTo(emailTextField.bottom, 32.dp)
@@ -224,7 +200,7 @@ fun SignUpContent(
                         hint = "enter your password",
                         value = user.password,
                         onValueChange = onChangePassword,
-                        passwordVisibility = passwordVisibility,
+                        passwordVisibility = screenState.passwordVisibility,
                         onClickVisibilityIcon = onClickPasswordVisibilityIcon,
                         onChangeVisibility = onChangePasswordVisibility,
                         textFieldModifier = Modifier.constrainAs(passwordTextField) {
@@ -232,7 +208,7 @@ fun SignUpContent(
                             start.linkTo(parent.start)
                         },
                         errorMessage = "field is empty",
-                        errorVisibility = isPasswordError,
+                        errorVisibility = screenState.isPasswordError,
                         errorModifier = Modifier.constrainAs(passwordError){
                             top.linkTo(passwordTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -240,7 +216,7 @@ fun SignUpContent(
                     )
 
                     TextWithPasswordTextField(
-                        isError = isRePasswordError,
+                        isError = screenState.isRePasswordError,
                         text = "Confirm Password",
                         textModifier = Modifier.constrainAs(rePasswordText) {
                             top.linkTo(passwordTextField.bottom, 32.dp)
@@ -249,15 +225,15 @@ fun SignUpContent(
                         hint = "repeat your password",
                         value = user.rePassword,
                         onValueChange = onChangeRePassword,
-                        passwordVisibility = rePasswordVisibility,
+                        passwordVisibility = screenState.rePasswordVisibility,
                         onClickVisibilityIcon = onClickRePasswordVisibilityIcon,
                         onChangeVisibility = onChangePasswordVisibility,
                         textFieldModifier = Modifier.constrainAs(rePasswordTextField) {
                             top.linkTo(rePasswordText.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
-                        errorMessage = "field is empty or not equal to the password",
-                        errorVisibility = isRePasswordError,
+                        errorMessage = "field is empty or not the same as the password",
+                        errorVisibility = screenState.isRePasswordError,
                         errorModifier = Modifier.constrainAs(rePasswordError){
                             top.linkTo(rePasswordTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -265,7 +241,7 @@ fun SignUpContent(
                     )
 
                     StandardButton(
-                        onClick = signUp,
+                        onClick = { handelInternetError(context,signUp,onInternetError) },
                         modifier = Modifier
                             .padding(bottom = 48.dp)
                             .constrainAs(signUpButton) {
@@ -273,7 +249,7 @@ fun SignUpContent(
                             }
                     ){
 
-                        if (isLoading){
+                        if (screenState.isLoading){
                             CircularProgressIndicator(
                                 modifier = Modifier.size(32.dp),
                                 color = DarkBlue,
@@ -295,9 +271,9 @@ fun SignUpContent(
                         }
                     }
 
-                    if (message != ""){
-                        LaunchedEffect(key1 = launchedEffectKey){
-                            snackBarHostState.showSnackbar(message)
+                    if (screenState.message != ""){
+                        LaunchedEffect(key1 = screenState.launchedEffectKey){
+                            snackBarHostState.showSnackbar(screenState.message)
                         }
                     }
                 }

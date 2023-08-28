@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,35 +23,20 @@ class SignUpViewModel @Inject constructor(
     private val _user = MutableStateFlow(UserSignUpDTO("","","","",""))
     val user = _user.asStateFlow()
 
-    private val _message = MutableStateFlow("")
-    val message = _message.asStateFlow()
+    private val _screenState = MutableStateFlow(SignUpState(
+        message = "",
+        isPasswordError = false,
+        isEmailError = false,
+        isLoading = false,
+        isPhoneError = false,
+        isNameError = false,
+        isRePasswordError = false,
+        passwordVisibility = false,
+        rePasswordVisibility = false,
+        launchedEffectKey = false
+    ))
 
-    private val _launchedEffectKey = MutableStateFlow(false)
-    val launchedEffectKey = _launchedEffectKey.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
-
-    private val _passwordVisibility = MutableStateFlow(false)
-    val passwordVisibility = _passwordVisibility.asStateFlow()
-
-    private val _rePasswordVisibility = MutableStateFlow(false)
-    val rePasswordVisibility = _rePasswordVisibility.asStateFlow()
-
-    private val _isPasswordError = MutableStateFlow(false)
-    val isPasswordError = _isPasswordError.asStateFlow()
-
-    private val _isEmailError = MutableStateFlow(false)
-    val isEmailError = _isEmailError.asStateFlow()
-
-    private val _isNameError = MutableStateFlow(false)
-    val isNameError = _isNameError.asStateFlow()
-
-    private val _isPhoneError = MutableStateFlow(false)
-    val isPhoneError = _isPhoneError.asStateFlow()
-
-    private val _isRePasswordError = MutableStateFlow(false)
-    val isRePasswordError = _isRePasswordError.asStateFlow()
+    val screenState = _screenState.asStateFlow()
 
     fun onChangePassword(newPassword : String){
 
@@ -59,12 +45,12 @@ class SignUpViewModel @Inject constructor(
 
     fun onChangePasswordVisibility(){
 
-        _passwordVisibility.update { !_passwordVisibility.value }
+        _screenState.update { it.copy(passwordVisibility = !_screenState.value.passwordVisibility) }
     }
 
     fun onChangeRePasswordVisibility(){
 
-        _rePasswordVisibility.update { !_rePasswordVisibility.value }
+        _screenState.update { it.copy(rePasswordVisibility = !_screenState.value.rePasswordVisibility) }
     }
 
     fun onChangeRePassword(newPassword : String){
@@ -95,21 +81,21 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun checkInputError(): Boolean {
-
         val user = user.value
-
-        _isPhoneError.value = user.phone.isEmpty()
-        _isNameError.value = user.name.isEmpty() || user.name.length < 3
-        _isPasswordError.value = user.password.isEmpty()
-        _isRePasswordError.value = user.rePassword.isEmpty() || user.password != user.rePassword
-
-        _isEmailError.value = user.email.isEmpty() || !("@" in user.email && "." in user.email)
-
-        return isPhoneError.value ||
-                isNameError.value ||
-                isPasswordError.value ||
-                isEmailError.value ||
-                isRePasswordError.value
+        _screenState.update { prevState ->
+            prevState.copy(
+                isPhoneError = user.phone.isEmpty(),
+                isNameError = user.name.isEmpty() || user.name.length < 3,
+                isPasswordError = user.password.isEmpty(),
+                isRePasswordError = user.rePassword.isEmpty() || user.password != user.rePassword,
+                isEmailError = user.email.isEmpty() || !("@" in user.email && "." in user.email)
+            )
+        }
+        return _screenState.value.isPhoneError ||
+                _screenState.value.isNameError ||
+                _screenState.value.isPasswordError ||
+                _screenState.value.isEmailError ||
+                _screenState.value.isRePasswordError
     }
 
     fun signUp() {
@@ -117,26 +103,36 @@ class SignUpViewModel @Inject constructor(
         if (checkInputError()) return
 
         viewModelScope.launch {
-
-            _isLoading.value = true
+            _screenState.update { prevState ->
+                prevState.copy(isLoading = true)
+            }
 
             val response = repository.signUp(user.value)
-            val errorResponse: FailResponse? = response.errorBody()?.charStream()?.use {
-                Gson().fromJson(it, FailResponse::class.java)
-            }
+            val errorMessage = response.getErrorMessage()
 
-            if (response.isSuccessful) {
-                _message.value = "Account Created Successfully"
-            } else {
-                val errorMessage = when (response.code()) {
-                    409 -> errorResponse?.message
-                    else -> errorResponse?.errors?.msg
-                }
-                _message.value = errorMessage ?: "An error occurred"
+            _screenState.update { prevState ->
+                if (response.isSuccessful) {
+                    prevState.copy(message = "Account Created Successfully")
+                } else {
+                    prevState.copy(message = errorMessage ?: "An error occurred")
+                }.copy(launchedEffectKey = !prevState.launchedEffectKey, isLoading = false)
             }
-
-            _launchedEffectKey.value = !launchedEffectKey.value
-            _isLoading.value = false
         }
+    }
+
+    private fun Response<*>.getErrorMessage(): String? {
+        val errorResponse: FailResponse? = errorBody()?.charStream()?.use {
+            Gson().fromJson(it, FailResponse::class.java)
+        }
+        return when (code()) {
+            409 -> errorResponse?.message
+            else -> errorResponse?.errors?.msg
+        }
+    }
+
+    fun onInternetError(){
+        _screenState.update { it.copy(
+            message = "No Internet Connection",
+            launchedEffectKey = !_screenState.value.launchedEffectKey) }
     }
 }

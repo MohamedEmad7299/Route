@@ -3,10 +3,9 @@ package com.ug.route.ui.design_matrials.text
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.ug.route.R
 import com.ug.route.ui.theme.DarkBlue
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardTextField(
     hint : String,
@@ -53,8 +51,11 @@ fun StandardTextField(
         shape = shape,
         value = value,
         onValueChange = onValueChange,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            containerColor = Color.White,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            errorContainerColor = Color.White,
+            disabledContainerColor = Color.White,
             cursorColor = DarkBlue,
             focusedBorderColor = DarkBlue,
         ),

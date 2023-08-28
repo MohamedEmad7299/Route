@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -19,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -38,6 +38,8 @@ import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
 import com.ug.route.ui.design_matrials.text.TextWithTextField
 import com.ug.route.ui.theme.DarkBlue
+import com.ug.route.utils.Screen
+import com.ug.route.utils.handelInternetError
 
 @Composable
 fun SignInScreen(
@@ -45,57 +47,46 @@ fun SignInScreen(
     viewModel: SignInViewModel = hiltViewModel()
 ){
     val user by viewModel.user.collectAsState()
-    val passwordVisibility by viewModel.passwordVisibility.collectAsState()
-    val message by viewModel.message.collectAsState()
-    val launchedEffectKey by viewModel.launchedEffectKey.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val isPasswordError by viewModel.isPasswordError.collectAsState()
-    val isEmailError by viewModel.isEmailError.collectAsState()
+    val screenState by viewModel.screenState.collectAsState()
 
     SignInContent(
-        userSignInDTO =  user,
-        passwordVisibility = passwordVisibility,
+        user =  user,
+        screenState = screenState,
         onPasswordChange = viewModel::onChangePassword,
         onEmailChange = viewModel::onChangeEmail,
         onChangePasswordVisibility = viewModel::onChangePasswordVisibility,
         onClickVisibilityIcon = viewModel::onClickVisibilityIcon,
         onClickLogin = viewModel::signIn,
-        message = message,
-        launchedEffectKey = launchedEffectKey,
-        isLoading = isLoading,
         navigateToSignUp = {
-            navController.navigate("signUp_screen")
+            viewModel.makeMessageEmpty()
+            navController.navigate(Screen.SignUpScreen.route)
         },
-        isEmailError = isEmailError,
-        isPasswordError = isPasswordError,
         onClickForgotPassword = {
-            navController.navigate("reset_password_screen")
-        }
+            viewModel.makeMessageEmpty()
+            navController.navigate(Screen.ResetPasswordScreen.route)
+        },
+        onInternetError = viewModel::onInternetError
     )
 }
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInContent(
-    userSignInDTO: UserSignInDTO,
+    user: UserSignInDTO,
+    screenState: SignInState,
     onPasswordChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onChangePasswordVisibility: (Boolean) -> Int,
-    passwordVisibility: Boolean,
     onClickVisibilityIcon: () -> Unit,
     onClickLogin: () -> Unit,
-    message: String,
-    launchedEffectKey : Boolean,
-    isLoading : Boolean,
     navigateToSignUp : () -> Unit,
-    isPasswordError : Boolean,
-    isEmailError : Boolean,
-    onClickForgotPassword : () -> Unit
+    onClickForgotPassword : () -> Unit,
+    onInternetError : () -> Unit
 ){
 
     val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
@@ -148,21 +139,21 @@ fun SignInContent(
             )
 
             TextWithTextField(
-                isError = isEmailError,
+                isError = screenState.isEmailError,
                 text = "E-mail",
                 textModifier = Modifier.constrainAs(usernameText) {
                     top.linkTo(welcomeMessage.bottom, 48.dp)
                     start.linkTo(parent.start, 16.dp)
                 },
                 hint = "enter your e-mail",
-                value = userSignInDTO.email,
+                value = user.email,
                 onValueChange = onEmailChange,
                 textFieldModifier = Modifier.constrainAs(userTextField) {
                     top.linkTo(usernameText.bottom, 16.dp)
                     start.linkTo(parent.start)
                 },
                 errorMessage = "incorrect or field is empty",
-                errorVisibility = isEmailError,
+                errorVisibility = screenState.isEmailError,
                 errorModifier = Modifier.constrainAs(emailErrorMessage){
                     top.linkTo(userTextField.bottom, 8.dp)
                     start.linkTo(parent.start,16.dp)
@@ -170,16 +161,16 @@ fun SignInContent(
             )
 
             TextWithPasswordTextField(
-                isError = isPasswordError,
+                isError = screenState.isPasswordError,
                 text = "Password",
                 hint = "enter your password",
-                value =  userSignInDTO.password,
+                value =  user.password,
                 textModifier = Modifier.constrainAs(passwordText) {
                     top.linkTo(userTextField.bottom, 32.dp)
                     start.linkTo(parent.start , 16.dp)
                 },
                 onValueChange = onPasswordChange,
-                passwordVisibility = passwordVisibility,
+                passwordVisibility = screenState.passwordVisibility,
                 onClickVisibilityIcon = onClickVisibilityIcon,
                 onChangeVisibility = onChangePasswordVisibility,
                 textFieldModifier = Modifier
@@ -188,7 +179,7 @@ fun SignInContent(
                         start.linkTo(parent.start)
                     },
                 errorMessage = "field is empty",
-                errorVisibility = isPasswordError,
+                errorVisibility = screenState.isPasswordError,
                 errorModifier = Modifier.constrainAs(passwordErrorMessage){
                     top.linkTo(passwordTextField.bottom, 8.dp)
                     start.linkTo(parent.start,16.dp)
@@ -209,19 +200,18 @@ fun SignInContent(
                         top.linkTo(passwordTextField.bottom,16.dp)
                         end.linkTo(parent.end,16.dp)
                     }
-            ){
-                onClickForgotPassword()
-            }
+            ){ handelInternetError(context,onClickForgotPassword,onInternetError) }
+
 
 
             StandardButton(
-                onClick = onClickLogin,
+                onClick = { handelInternetError(context,onClickLogin,onInternetError) },
                 modifier = Modifier
                     .constrainAs(loginButton) {
                         top.linkTo(forgetPasswordText.bottom, 48.dp)
                     }
             ) {
-                if (isLoading){
+                if (screenState.isLoading){
                     CircularProgressIndicator(
                         modifier = Modifier.size(32.dp),
                         color = DarkBlue,
@@ -244,7 +234,7 @@ fun SignInContent(
             }
 
             ClickableText(
-                text = AnnotatedString("Don’t have an account? Create One",),
+                text = AnnotatedString("Don’t have an account? Create One"),
                 style = TextStyle(
                     fontSize = 18.sp,
                     lineHeight = 18.sp,
@@ -253,9 +243,7 @@ fun SignInContent(
                     color = Color(0xFFFFFFFF),
                     textAlign = TextAlign.Center,
                 ),
-                onClick = {
-                    navigateToSignUp()
-                },
+                onClick = { handelInternetError(context,navigateToSignUp,onInternetError) },
                 modifier = Modifier
                     .constrainAs(createAccountText) {
                         top.linkTo(loginButton.bottom, 32.dp)
@@ -264,9 +252,9 @@ fun SignInContent(
                     }
             )
 
-            if (message != ""){
-                LaunchedEffect(key1 = launchedEffectKey){
-                    snackBarHostState.showSnackbar(message)
+            if (screenState.message != ""){
+                LaunchedEffect(key1 = screenState.launchedEffectKey){
+                    snackBarHostState.showSnackbar(screenState.message)
                 }
             }
         }

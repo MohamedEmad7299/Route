@@ -5,9 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -20,7 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -32,54 +30,54 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
+import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.StandardTextField
 import com.ug.route.ui.design_matrials.text.Text18
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
-
-
+import com.ug.route.utils.Screen
+import com.ug.route.utils.handelInternetError
 @Composable
-fun ForgotPasswordScreen(
+fun ResetPasswordScreen(
     navController : NavController,
     viewModel: ResetPasswordViewModel = hiltViewModel()
 ){
 
     val email by viewModel.email.collectAsState()
-    val isEmailError by viewModel.isEmailError.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val message by viewModel.message.collectAsState()
-    val launchedEffectKey by viewModel.launchedEffectKey.collectAsState()
+    val screenState by viewModel.screenState.collectAsState()
 
-    ForgotPasswordContent(
+    ResetPasswordContent(
         email = email,
-        isEmailError = isEmailError,
-        isLoading = isLoading,
-        message = message,
-        launchedEffectKey = launchedEffectKey,
-        onClickReset = viewModel::resetPassword,
-        onClickBack = { navController.navigate("signIn_screen") },
-        onChangeEmail = viewModel::onChangeEmail
+        screenState = screenState,
+        onClickReset = {
+            viewModel.resetPassword(navController)
+        },
+        onClickBack = { navController.navigate(Screen.SignInScreen.route){
+            popUpTo(navController.graph.id){
+                inclusive = true
+            }
+        } },
+        onChangeEmail = viewModel::onChangeEmail,
+        onInternetError = viewModel::onInternetError,
     )
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ForgotPasswordContent(
+fun ResetPasswordContent(
     email : String,
+    screenState: ResetPasswordState,
     onChangeEmail : (String) -> Unit,
     onClickReset : () -> Unit,
-    message : String,
-    launchedEffectKey : Boolean,
     onClickBack : () -> Unit,
-    isLoading : Boolean,
-    isEmailError : Boolean
+    onInternetError : () -> Unit
 ){
 
     val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) {
@@ -150,7 +148,7 @@ fun ForgotPasswordContent(
             )
 
             StandardTextField(
-                isError = isEmailError,
+                isError = screenState.isEmailError,
                 hint = "enter your email",
                 value = email,
                 onValueChange = onChangeEmail,
@@ -163,21 +161,21 @@ fun ForgotPasswordContent(
                 text = "Incorrect or field is empty",
                 color = Color.Red,
                 modifier = Modifier
-                    .constrainAs(errorMessage){
+                    .constrainAs(errorMessage) {
                         top.linkTo(emailTextField.bottom, 8.dp)
-                        start.linkTo(parent.start,16.dp)
+                        start.linkTo(parent.start, 16.dp)
                     }
-                    .alpha(if (isEmailError) 1f else 0f)
+                    .alpha(if (screenState.isEmailError) 1f else 0f)
             )
 
             StandardButton(
                 buttonColor = DarkBlue,
-                onClick = onClickReset,
+                onClick = { handelInternetError(context,onClickReset,onInternetError) },
                 modifier = Modifier.constrainAs(resetButton){
                     top.linkTo(emailTextField.bottom,48.dp)},
             ) {
 
-                if (isLoading){
+                if (screenState.isLoading){
                     CircularProgressIndicator(
                         modifier = Modifier.size(32.dp),
                         color = Color.White,
@@ -199,27 +197,18 @@ fun ForgotPasswordContent(
                 }
             }
 
-            ClickableText(
-                text = AnnotatedString("<- Back to log in"),
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(700),
-                    color = Gray80,
-                    textAlign = TextAlign.Center,
-                ),
+            BackToLogin(
                 modifier = Modifier.constrainAs(backButton){
                     top.linkTo(resetButton.bottom,32.dp)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end) }
-            ){
-                onClickBack()
-            }
+                    end.linkTo(parent.end) },
+                onClickBack = onClickBack
+            )
         }
 
-        if (message != ""){
-            LaunchedEffect(key1 = launchedEffectKey){
-                snackBarHostState.showSnackbar(message)
+        if (screenState.message != ""){
+            LaunchedEffect(key1 = screenState.launchedEffectKey){
+                snackBarHostState.showSnackbar(screenState.message)
             }
         }
     }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,23 +21,16 @@ class SignInViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    private val _message = MutableStateFlow("")
-    val message = _message.asStateFlow()
+    private val _screenState = MutableStateFlow(SignInState(
+        message = "",
+        launchedEffectKey = false,
+        isLoading = false,
+        isEmailError = false,
+        passwordVisibility = false,
+        isPasswordError = false
+    ))
 
-    private val _launchedEffectKey = MutableStateFlow(false)
-    val launchedEffectKey = _launchedEffectKey.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
-
-    private val _isEmailError = MutableStateFlow(false)
-    val isEmailError = _isEmailError.asStateFlow()
-
-    private val _isPasswordError = MutableStateFlow(false)
-    val isPasswordError = _isPasswordError.asStateFlow()
-
-    private val _passwordVisibility = MutableStateFlow(false)
-    val passwordVisibility = _passwordVisibility.asStateFlow()
+    val screenState = _screenState.asStateFlow()
 
     private val _user = MutableStateFlow(UserSignInDTO("",""))
     val user = _user.asStateFlow()
@@ -50,29 +44,25 @@ class SignInViewModel @Inject constructor(
         _user.update { it.copy(email = newEmail) }
     }
 
-    fun signIn(){
+    fun signIn() {
 
         if (checkInputError()) return
 
         viewModelScope.launch {
+            _screenState.update { prevState ->
+                prevState.copy(isLoading = true)
+            }
 
-            _isLoading.update { true }
             val response = repository.signIn(user.value)
-            val errorResponse: FailResponse? = response.errorBody()?.charStream()?.use {
-                Gson().fromJson(it, FailResponse::class.java)
-            }
+            val errorMessage = response.getErrorMessage()
 
-            if (response.isSuccessful) {
-                _message.value = "Welcome"
-            } else {
-                val errorMessage = when (response.code()) {
-                    401 -> errorResponse?.message
-                    else -> errorResponse?.errors?.msg
-                }
-                _message.value = errorMessage ?: "An error occurred"
+            _screenState.update { prevState ->
+                if (response.isSuccessful) {
+                    prevState.copy(message = "Welcome")
+                } else {
+                    prevState.copy(message = errorMessage ?: "An error occurred")
+                }.copy(launchedEffectKey = !prevState.launchedEffectKey, isLoading = false)
             }
-            _launchedEffectKey.update { !launchedEffectKey.value }
-            _isLoading.update { false }
         }
     }
 
@@ -84,15 +74,37 @@ class SignInViewModel @Inject constructor(
     }
 
     fun onClickVisibilityIcon(){
-        _passwordVisibility.update { !_passwordVisibility.value }
+        _screenState.update { it.copy(passwordVisibility = !_screenState.value.passwordVisibility) }
     }
 
-    private fun checkInputError() : Boolean{
-
+    private fun checkInputError(): Boolean {
         val user = user.value
-        _isPasswordError.value = user.password.isEmpty()
-        _isEmailError.value = user.email.isEmpty() || !("@" in user.email && "." in user.email)
+        _screenState.update { prevState ->
+            prevState.copy(
+                isPasswordError = user.password.isEmpty(),
+                isEmailError = user.email.isEmpty() || !("@" in user.email && "." in user.email)
+            )
+        }
+        return _screenState.value.isEmailError || _screenState.value.isPasswordError
+    }
 
-        return _isEmailError.value || _isPasswordError.value
+    fun makeMessageEmpty(){
+        _screenState.update { it.copy(message = "") }
+    }
+
+    private fun Response<*>.getErrorMessage(): String? {
+        val errorResponse: FailResponse? = errorBody()?.charStream()?.use {
+            Gson().fromJson(it, FailResponse::class.java)
+        }
+        return when (code()) {
+            401 -> errorResponse?.message
+            else -> errorResponse?.errors?.msg
+        }
+    }
+
+    fun onInternetError(){
+        _screenState.update { it.copy(
+            message = "No Internet Connection",
+            launchedEffectKey = !_screenState.value.launchedEffectKey) }
     }
 }

@@ -3,7 +3,7 @@ package com.ug.route.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class SuccessRespone(
+data class SuccessResponse(
     @SerializedName("message")
     val message: String? = "",
     @SerializedName("token")

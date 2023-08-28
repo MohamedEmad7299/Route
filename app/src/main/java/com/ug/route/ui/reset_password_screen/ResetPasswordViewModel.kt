@@ -2,74 +2,83 @@ package com.ug.route.ui.reset_password_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.ug.route.data.models.ResetPasswordResponse
 import com.ug.route.data.repositories.Repository
 import com.ug.route.networking.dto_models.ResetPasswordDTO
+import com.ug.route.utils.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
     val email = _email.asStateFlow()
 
-    private val _message = MutableStateFlow("")
-    val message = _message.asStateFlow()
+    private val _screenState = MutableStateFlow(
+        ResetPasswordState(
+        message = "",
+        isEmailError = false,
+        isLoading = false,
+        launchedEffectKey = false)
+    )
 
-    private val _isEmailError = MutableStateFlow(false)
-    val isEmailError = _isEmailError.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
-
-    private val _launchedEffectKey = MutableStateFlow(false)
-    val launchedEffectKey = _launchedEffectKey.asStateFlow()
+    val screenState = _screenState.asStateFlow()
 
     fun onChangeEmail(newEmail : String){
 
         _email.update { newEmail }
     }
 
-
     private fun checkInputError(): Boolean {
 
         val email = _email.value
 
-        _isEmailError.value = email.isEmpty() || !("@" in email && "." in email)
+        _screenState.update { it.copy(isEmailError = email.isEmpty() || !("@" in email && "." in email)) }
 
-        return isEmailError.value
+        return _screenState.value.isEmailError
     }
 
-    fun resetPassword(){
+    fun resetPassword(navController: NavController){
 
         if (checkInputError()) return
         viewModelScope.launch {
 
-            _isLoading.value = true
+            _screenState.update { it.copy(isLoading = true) }
 
             val response = repository.resetPassword(ResetPasswordDTO(email = email.value))
-            val errorResponse: ResetPasswordResponse? = response.errorBody()?.charStream()?.use {
-                Gson().fromJson(it, ResetPasswordResponse::class.java)
-            }
+            val errorMessage = response.getErrorMessage()
 
-            if (response.isSuccessful) {
-                _message.value = "Reset code sent to your email"
-            } else {
-                val errorMessage = errorResponse?.message
-                _message.value = errorMessage ?: "An error occurred"
+            if (response.isSuccessful) navController.navigate("${Screen.CodeValidationScreen.route}/${_email.value}"){
+                popUpTo(navController.graph.id){
+                    inclusive = true
+                }
             }
+             else _screenState.update { it.copy(message = errorMessage ?: "An error occurred") }
 
-            _launchedEffectKey.value = !launchedEffectKey.value
-            _isLoading.value = false
+            _screenState.update {it.copy(launchedEffectKey = !_screenState.value.launchedEffectKey,isLoading = false)}
         }
     }
 
+    private fun Response<*>.getErrorMessage(): String? {
+        val errorResponse: ResetPasswordResponse? = errorBody()?.charStream()?.use {
+            Gson().fromJson(it, ResetPasswordResponse::class.java)
+        }
+        return errorResponse?.message
+    }
+
+    fun onInternetError(){
+        _screenState.update { it.copy(
+            message = "No Internet Connection",
+            launchedEffectKey = !_screenState.value.launchedEffectKey) }
+    }
 }

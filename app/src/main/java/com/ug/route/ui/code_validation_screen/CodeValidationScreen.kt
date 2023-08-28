@@ -1,51 +1,98 @@
 package com.ug.route.ui.code_validation_screen
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.ug.route.R
+import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.ResetBoxes
 import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
-
+import com.ug.route.utils.Screen
+import com.ug.route.utils.handelInternetError
 @Composable
-fun CodeValidationScreen(){
+fun CodeValidationScreen(
+    navController: NavController,
+    viewModel: CodeValidationViewModel = hiltViewModel()
+){
 
-    CodeValidationContent()
+    val screenState by viewModel.screenState.collectAsState()
+
+    CodeValidationContent(
+        screenState = screenState,
+        onChangeDigit = viewModel::onChangeDigit,
+        onClickBack = { navController.navigate(Screen.SignInScreen.route){
+            popUpTo(navController.graph.id){
+                inclusive = true
+            }
+        } },
+        onClickHere = viewModel::resetPassword,
+        updateMessageAndKeyOnClick = viewModel::updateMessageAndKeyOnClick,
+        disableClickHere = viewModel::disableClickHere,
+        codeValidation = viewModel::codeValidation,
+        onInternetError = viewModel::onInternetError
+    )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CodeValidationContent(){
+fun CodeValidationContent(
+    screenState: CodeValidationState,
+    onChangeDigit : (Int,String) -> Unit,
+    onClickBack : () -> Unit,
+    onClickHere : () -> Unit,
+    updateMessageAndKeyOnClick : (Boolean) -> Unit,
+    disableClickHere : () -> Unit,
+    codeValidation : () -> Unit,
+    onInternetError : () -> Unit
+){
 
     val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) {
+
+        BackHandler(
+            onBack = onClickBack
+        )
 
         ConstraintLayout(
             modifier = Modifier
@@ -60,7 +107,8 @@ fun CodeValidationContent(){
                 boxes,
                 errorMessage,
                 continueButton,
-                backButton
+                backButton,
+                reSendCode,
             ) = createRefs()
 
             Logo(
@@ -107,7 +155,7 @@ fun CodeValidationContent(){
                 )
 
                 Text(
-                    text = "asd55asd36@gmail.com",
+                    text = screenState.email,
                     style = TextStyle(
                         fontSize = 17.sp,
                         lineHeight = 18.sp,
@@ -120,98 +168,111 @@ fun CodeValidationContent(){
             }
 
             ResetBoxes(
-                digit1 = "",
-                isError = false,
-                onDigit1Change = {},
-                digit2 = "",
-                onDigit2Change = {},
-                digit3 = "",
-                onDigit3Change = {},
-                digit4 = "",
-                onDigit4Change = {},
-                digit5 = "",
-                onDigit5Change = {},
-                digit6 = "",
-                onDigit6Change = {},
+                isError = screenState.isError,
+                resetCode = screenState.resetCode,
+                onChangeDigit = onChangeDigit,
                 modifier = Modifier.constrainAs(boxes){
                     top.linkTo(instructionsText.bottom,32.dp)}
             )
 
 
             Text(
-                text = "Incorrect or some field is empty",
+                text = "Some fields is empty",
                 color = Color.Red,
                 modifier = Modifier
                     .constrainAs(errorMessage) {
                         top.linkTo(boxes.bottom, 8.dp)
                         start.linkTo(parent.start, 16.dp)
                     }
-                    .alpha(if (false) 1f else 0f)
+                    .alpha(if (screenState.isError) 1f else 0f)
             )
 
             StandardButton(
                 buttonColor = DarkBlue,
-                onClick = {},
+                onClick = {
+                    keyboardController?.hide()
+                    handelInternetError(context,codeValidation,onInternetError) },
                 modifier = Modifier.constrainAs(continueButton){
                     top.linkTo(boxes.bottom,48.dp)},
             ) {
 
-                Text(
-                    text = "Continue",
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                        fontWeight = FontWeight(600),
+                if (screenState.isLoading){
+
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
                         color = Color.White,
+                        strokeWidth = 5.dp
+                    )
+
+                } else {
+
+                    Text(
+                        text = "Continue",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                            fontWeight = FontWeight(600),
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                        )
+                    )
+                }
+            }
+
+
+            Row(
+                modifier = Modifier
+                    .constrainAs(reSendCode){
+                        top.linkTo(continueButton.bottom,32.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end) }
+            ) {
+                Text(
+                    text = "Don't receive the code? ",
+                    style = TextStyle(
+                        fontSize = 17.sp,
+                        lineHeight = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(300),
+                        color = Gray80,
                         textAlign = TextAlign.Center,
                     )
                 )
 
-
-//                if (isLoading){
-//                    CircularProgressIndicator(
-//                        modifier = Modifier.size(32.dp),
-//                        color = Color.White,
-//                        strokeWidth = 5.dp
-//                    )
-//
-//                } else {
-//
-//                    Text(
-//                        text = "Reset",
-//                        style = TextStyle(
-//                            fontSize = 20.sp,
-//                            fontFamily = FontFamily(Font(R.font.poppins_regular)),
-//                            fontWeight = FontWeight(600),
-//                            color = Color.White,
-//                            textAlign = TextAlign.Center,
-//                        )
-//                    )
-//                }
+                ClickableText(
+                    text = AnnotatedString("Click here"),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        lineHeight = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(700),
+                        color = DarkBlue,
+                        textAlign = TextAlign.Center,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ){
+                    handelInternetError(context,{
+                        if (screenState.isClickable) onClickHere()
+                        updateMessageAndKeyOnClick(screenState.isClickable)
+                        if (screenState.isClickable) disableClickHere()
+                    },onInternetError)
+                }
             }
 
-            ClickableText(
-                text = AnnotatedString("<- Back to log in"),
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(700),
-                    color = Gray80,
-                    textAlign = TextAlign.Center,
-                ),
+            BackToLogin(
                 modifier = Modifier.constrainAs(backButton){
-                    top.linkTo(continueButton.bottom,32.dp)
+                    top.linkTo(reSendCode.bottom,32.dp)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end) }
-            ){
-                //onClickBack()
-            }
+                    end.linkTo(parent.end) },
+                onClickBack = onClickBack
+            )
+
         }
 
-//        if (message != ""){
-//            LaunchedEffect(key1 = launchedEffectKey){
-//                snackBarHostState.showSnackbar(message)
-//            }
-//        }
+        if (screenState.message != ""){
+            LaunchedEffect(key1 = screenState.launchedEffectKey){
+                snackBarHostState.showSnackbar(screenState.message)
+            }
+        }
     }
 }
