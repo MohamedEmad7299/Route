@@ -1,4 +1,4 @@
-package com.ug.route.ui.no_internet_screen
+package com.ug.route.ui.unused.no_internet_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize

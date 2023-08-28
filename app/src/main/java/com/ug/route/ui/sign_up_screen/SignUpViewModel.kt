@@ -8,10 +8,12 @@ import com.ug.route.data.models.FailResponse
 import com.ug.route.data.repositories.Repository
 import com.ug.route.networking.dto_models.UserSignUpDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -98,6 +100,8 @@ class SignUpViewModel @Inject constructor(
                 _screenState.value.isRePasswordError
     }
 
+
+
     fun signUp() {
 
         if (checkInputError()) return
@@ -107,15 +111,32 @@ class SignUpViewModel @Inject constructor(
                 prevState.copy(isLoading = true)
             }
 
-            val response = repository.signUp(user.value)
-            val errorMessage = response.getErrorMessage()
+            try {
+                val response = withTimeout(5000L) {
+                    repository.signUp(user.value)
+                }
 
-            _screenState.update { prevState ->
-                if (response.isSuccessful) {
-                    prevState.copy(message = "Account Created Successfully")
-                } else {
-                    prevState.copy(message = errorMessage ?: "An error occurred")
-                }.copy(launchedEffectKey = !prevState.launchedEffectKey, isLoading = false)
+                val errorMessage = response.getErrorMessage()
+
+                _screenState.update { prevState ->
+                    if (response.isSuccessful) {
+                        prevState.copy(message = "Account Created Successfully")
+                    } else {
+                        prevState.copy(message = errorMessage ?: "An error occurred")
+                    }.copy(launchedEffectKey = !prevState.launchedEffectKey)
+                }
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { prevState ->
+                    prevState.copy(message = "Request timed out")
+                }
+            } catch (e: Exception) {
+                _screenState.update { prevState ->
+                    prevState.copy(message = "An error occurred")
+                }
+            } finally {
+                _screenState.update { prevState ->
+                    prevState.copy(isLoading = false)
+                }
             }
         }
     }

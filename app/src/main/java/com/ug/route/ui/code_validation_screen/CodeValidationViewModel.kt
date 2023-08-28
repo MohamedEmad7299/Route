@@ -4,16 +4,17 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.ug.route.data.models.ResetCode
 import com.ug.route.data.models.ResetPasswordResponse
 import com.ug.route.data.repositories.Repository
 import com.ug.route.networking.dto_models.ResetPasswordDTO
 import com.ug.route.networking.dto_models.ValidationCodeDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -25,13 +26,7 @@ class CodeValidationViewModel  @Inject constructor(
 
     private val _screenState = MutableStateFlow(
         CodeValidationState(
-            resetCode = ResetCode(
-                digit1 = "",
-                digit2 = "",
-                digit3 = "",
-                digit4 = "",
-                digit5 = "",
-                digit6 = ""),
+            resetCode = "",
             message = "",
             isError = false,
             isLoading = false,
@@ -42,17 +37,9 @@ class CodeValidationViewModel  @Inject constructor(
 
     val screenState = _screenState.asStateFlow()
 
-    fun onChangeDigit(index : Int, newDigit: String) {
+    fun onChangeCode(newCode: String) {
 
-        when (index) {
-
-            0 -> _screenState.update { it.copy(resetCode = it.resetCode.copy(digit1 = newDigit)) }
-            1 -> _screenState.update { it.copy(resetCode = it.resetCode.copy(digit2 = newDigit)) }
-            2 -> _screenState.update { it.copy(resetCode = it.resetCode.copy(digit3 = newDigit)) }
-            3 -> _screenState.update { it.copy(resetCode = it.resetCode.copy(digit4 = newDigit)) }
-            4 -> _screenState.update { it.copy(resetCode = it.resetCode.copy(digit5 = newDigit)) }
-            5 -> _screenState.update { it.copy(resetCode = it.resetCode.copy(digit6 = newDigit)) }
-        }
+        _screenState.update { it.copy(resetCode = newCode) }
     }
 
     fun updateMessageAndKeyOnClick(isClickable: Boolean) {
@@ -64,40 +51,58 @@ class CodeValidationViewModel  @Inject constructor(
         _screenState.update { it.copy(isClickable = false) }
     }
 
-    fun resetPassword(){
+    fun resetPassword() {
 
         viewModelScope.launch {
 
-            repository.resetPassword(ResetPasswordDTO(email = _screenState.value.email))
+            try {
+                withTimeout(5000L) {
+                    repository.resetPassword(ResetPasswordDTO(email = _screenState.value.email))
+                }
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { it.copy(message = "Request timed out") }
+            } catch (e: Exception) {
+                _screenState.update { it.copy(message = "An error occurred") }
+            }
         }
     }
 
-    fun codeValidation(){
+
+    fun codeValidation() {
 
         if (checkInputError()) return
-        viewModelScope.launch {
 
+        viewModelScope.launch {
             _screenState.update { it.copy(isLoading = true) }
 
-            val response = repository.codeValidation(ValidationCodeDTO(codeProvider()))
-            val errorMessage = response.getErrorMessage()
+            try {
+                val response = withTimeout(5000L) {
+                    repository.codeValidation(ValidationCodeDTO(_screenState.value.resetCode))
+                }
+                val errorMessage = response.getErrorMessage()
 
-            if (response.isSuccessful) _screenState.update { it.copy(message = "Done ya ro7y") }
-            else _screenState.update { it.copy(message = errorMessage ?: "An error occurred") }
+                if (response.isSuccessful) _screenState.update { it.copy(message = "Done ya ro7y") }
+                else _screenState.update { it.copy(message = errorMessage ?: "An error occurred") }
 
-            _screenState.update {it.copy(launchedEffectKey = !_screenState.value.launchedEffectKey,isLoading = false)}
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { it.copy(message = "Request timed out") }
+            } catch (e: Exception) {
+                _screenState.update { it.copy(message = "An error occurred") }
+            } finally {
+                _screenState.update {
+                    it.copy(
+                        launchedEffectKey = !it.launchedEffectKey,
+                        isLoading = false
+                    )
+                }
+            }
         }
     }
 
     private fun checkInputError(): Boolean {
 
         val resetCode =  _screenState.value.resetCode
-        val isError = resetCode.digit1.isEmpty() ||
-                resetCode.digit2.isEmpty() ||
-                resetCode.digit3.isEmpty() ||
-                resetCode.digit4.isEmpty() ||
-                resetCode.digit5.isEmpty() ||
-                resetCode.digit6.isEmpty()
+        val isError = resetCode.isEmpty() || !resetCode.all { it.isDigit() }
         _screenState.update {it.copy(isError = isError)}
         return  isError
     }
@@ -107,16 +112,6 @@ class CodeValidationViewModel  @Inject constructor(
             Gson().fromJson(it, ResetPasswordResponse::class.java)
         }
         return errorResponse?.message
-    }
-
-    private fun codeProvider() : String{
-
-        return  _screenState.value.resetCode.digit1 +
-                _screenState.value.resetCode.digit2 +
-                _screenState.value.resetCode.digit3 +
-                _screenState.value.resetCode.digit4 +
-                _screenState.value.resetCode.digit5 +
-                _screenState.value.resetCode.digit6
     }
 
     fun onInternetError(){

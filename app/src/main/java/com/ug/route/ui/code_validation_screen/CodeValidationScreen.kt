@@ -37,8 +37,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
 import com.ug.route.ui.design_matrials.text.BackToLogin
+import com.ug.route.ui.design_matrials.text.CodeTextField
 import com.ug.route.ui.design_matrials.text.Logo
-import com.ug.route.ui.design_matrials.text.ResetBoxes
 import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
@@ -54,7 +54,7 @@ fun CodeValidationScreen(
 
     CodeValidationContent(
         screenState = screenState,
-        onChangeDigit = viewModel::onChangeDigit,
+        onChangeCode = viewModel::onChangeCode,
         onClickBack = { navController.navigate(Screen.SignInScreen.route){
             popUpTo(navController.graph.id){
                 inclusive = true
@@ -73,7 +73,7 @@ fun CodeValidationScreen(
 @Composable
 fun CodeValidationContent(
     screenState: CodeValidationState,
-    onChangeDigit : (Int,String) -> Unit,
+    onChangeCode : (String) -> Unit,
     onClickBack : () -> Unit,
     onClickHere : () -> Unit,
     updateMessageAndKeyOnClick : (Boolean) -> Unit,
@@ -104,7 +104,7 @@ fun CodeValidationContent(
                 logo,
                 resetPasswordText,
                 instructionsText,
-                boxes,
+                code,
                 errorMessage,
                 continueButton,
                 backButton,
@@ -167,21 +167,20 @@ fun CodeValidationContent(
                 )
             }
 
-            ResetBoxes(
+            CodeTextField(
                 isError = screenState.isError,
-                resetCode = screenState.resetCode,
-                onChangeDigit = onChangeDigit,
-                modifier = Modifier.constrainAs(boxes){
-                    top.linkTo(instructionsText.bottom,32.dp)}
+                value = screenState.resetCode,
+                onValueChange = onChangeCode,
+                modifier =  Modifier.constrainAs(code){
+                    top.linkTo(instructionsText.bottom,24.dp)}
             )
 
-
             Text(
-                text = "Some fields is empty",
+                text = "Field is empty",
                 color = Color.Red,
                 modifier = Modifier
                     .constrainAs(errorMessage) {
-                        top.linkTo(boxes.bottom, 8.dp)
+                        top.linkTo(code.bottom, 8.dp)
                         start.linkTo(parent.start, 16.dp)
                     }
                     .alpha(if (screenState.isError) 1f else 0f)
@@ -193,7 +192,7 @@ fun CodeValidationContent(
                     keyboardController?.hide()
                     handelInternetError(context,codeValidation,onInternetError) },
                 modifier = Modifier.constrainAs(continueButton){
-                    top.linkTo(boxes.bottom,48.dp)},
+                    top.linkTo(code.bottom,48.dp)},
             ) {
 
                 if (screenState.isLoading){

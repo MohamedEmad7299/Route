@@ -1,8 +1,10 @@
-package com.ug.route.ui.code_validation_screen
+package com.ug.route.ui.unused.six_boxes
 
-data class CodeValidationState(
+import com.ug.route.utils.ResetCode
 
-    val resetCode: String,
+data class SixBoxesCodeValidationState(
+
+    val resetCode: ResetCode,
     val email : String,
     val message : String,
     val launchedEffectKey : Boolean,

@@ -8,10 +8,12 @@ import com.ug.route.data.models.FailResponse
 import com.ug.route.networking.dto_models.UserSignInDTO
 import com.ug.route.data.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -53,15 +55,32 @@ class SignInViewModel @Inject constructor(
                 prevState.copy(isLoading = true)
             }
 
-            val response = repository.signIn(user.value)
-            val errorMessage = response.getErrorMessage()
+            try {
+                val response = withTimeout(5000L) {
+                    repository.signIn(user.value)
+                }
 
-            _screenState.update { prevState ->
-                if (response.isSuccessful) {
-                    prevState.copy(message = "Welcome")
-                } else {
-                    prevState.copy(message = errorMessage ?: "An error occurred")
-                }.copy(launchedEffectKey = !prevState.launchedEffectKey, isLoading = false)
+                val errorMessage = response.getErrorMessage()
+
+                _screenState.update { prevState ->
+                    if (response.isSuccessful) {
+                        prevState.copy(message = "Welcome")
+                    } else {
+                        prevState.copy(message = errorMessage ?: "An error occurred")
+                    }.copy(launchedEffectKey = !prevState.launchedEffectKey)
+                }
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { prevState ->
+                    prevState.copy(message = "Request timed out")
+                }
+            } catch (e: Exception) {
+                _screenState.update { prevState ->
+                    prevState.copy(message = "An error occurred")
+                }
+            } finally {
+                _screenState.update { prevState ->
+                    prevState.copy(isLoading = false)
+                }
             }
         }
     }

@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ug.route.ui.code_validation_screen.CodeValidationScreen
-import com.ug.route.ui.no_internet_screen.NoInternetScreen
 import com.ug.route.ui.reset_password_screen.ResetPasswordScreen
 import com.ug.route.ui.sign_in_screen.SignInScreen
 import com.ug.route.ui.sign_up_screen.SignUpScreen
