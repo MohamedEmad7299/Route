@@ -1,14 +1,18 @@
 package com.ug.route.ui.design_matrials.text
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun TextWithPasswordTextField(
     text : String,
+    textColor : Color = Color.White,
     textModifier : Modifier = Modifier,
     hint : String,
     value : String,
@@ -20,12 +24,14 @@ fun TextWithPasswordTextField(
     isError : Boolean = false,
     errorMessage : String,
     errorModifier : Modifier = Modifier,
-    errorVisibility : Boolean
+    errorVisibility : Boolean,
+    shape: Shape = RoundedCornerShape(16.dp)
 ){
 
     Text18(
         text = text,
-        modifier = textModifier
+        modifier = textModifier,
+        color = textColor
     )
 
     PasswordTextField(
@@ -36,7 +42,8 @@ fun TextWithPasswordTextField(
         passwordVisibility = passwordVisibility,
         onClickVisibilityIcon = onClickVisibilityIcon,
         onChangePasswordVisibility = onChangeVisibility,
-        modifier = textFieldModifier
+        modifier = textFieldModifier,
+        shape = shape
     )
 
     Text(

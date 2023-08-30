@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -36,7 +37,8 @@ fun PasswordTextField(
     passwordVisibility : Boolean,
     onClickVisibilityIcon : () -> Unit,
     onChangePasswordVisibility : (Boolean) -> Int,
-    isError : Boolean = false
+    isError : Boolean = false,
+    shape: Shape = RoundedCornerShape(16.dp)
 ){
 
     OutlinedTextField(
@@ -58,7 +60,7 @@ fun PasswordTextField(
         modifier = modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = shape,
         value = value,
         onValueChange = onValueChange,
         trailingIcon = {

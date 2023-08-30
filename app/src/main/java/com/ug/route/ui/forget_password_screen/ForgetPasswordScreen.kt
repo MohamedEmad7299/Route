@@ -1,4 +1,4 @@
-package com.ug.route.ui.reset_password_screen
+package com.ug.route.ui.forget_password_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -11,8 +11,12 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -20,31 +24,60 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.ug.route.R
 import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
-import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
+import com.ug.route.ui.design_matrials.text.StandardTextField
+import com.ug.route.ui.design_matrials.text.Text18
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
-
+import com.ug.route.utils.Screen
+import com.ug.route.utils.handelInternetError
 @Composable
-fun ResetPasswordScreen(){
+fun ForgetPasswordScreen(
+    navController : NavController,
+    viewModel: ForgetPasswordViewModel = hiltViewModel()
+){
 
-    ResetPasswordContent()
+    val email by viewModel.email.collectAsState()
+    val screenState by viewModel.screenState.collectAsState()
+
+    ForgetPasswordContent(
+        email = email,
+        screenState = screenState,
+        onClickReset = {
+            viewModel.resetPassword(navController)
+        },
+        onClickBack = { navController.navigate(Screen.SignInScreen.route){
+            popUpTo(navController.graph.id){
+                inclusive = true
+            }
+        } },
+        onChangeEmail = viewModel::onChangeEmail,
+        onInternetError = viewModel::onInternetError,
+    )
 }
+
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showSystemUi = true)
 @Composable
-fun ResetPasswordContent(){
+fun ForgetPasswordContent(
+    email : String,
+    screenState: ForgetPasswordState,
+    onChangeEmail : (String) -> Unit,
+    onClickReset : () -> Unit,
+    onClickBack : () -> Unit,
+    onInternetError : () -> Unit
+){
 
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) {
@@ -57,14 +90,11 @@ fun ResetPasswordContent(){
 
             val (
                 logo,
-                setNewPasswordText,
+                forgetPasswordText,
                 instructionsText,
-                passwordText,
-                passwordTextField,
-                passwordError,
-                rePasswordText,
-                rePasswordTextField,
-                rePasswordError,
+                emailText,
+                emailTextField,
+                errorMessage,
                 resetButton,
                 backButton
             ) = createRefs()
@@ -72,13 +102,13 @@ fun ResetPasswordContent(){
             Logo(
                 id = R.drawable.logo_dark_blue,
                 modifier = Modifier.constrainAs(logo){
-                    top.linkTo(parent.top,56.dp)
+                    top.linkTo(parent.top,96.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)}
             )
 
             Text(
-                text = "Set new password",
+                text = "Forgot Password?",
                 style = TextStyle(
                     fontSize = 32.sp,
                     lineHeight = 18.sp,
@@ -87,14 +117,14 @@ fun ResetPasswordContent(){
                     color = Color(0xFF000000),
                     textAlign = TextAlign.Center,
                 ),
-                modifier = Modifier.constrainAs(setNewPasswordText){
-                    top.linkTo(logo.bottom,56.dp)
+                modifier = Modifier.constrainAs(forgetPasswordText){
+                    top.linkTo(logo.bottom,96.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)}
             )
 
             Text(
-                text = "Must be at least 6 characters",
+                text = "No worries, we’ll send you reset instructions",
                 style = TextStyle(
                     fontSize = 17.sp,
                     lineHeight = 18.sp,
@@ -104,73 +134,48 @@ fun ResetPasswordContent(){
                     textAlign = TextAlign.Center,
                 ),
                 modifier = Modifier.constrainAs(instructionsText){
-                    top.linkTo(setNewPasswordText.bottom)
+                    top.linkTo(forgetPasswordText.bottom)
                     start.linkTo(parent.start,16.dp)
                     end.linkTo(parent.end,16.dp)}
             )
 
-            TextWithPasswordTextField(
-                textColor = Color(0xFF000000),
-                isError = false,
-                text = "Password",
-                textModifier = Modifier.constrainAs(passwordText) {
-                    top.linkTo(instructionsText.bottom, 32.dp)
-                    start.linkTo(parent.start,16.dp)
-                },
-                hint = "enter your password",
-                value = "",
-                onValueChange = {},
-                passwordVisibility = false,
-                onClickVisibilityIcon = {},
-                onChangeVisibility = { R.drawable.visibility_off },
-                textFieldModifier = Modifier.constrainAs(passwordTextField) {
-                    top.linkTo(passwordText.bottom, 16.dp)
-                    start.linkTo(parent.start)
-                },
-                errorMessage = "empty or less than 6 characters",
-                errorVisibility = true,
-                errorModifier = Modifier.constrainAs(passwordError){
-                    top.linkTo(passwordTextField.bottom, 8.dp)
-                    start.linkTo(parent.start,16.dp)
-                },
-                shape = RoundedCornerShape(8.dp)
+            Text18(
+                text = "Email",
+                color = Color(0xFF000000),
+                modifier = Modifier.constrainAs(emailText){
+                    top.linkTo(instructionsText.bottom,32.dp)
+                    start.linkTo(parent.start,16.dp)}
             )
 
-            TextWithPasswordTextField(
-                textColor = Color(0xFF000000),
-                isError = false,
-                text = "Confirm Password",
-                textModifier = Modifier.constrainAs(rePasswordText) {
-                    top.linkTo(passwordTextField.bottom, 40.dp)
-                    start.linkTo(parent.start,16.dp)
-                },
-                hint = "repeat your password",
-                value = "",
-                onValueChange = {},
-                passwordVisibility = false,
-                onClickVisibilityIcon = {},
-                onChangeVisibility = { R.drawable.visibility_off },
-                textFieldModifier = Modifier.constrainAs(rePasswordTextField) {
-                    top.linkTo(rePasswordText.bottom, 16.dp)
-                    start.linkTo(parent.start)
-                },
-                errorMessage = "field is empty or not the same as the password",
-                errorVisibility = true,
-                errorModifier = Modifier.constrainAs(rePasswordError){
-                    top.linkTo(rePasswordTextField.bottom, 8.dp)
-                    start.linkTo(parent.start,16.dp)
-                },
-                shape = RoundedCornerShape(8.dp)
+            StandardTextField(
+                isError = screenState.isEmailError,
+                hint = "enter your email",
+                value = email,
+                onValueChange = onChangeEmail,
+                modifier = Modifier.constrainAs(emailTextField){
+                    top.linkTo(emailText.bottom,16.dp)},
+                shape = RoundedCornerShape(8.dp),
+            )
+
+            Text(
+                text = "Incorrect or field is empty",
+                color = Color.Red,
+                modifier = Modifier
+                    .constrainAs(errorMessage) {
+                        top.linkTo(emailTextField.bottom, 8.dp)
+                        start.linkTo(parent.start, 16.dp)
+                    }
+                    .alpha(if (screenState.isEmailError) 1f else 0f)
             )
 
             StandardButton(
                 buttonColor = DarkBlue,
-                onClick = {  },
+                onClick = { handelInternetError(context,onClickReset,onInternetError) },
                 modifier = Modifier.constrainAs(resetButton){
-                    top.linkTo(rePasswordTextField.bottom,48.dp)},
+                    top.linkTo(emailTextField.bottom,48.dp)},
             ) {
 
-                if (false){
+                if (screenState.isLoading){
                     CircularProgressIndicator(
                         modifier = Modifier.size(32.dp),
                         color = Color.White,
@@ -197,15 +202,15 @@ fun ResetPasswordContent(){
                     top.linkTo(resetButton.bottom,32.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end) },
-                onClickBack = {}
+                onClickBack = onClickBack
             )
         }
 
-//        if (screenState.message != ""){
-//            LaunchedEffect(key1 = screenState.launchedEffectKey){
-//                snackBarHostState.showSnackbar(screenState.message)
-//            }
-//        }
+        if (screenState.message != ""){
+            LaunchedEffect(key1 = screenState.launchedEffectKey){
+                snackBarHostState.showSnackbar(screenState.message)
+            }
+        }
     }
 }
 

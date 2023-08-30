@@ -1,6 +1,6 @@
-package com.ug.route.ui.reset_password_screen
+package com.ug.route.ui.forget_password_screen
 
-data class ResetPasswordState(
+data class ForgetPasswordState(
 
     val message : String,
     val launchedEffectKey : Boolean,

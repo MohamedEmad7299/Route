@@ -150,7 +150,7 @@ fun SignUpContent(
                         isError = screenState.isPhoneError,
                         text = "Mobile Number",
                         textModifier = Modifier.constrainAs(mobileNumberText) {
-                            top.linkTo(fullNameTextField.bottom, 32.dp)
+                            top.linkTo(fullNameTextField.bottom, 40.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "enter your mobile number",
@@ -172,7 +172,7 @@ fun SignUpContent(
                         isError = screenState.isEmailError,
                         text = "E-mail address",
                         textModifier = Modifier.constrainAs(emailText) {
-                            top.linkTo(mobileNumberTextField.bottom, 32.dp)
+                            top.linkTo(mobileNumberTextField.bottom, 40.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "enter your email address",
@@ -194,7 +194,7 @@ fun SignUpContent(
                         isError = screenState.isPasswordError,
                         text = "Password",
                         textModifier = Modifier.constrainAs(passwordText) {
-                            top.linkTo(emailTextField.bottom, 32.dp)
+                            top.linkTo(emailTextField.bottom, 40.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "enter your password",
@@ -219,7 +219,7 @@ fun SignUpContent(
                         isError = screenState.isRePasswordError,
                         text = "Confirm Password",
                         textModifier = Modifier.constrainAs(rePasswordText) {
-                            top.linkTo(passwordTextField.bottom, 32.dp)
+                            top.linkTo(passwordTextField.bottom, 40.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "repeat your password",

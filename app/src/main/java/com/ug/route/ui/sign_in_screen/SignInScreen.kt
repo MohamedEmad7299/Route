@@ -166,7 +166,7 @@ fun SignInContent(
                 hint = "enter your password",
                 value =  user.password,
                 textModifier = Modifier.constrainAs(passwordText) {
-                    top.linkTo(userTextField.bottom, 32.dp)
+                    top.linkTo(userTextField.bottom, 40.dp)
                     start.linkTo(parent.start , 16.dp)
                 },
                 onValueChange = onPasswordChange,
