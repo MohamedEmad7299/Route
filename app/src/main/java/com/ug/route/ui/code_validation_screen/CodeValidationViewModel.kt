@@ -3,11 +3,13 @@ package com.ug.route.ui.code_validation_screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.gson.Gson
-import com.ug.route.data.models.ResetPasswordResponse
+import com.ug.route.data.models.ForgetPasswordResponse
 import com.ug.route.data.repositories.Repository
-import com.ug.route.networking.dto_models.ResetPasswordDTO
+import com.ug.route.networking.dto_models.ForgetPasswordDTO
 import com.ug.route.networking.dto_models.ValidationCodeDTO
+import com.ug.route.utils.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,7 +59,7 @@ class CodeValidationViewModel  @Inject constructor(
 
             try {
                 withTimeout(5000L) {
-                    repository.resetPassword(ResetPasswordDTO(email = _screenState.value.email))
+                    repository.forgetPassword(ForgetPasswordDTO(email = _screenState.value.email))
                 }
             } catch (e: TimeoutCancellationException) {
                 _screenState.update { it.copy(message = "Request timed out") }
@@ -68,7 +70,7 @@ class CodeValidationViewModel  @Inject constructor(
     }
 
 
-    fun codeValidation() {
+    fun codeValidation(navController : NavController) {
 
         if (checkInputError()) return
 
@@ -81,7 +83,14 @@ class CodeValidationViewModel  @Inject constructor(
                 }
                 val errorMessage = response.getErrorMessage()
 
-                if (response.isSuccessful) _screenState.update { it.copy(message = "Done ya ro7y") }
+                if (response.isSuccessful) {
+
+                    navController.navigate("${Screen.ResetPasswordScreen.route}/${_screenState.value.email}") {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
+                }
                 else _screenState.update { it.copy(message = errorMessage ?: "An error occurred") }
 
             } catch (e: TimeoutCancellationException) {
@@ -108,8 +117,8 @@ class CodeValidationViewModel  @Inject constructor(
     }
 
     private fun Response<*>.getErrorMessage(): String? {
-        val errorResponse: ResetPasswordResponse? = errorBody()?.charStream()?.use {
-            Gson().fromJson(it, ResetPasswordResponse::class.java)
+        val errorResponse: ForgetPasswordResponse? = errorBody()?.charStream()?.use {
+            Gson().fromJson(it, ForgetPasswordResponse::class.java)
         }
         return errorResponse?.message
     }

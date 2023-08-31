@@ -11,6 +11,9 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,27 +23,67 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.ug.route.R
+import com.ug.route.networking.dto_models.ResetPasswordDTO
 import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
+import com.ug.route.utils.Screen
+import com.ug.route.utils.handelInternetError
 
 @Composable
-fun ResetPasswordScreen(){
+fun ResetPasswordScreen(
+    navController : NavController,
+    viewModel: ResetPasswordViewModel = hiltViewModel()
+){
 
-    ResetPasswordContent()
+    val screenState by viewModel.screenState.collectAsState()
+    val rePassword by viewModel.rePassword.collectAsState()
+    val resetPasswordDTO by viewModel.resetPasswordDto.collectAsState()
+
+    ResetPasswordContent(
+        screenState = screenState,
+        onInternetError = viewModel::onInternetError,
+        rePassword = rePassword,
+        resetPassword = {viewModel.resetPassword(navController)},
+        onChangeRePassword = viewModel::onChangeRePassword,
+        onChangePassword = viewModel::onChangePassword,
+        onClickBack = {
+            navController.navigate(Screen.SignInScreen.route){
+                popUpTo(navController.graph.id){
+                    inclusive = true
+                }
+            }
+        },
+        resetPasswordDTO = resetPasswordDTO,
+        updatePasswordVisibility = viewModel::updatePasswordVisibility,
+        updateRePasswordVisibility = viewModel::updateRePasswordVisibility,
+        onChangeVisibility = viewModel::onChangeVisibility
+    )
 }
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showSystemUi = true)
 @Composable
-fun ResetPasswordContent(){
+fun ResetPasswordContent(
+    screenState : ResetPasswordState,
+    resetPasswordDTO: ResetPasswordDTO,
+    onChangePassword : (String) -> Unit,
+    onChangeRePassword : (String) -> Unit,
+    updatePasswordVisibility : () -> Unit,
+    updateRePasswordVisibility: () -> Unit,
+    onChangeVisibility: (Boolean) -> Int,
+    rePassword : String,
+    resetPassword : () -> Unit,
+    onClickBack : () -> Unit,
+    onInternetError : () -> Unit
+){
 
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
@@ -111,24 +154,23 @@ fun ResetPasswordContent(){
 
             TextWithPasswordTextField(
                 textColor = Color(0xFF000000),
-                isError = false,
+                isError = screenState.isPasswordError,
                 text = "Password",
                 textModifier = Modifier.constrainAs(passwordText) {
                     top.linkTo(instructionsText.bottom, 32.dp)
                     start.linkTo(parent.start,16.dp)
                 },
                 hint = "enter your password",
-                value = "",
-                onValueChange = {},
-                passwordVisibility = false,
-                onClickVisibilityIcon = {},
-                onChangeVisibility = { R.drawable.visibility_off },
+                value = resetPasswordDTO.newPassword,
+                onValueChange = onChangePassword,
+                passwordVisibility = screenState.passwordVisibility,
+                updatePasswordVisibility = updatePasswordVisibility,
+                onChangeVisibility = onChangeVisibility,
                 textFieldModifier = Modifier.constrainAs(passwordTextField) {
                     top.linkTo(passwordText.bottom, 16.dp)
                     start.linkTo(parent.start)
                 },
                 errorMessage = "empty or less than 6 characters",
-                errorVisibility = true,
                 errorModifier = Modifier.constrainAs(passwordError){
                     top.linkTo(passwordTextField.bottom, 8.dp)
                     start.linkTo(parent.start,16.dp)
@@ -138,24 +180,23 @@ fun ResetPasswordContent(){
 
             TextWithPasswordTextField(
                 textColor = Color(0xFF000000),
-                isError = false,
+                isError = screenState.isRePasswordError,
                 text = "Confirm Password",
                 textModifier = Modifier.constrainAs(rePasswordText) {
-                    top.linkTo(passwordTextField.bottom, 40.dp)
+                    top.linkTo(passwordTextField.bottom, 32.dp)
                     start.linkTo(parent.start,16.dp)
                 },
                 hint = "repeat your password",
-                value = "",
-                onValueChange = {},
-                passwordVisibility = false,
-                onClickVisibilityIcon = {},
-                onChangeVisibility = { R.drawable.visibility_off },
+                value = rePassword,
+                onValueChange = onChangeRePassword,
+                passwordVisibility = screenState.rePasswordVisibility,
+                updatePasswordVisibility = updateRePasswordVisibility,
+                onChangeVisibility = onChangeVisibility,
                 textFieldModifier = Modifier.constrainAs(rePasswordTextField) {
                     top.linkTo(rePasswordText.bottom, 16.dp)
                     start.linkTo(parent.start)
                 },
                 errorMessage = "field is empty or not the same as the password",
-                errorVisibility = true,
                 errorModifier = Modifier.constrainAs(rePasswordError){
                     top.linkTo(rePasswordTextField.bottom, 8.dp)
                     start.linkTo(parent.start,16.dp)
@@ -165,12 +206,12 @@ fun ResetPasswordContent(){
 
             StandardButton(
                 buttonColor = DarkBlue,
-                onClick = {  },
+                onClick = { handelInternetError(context,resetPassword,onInternetError) },
                 modifier = Modifier.constrainAs(resetButton){
                     top.linkTo(rePasswordTextField.bottom,48.dp)},
             ) {
 
-                if (false){
+                if (screenState.isLoading){
                     CircularProgressIndicator(
                         modifier = Modifier.size(32.dp),
                         color = Color.White,
@@ -197,15 +238,15 @@ fun ResetPasswordContent(){
                     top.linkTo(resetButton.bottom,32.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end) },
-                onClickBack = {}
+                onClickBack = onClickBack
             )
         }
 
-//        if (screenState.message != ""){
-//            LaunchedEffect(key1 = screenState.launchedEffectKey){
-//                snackBarHostState.showSnackbar(screenState.message)
-//            }
-//        }
+        if (screenState.message != ""){
+            LaunchedEffect(key1 = screenState.launchedEffectKey){
+                snackBarHostState.showSnackbar(screenState.message)
+            }
+        }
     }
 }
 

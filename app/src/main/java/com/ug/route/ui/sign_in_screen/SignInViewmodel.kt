@@ -92,7 +92,7 @@ class SignInViewModel @Inject constructor(
 
     }
 
-    fun onClickVisibilityIcon(){
+    fun updatePasswordVisibility(){
         _screenState.update { it.copy(passwordVisibility = !_screenState.value.passwordVisibility) }
     }
 

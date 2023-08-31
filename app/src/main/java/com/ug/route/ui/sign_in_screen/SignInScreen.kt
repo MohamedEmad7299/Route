@@ -55,7 +55,7 @@ fun SignInScreen(
         onPasswordChange = viewModel::onChangePassword,
         onEmailChange = viewModel::onChangeEmail,
         onChangePasswordVisibility = viewModel::onChangePasswordVisibility,
-        onClickVisibilityIcon = viewModel::onClickVisibilityIcon,
+        onClickVisibilityIcon = viewModel::updatePasswordVisibility,
         onClickLogin = viewModel::signIn,
         navigateToSignUp = {
             viewModel.makeMessageEmpty()
@@ -63,7 +63,7 @@ fun SignInScreen(
         },
         onClickForgotPassword = {
             viewModel.makeMessageEmpty()
-            navController.navigate(Screen.ResetPasswordScreen.route)
+            navController.navigate(Screen.ForgetPasswordScreen.route)
         },
         onInternetError = viewModel::onInternetError
     )
@@ -153,7 +153,6 @@ fun SignInContent(
                     start.linkTo(parent.start)
                 },
                 errorMessage = "incorrect or field is empty",
-                errorVisibility = screenState.isEmailError,
                 errorModifier = Modifier.constrainAs(emailErrorMessage){
                     top.linkTo(userTextField.bottom, 8.dp)
                     start.linkTo(parent.start,16.dp)
@@ -166,12 +165,12 @@ fun SignInContent(
                 hint = "enter your password",
                 value =  user.password,
                 textModifier = Modifier.constrainAs(passwordText) {
-                    top.linkTo(userTextField.bottom, 40.dp)
+                    top.linkTo(userTextField.bottom, 32.dp)
                     start.linkTo(parent.start , 16.dp)
                 },
                 onValueChange = onPasswordChange,
                 passwordVisibility = screenState.passwordVisibility,
-                onClickVisibilityIcon = onClickVisibilityIcon,
+                updatePasswordVisibility = onClickVisibilityIcon,
                 onChangeVisibility = onChangePasswordVisibility,
                 textFieldModifier = Modifier
                     .constrainAs(passwordTextField) {
@@ -179,7 +178,6 @@ fun SignInContent(
                         start.linkTo(parent.start)
                     },
                 errorMessage = "field is empty",
-                errorVisibility = screenState.isPasswordError,
                 errorModifier = Modifier.constrainAs(passwordErrorMessage){
                     top.linkTo(passwordTextField.bottom, 8.dp)
                     start.linkTo(parent.start,16.dp)

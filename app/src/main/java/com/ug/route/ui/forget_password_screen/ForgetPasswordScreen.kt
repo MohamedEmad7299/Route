@@ -16,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -33,8 +32,7 @@ import com.ug.route.R
 import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
-import com.ug.route.ui.design_matrials.text.StandardTextField
-import com.ug.route.ui.design_matrials.text.Text18
+import com.ug.route.ui.design_matrials.text.TextWithTextField
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
 import com.ug.route.utils.Screen
@@ -139,33 +137,26 @@ fun ForgetPasswordContent(
                     end.linkTo(parent.end,16.dp)}
             )
 
-            Text18(
-                text = "Email",
-                color = Color(0xFF000000),
-                modifier = Modifier.constrainAs(emailText){
-                    top.linkTo(instructionsText.bottom,32.dp)
-                    start.linkTo(parent.start,16.dp)}
-            )
 
-            StandardTextField(
+            TextWithTextField(
+                text = "Email",
+                textColor = Color(0xFF000000),
+                textModifier = Modifier.constrainAs(emailText){
+                    top.linkTo(instructionsText.bottom,32.dp)
+                    start.linkTo(parent.start,16.dp)},
                 isError = screenState.isEmailError,
                 hint = "enter your email",
                 value = email,
                 onValueChange = onChangeEmail,
-                modifier = Modifier.constrainAs(emailTextField){
+                textFieldModifier = Modifier.constrainAs(emailTextField){
                     top.linkTo(emailText.bottom,16.dp)},
-                shape = RoundedCornerShape(8.dp),
-            )
-
-            Text(
-                text = "Incorrect or field is empty",
-                color = Color.Red,
-                modifier = Modifier
+                errorMessage = "Incorrect or field is empty",
+                errorModifier = Modifier
                     .constrainAs(errorMessage) {
                         top.linkTo(emailTextField.bottom, 8.dp)
                         start.linkTo(parent.start, 16.dp)
-                    }
-                    .alpha(if (screenState.isEmailError) 1f else 0f)
+                    },
+                shape = RoundedCornerShape(8.dp)
             )
 
             StandardButton(

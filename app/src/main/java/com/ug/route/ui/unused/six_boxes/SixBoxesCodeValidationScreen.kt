@@ -64,7 +64,7 @@
 //                }
 //            }
 //        },
-//        onClickHere = viewModel::resetPassword,
+//        onClickHere = viewModel::forgetPassword,
 //        updateMessageAndKeyOnClick = viewModel::updateMessageAndKeyOnClick,
 //        disableClickHere = viewModel::disableClickHere,
 //        codeValidation = viewModel::codeValidation,

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TextWithTextField(
     text : String,
+    textColor : Color = Color.White,
     textModifier: Modifier,
     hint : String,
     value : String,
@@ -20,11 +21,11 @@ fun TextWithTextField(
     isError : Boolean = false,
     errorMessage : String,
     errorModifier : Modifier = Modifier,
-    errorVisibility : Boolean,
     shape: Shape = RoundedCornerShape(16.dp)
 ){
 
     Text18(
+        color = textColor,
         text = text,
         modifier = textModifier
     )
@@ -41,6 +42,6 @@ fun TextWithTextField(
     Text(
         text = errorMessage,
         color = Color.Red,
-        modifier = errorModifier.alpha(if (errorVisibility) 1f else 0f)
+        modifier = errorModifier.alpha(if (isError) 1f else 0f)
     )
 }

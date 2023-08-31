@@ -5,7 +5,7 @@
 //import androidx.lifecycle.viewModelScope
 //import com.google.gson.Gson
 //import com.ug.route.utils.ResetCode
-//import com.ug.route.data.models.ResetPasswordResponse
+//import com.ug.route.data.models.ForgetPasswordResponse
 //import com.ug.route.data.repositories.Repository
 //import com.ug.route.networking.dto_models.ResetPasswordDTO
 //import com.ug.route.networking.dto_models.ValidationCodeDTO
@@ -65,11 +65,11 @@
 //        _screenState.update { it.copy(isClickable = false) }
 //    }
 //
-//    fun resetPassword(){
+//    fun forgetPassword(){
 //
 //        viewModelScope.launch {
 //
-//            repository.resetPassword(ResetPasswordDTO(email = _screenState.value.email))
+//            repository.forgetPassword(ResetPasswordDTO(email = _screenState.value.email))
 //        }
 //    }
 //
@@ -104,8 +104,8 @@
 //    }
 //
 //    private fun Response<*>.getErrorMessage(): String? {
-//        val errorResponse: ResetPasswordResponse? = errorBody()?.charStream()?.use {
-//            Gson().fromJson(it, ResetPasswordResponse::class.java)
+//        val errorResponse: ForgetPasswordResponse? = errorBody()?.charStream()?.use {
+//            Gson().fromJson(it, ForgetPasswordResponse::class.java)
 //        }
 //        return errorResponse?.message
 //    }

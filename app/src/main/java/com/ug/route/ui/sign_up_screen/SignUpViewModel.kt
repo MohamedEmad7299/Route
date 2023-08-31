@@ -45,12 +45,12 @@ class SignUpViewModel @Inject constructor(
         _user.update { it.copy(password = newPassword) }
     }
 
-    fun onChangePasswordVisibility(){
+    fun updatePasswordVisibility(){
 
         _screenState.update { it.copy(passwordVisibility = !_screenState.value.passwordVisibility) }
     }
 
-    fun onChangeRePasswordVisibility(){
+    fun updateRePasswordVisibility(){
 
         _screenState.update { it.copy(rePasswordVisibility = !_screenState.value.rePasswordVisibility) }
     }

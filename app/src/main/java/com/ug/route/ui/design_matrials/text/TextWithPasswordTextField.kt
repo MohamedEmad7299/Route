@@ -18,13 +18,12 @@ fun TextWithPasswordTextField(
     value : String,
     onValueChange : (String) -> Unit,
     passwordVisibility : Boolean,
-    onClickVisibilityIcon : () -> Unit,
+    updatePasswordVisibility : () -> Unit,
     onChangeVisibility : (Boolean) -> Int,
     textFieldModifier : Modifier = Modifier,
     isError : Boolean = false,
     errorMessage : String,
     errorModifier : Modifier = Modifier,
-    errorVisibility : Boolean,
     shape: Shape = RoundedCornerShape(16.dp)
 ){
 
@@ -40,7 +39,7 @@ fun TextWithPasswordTextField(
         value = value,
         onValueChange = onValueChange,
         passwordVisibility = passwordVisibility,
-        onClickVisibilityIcon = onClickVisibilityIcon,
+        onClickVisibilityIcon = updatePasswordVisibility,
         onChangePasswordVisibility = onChangeVisibility,
         modifier = textFieldModifier,
         shape = shape
@@ -49,6 +48,6 @@ fun TextWithPasswordTextField(
     Text(
         text = errorMessage,
         color = Color.Red,
-        modifier = errorModifier.alpha(if (errorVisibility) 1f else 0f)
+        modifier = errorModifier.alpha(if (isError) 1f else 0f)
     )
 }

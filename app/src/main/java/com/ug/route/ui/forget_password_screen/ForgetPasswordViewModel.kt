@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.gson.Gson
-import com.ug.route.data.models.ResetPasswordResponse
+import com.ug.route.data.models.ForgetPasswordResponse
 import com.ug.route.data.repositories.Repository
-import com.ug.route.networking.dto_models.ResetPasswordDTO
+import com.ug.route.networking.dto_models.ForgetPasswordDTO
 import com.ug.route.utils.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
@@ -59,8 +59,8 @@ class ForgetPasswordViewModel @Inject constructor(
             _screenState.update { it.copy(isLoading = true) }
 
             try {
-                val response = withTimeout(5000L) { // Set your desired timeout value in milliseconds
-                    repository.resetPassword(ResetPasswordDTO(email = email.value))
+                val response = withTimeout(5000L) {
+                    repository.forgetPassword(ForgetPasswordDTO(email = email.value))
                 }
                 val errorMessage = response.getErrorMessage()
 
@@ -89,8 +89,8 @@ class ForgetPasswordViewModel @Inject constructor(
     }
 
     private fun Response<*>.getErrorMessage(): String? {
-        val errorResponse: ResetPasswordResponse? = errorBody()?.charStream()?.use {
-            Gson().fromJson(it, ResetPasswordResponse::class.java)
+        val errorResponse: ForgetPasswordResponse? = errorBody()?.charStream()?.use {
+            Gson().fromJson(it, ForgetPasswordResponse::class.java)
         }
         return errorResponse?.message
     }

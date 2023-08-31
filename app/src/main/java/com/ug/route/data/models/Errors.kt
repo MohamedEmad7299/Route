@@ -12,6 +12,4 @@ data class Errors(
     val `param`: String? = null,
     @SerializedName("value")
     val value: String? = null
-
-
 )

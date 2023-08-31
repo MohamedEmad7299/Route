@@ -63,7 +63,7 @@ fun CodeValidationScreen(
         onClickHere = viewModel::resetPassword,
         updateMessageAndKeyOnClick = viewModel::updateMessageAndKeyOnClick,
         disableClickHere = viewModel::disableClickHere,
-        codeValidation = viewModel::codeValidation,
+        codeValidation = { viewModel.codeValidation(navController) },
         onInternetError = viewModel::onInternetError
     )
 }

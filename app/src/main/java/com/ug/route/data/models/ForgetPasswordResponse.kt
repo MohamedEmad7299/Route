@@ -3,7 +3,7 @@ package com.ug.route.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class ResetPasswordResponse(
+data class ForgetPasswordResponse(
 
     @SerializedName("statusMsg")
     val statusMsg: String? = null,

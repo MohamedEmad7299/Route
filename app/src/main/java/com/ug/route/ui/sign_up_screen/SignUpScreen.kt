@@ -53,9 +53,9 @@ fun SignUpScreen(
         onChangePassword = viewModel::onChangePassword,
         onChangePhone = viewModel::onChangePhone,
         signUp = viewModel::signUp,
-        onClickPasswordVisibilityIcon = viewModel::onChangePasswordVisibility,
+        onClickPasswordVisibilityIcon = viewModel::updatePasswordVisibility,
         onChangePasswordVisibility = viewModel::onChangeVisibility,
-        onClickRePasswordVisibilityIcon = viewModel::onChangeRePasswordVisibility,
+        onClickRePasswordVisibilityIcon = viewModel::updateRePasswordVisibility,
         onChangeRePassword = viewModel::onChangeRePassword,
         onInternetError = viewModel::onInternetError
     )
@@ -139,7 +139,6 @@ fun SignUpContent(
                             start.linkTo(parent.start)
                         },
                         errorMessage = "field is empty or less than 3 characters",
-                        errorVisibility = screenState.isNameError,
                         errorModifier = Modifier.constrainAs(nameError){
                             top.linkTo(fullNameTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -150,7 +149,7 @@ fun SignUpContent(
                         isError = screenState.isPhoneError,
                         text = "Mobile Number",
                         textModifier = Modifier.constrainAs(mobileNumberText) {
-                            top.linkTo(fullNameTextField.bottom, 40.dp)
+                            top.linkTo(fullNameTextField.bottom, 32.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "enter your mobile number",
@@ -161,7 +160,6 @@ fun SignUpContent(
                             start.linkTo(parent.start)
                         },
                         errorMessage = "field is empty",
-                        errorVisibility = screenState.isPhoneError,
                         errorModifier = Modifier.constrainAs(phoneError){
                             top.linkTo(mobileNumberTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -172,7 +170,7 @@ fun SignUpContent(
                         isError = screenState.isEmailError,
                         text = "E-mail address",
                         textModifier = Modifier.constrainAs(emailText) {
-                            top.linkTo(mobileNumberTextField.bottom, 40.dp)
+                            top.linkTo(mobileNumberTextField.bottom, 32.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "enter your email address",
@@ -183,7 +181,6 @@ fun SignUpContent(
                             start.linkTo(parent.start)
                         },
                         errorMessage = "incorrect or field is empty",
-                        errorVisibility = screenState.isEmailError,
                         errorModifier = Modifier.constrainAs(emailError){
                             top.linkTo(emailTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -194,21 +191,20 @@ fun SignUpContent(
                         isError = screenState.isPasswordError,
                         text = "Password",
                         textModifier = Modifier.constrainAs(passwordText) {
-                            top.linkTo(emailTextField.bottom, 40.dp)
+                            top.linkTo(emailTextField.bottom, 32.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "enter your password",
                         value = user.password,
                         onValueChange = onChangePassword,
                         passwordVisibility = screenState.passwordVisibility,
-                        onClickVisibilityIcon = onClickPasswordVisibilityIcon,
+                        updatePasswordVisibility = onClickPasswordVisibilityIcon,
                         onChangeVisibility = onChangePasswordVisibility,
                         textFieldModifier = Modifier.constrainAs(passwordTextField) {
                             top.linkTo(passwordText.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
                         errorMessage = "field is empty",
-                        errorVisibility = screenState.isPasswordError,
                         errorModifier = Modifier.constrainAs(passwordError){
                             top.linkTo(passwordTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
@@ -219,21 +215,20 @@ fun SignUpContent(
                         isError = screenState.isRePasswordError,
                         text = "Confirm Password",
                         textModifier = Modifier.constrainAs(rePasswordText) {
-                            top.linkTo(passwordTextField.bottom, 40.dp)
+                            top.linkTo(passwordTextField.bottom, 32.dp)
                             start.linkTo(parent.start,16.dp)
                         },
                         hint = "repeat your password",
                         value = user.rePassword,
                         onValueChange = onChangeRePassword,
                         passwordVisibility = screenState.rePasswordVisibility,
-                        onClickVisibilityIcon = onClickRePasswordVisibilityIcon,
+                        updatePasswordVisibility = onClickRePasswordVisibilityIcon,
                         onChangeVisibility = onChangePasswordVisibility,
                         textFieldModifier = Modifier.constrainAs(rePasswordTextField) {
                             top.linkTo(rePasswordText.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
                         errorMessage = "field is empty or not the same as the password",
-                        errorVisibility = screenState.isRePasswordError,
                         errorModifier = Modifier.constrainAs(rePasswordError){
                             top.linkTo(rePasswordTextField.bottom, 8.dp)
                             start.linkTo(parent.start,16.dp)
