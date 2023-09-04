@@ -1,6 +1,7 @@
 package com.ug.route.ui.design_matrials.text
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
@@ -48,7 +49,8 @@ fun StandardTextField(
         },
         modifier = modifier
             .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(64.dp),
         shape = shape,
         value = value,
         onValueChange = onValueChange,

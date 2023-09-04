@@ -22,29 +22,29 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ug.route.R
 import com.ug.route.ui.theme.DarkBlue
 
-@Preview(showSystemUi = true)
 @Composable
 fun SearchBarAndCart(
-//    isError: Boolean,
-//    value: String,
-//    onValueChange : (String) -> Unit,
+    modifier: Modifier = Modifier,
+    isError: Boolean,
+    value: String,
+    onValueChange : (String) -> Unit,
+    onClickCartIcon : () -> Unit
 ){
 
     Row(
-        Modifier
+        modifier
             .padding(16.dp)
             .fillMaxWidth(),
         Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
-            isError = false, //isError
+            isError = isError,
             singleLine = true,
             placeholder = {
                 Text(
@@ -62,14 +62,14 @@ fun SearchBarAndCart(
             modifier = Modifier
                 .width(300.dp),
             shape = RoundedCornerShape(32.dp),
-            value = "", // value
-            onValueChange = {}, // onValueChange
+            value = value,
+            onValueChange = onValueChange,
             trailingIcon = {
                 IconButton(onClick =  {}) {
                     Icon(
                         tint = DarkBlue,
                         painter = painterResource(id = R.drawable.baseline_search_24),
-                        contentDescription = "")
+                        contentDescription = "search icon")
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
@@ -91,7 +91,7 @@ fun SearchBarAndCart(
 
 
         IconButton(
-            onClick =  {},
+            onClick =  onClickCartIcon,
             modifier = Modifier.size(50.dp)
         ){
             Icon(
@@ -99,7 +99,5 @@ fun SearchBarAndCart(
                 painter = painterResource(id = R.drawable.cart),
                 contentDescription = "cart icon")
         }
-
-
     }
 }

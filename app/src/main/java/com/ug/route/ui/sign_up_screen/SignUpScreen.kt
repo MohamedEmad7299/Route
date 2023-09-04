@@ -45,6 +45,7 @@ fun SignUpScreen(
     val user by viewModel.user.collectAsState()
     val screenState by viewModel.screenState.collectAsState()
 
+
     SignUpContent(
         user = user,
         screenState = screenState,

@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
 import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.Logo
@@ -45,6 +47,12 @@ fun ForgetPasswordScreen(
 
     val email by viewModel.email.collectAsState()
     val screenState by viewModel.screenState.collectAsState()
+
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.White,darkIcons = true)
+    }
 
     ForgetPasswordContent(
         email = email,
@@ -76,6 +84,7 @@ fun ForgetPasswordContent(
 
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) {
