@@ -3,6 +3,7 @@ package com.ug.route.ui.design_matrials.text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,10 +49,10 @@ fun SearchBarAndCart(
             singleLine = true,
             placeholder = {
                 Text(
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     text = "what do you search for?",
                     style = TextStyle(
-                        fontSize = 18.sp,
-                        lineHeight = 18.sp,
+                        fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.poppins_regular)),
                         fontWeight = FontWeight(300),
                         color = DarkBlue,
@@ -60,17 +61,16 @@ fun SearchBarAndCart(
                 )
             },
             modifier = Modifier
-                .width(300.dp),
+                .width(300.dp)
+                .height(50.dp),
             shape = RoundedCornerShape(32.dp),
             value = value,
             onValueChange = onValueChange,
             trailingIcon = {
-                IconButton(onClick =  {}) {
-                    Icon(
-                        tint = DarkBlue,
-                        painter = painterResource(id = R.drawable.baseline_search_24),
-                        contentDescription = "search icon")
-                }
+                Icon(
+                    tint = DarkBlue,
+                    painter = painterResource(id = R.drawable.baseline_search_24),
+                    contentDescription = "search icon")
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
@@ -88,7 +88,6 @@ fun SearchBarAndCart(
                 fontWeight = FontWeight(300)
             )
         )
-
 
         IconButton(
             onClick =  onClickCartIcon,

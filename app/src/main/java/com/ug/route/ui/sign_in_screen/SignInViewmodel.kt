@@ -2,11 +2,13 @@ package com.ug.route.ui.sign_in_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.ug.route.R
 import com.ug.route.data.models.FailResponse
 import com.ug.route.networking.dto_models.UserSignInDTO
 import com.ug.route.data.repositories.Repository
+import com.ug.route.utils.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +48,7 @@ class SignInViewModel @Inject constructor(
         _user.update { it.copy(email = newEmail) }
     }
 
-    fun signIn() {
+    fun signIn(navController: NavController) {
 
         if (checkInputError()) return
 
@@ -62,13 +64,16 @@ class SignInViewModel @Inject constructor(
 
                 val errorMessage = response.getErrorMessage()
 
-                _screenState.update { prevState ->
-                    if (response.isSuccessful) {
-                        prevState.copy(message = "Welcome")
-                    } else {
-                        prevState.copy(message = errorMessage ?: "An error occurred")
-                    }.copy(launchedEffectKey = !prevState.launchedEffectKey)
-                }
+                if (response.isSuccessful) {
+
+                    navController.navigate(Screen.HomeScreen.route) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
+
+                } else _screenState.update { it.copy(message = errorMessage ?: "An error occurred") }
+
             } catch (e: TimeoutCancellationException) {
                 _screenState.update { prevState ->
                     prevState.copy(message = "Request timed out")
@@ -79,7 +84,7 @@ class SignInViewModel @Inject constructor(
                 }
             } finally {
                 _screenState.update { prevState ->
-                    prevState.copy(isLoading = false)
+                    prevState.copy(isLoading = false,launchedEffectKey = !prevState.launchedEffectKey)
                 }
             }
         }

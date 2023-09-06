@@ -51,12 +51,6 @@ fun SignInScreen(
     val user by viewModel.user.collectAsState()
     val screenState by viewModel.screenState.collectAsState()
 
-    val systemUiController = rememberSystemUiController()
-
-    SideEffect {
-        systemUiController.setStatusBarColor(DarkBlue,darkIcons = false)
-    }
-
     SignInContent(
         user =  user,
         screenState = screenState,
@@ -64,7 +58,9 @@ fun SignInScreen(
         onEmailChange = viewModel::onChangeEmail,
         onChangePasswordVisibility = viewModel::onChangePasswordVisibility,
         onClickVisibilityIcon = viewModel::updatePasswordVisibility,
-        onClickLogin = viewModel::signIn,
+        onClickLogin = {
+            viewModel.signIn(navController)
+        },
         navigateToSignUp = {
             viewModel.makeMessageEmpty()
             navController.navigate(Screen.SignUpScreen.route)
@@ -96,6 +92,9 @@ fun SignInContent(
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
+    val systemUiController = rememberSystemUiController()
+
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) {
@@ -104,6 +103,10 @@ fun SignInContent(
                 .fillMaxSize()
                 .background(DarkBlue),
         ) {
+
+            SideEffect {
+                systemUiController.setStatusBarColor(DarkBlue,darkIcons = false)
+            }
 
             val (
                 logo,

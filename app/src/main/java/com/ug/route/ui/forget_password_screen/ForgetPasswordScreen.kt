@@ -48,12 +48,6 @@ fun ForgetPasswordScreen(
     val email by viewModel.email.collectAsState()
     val screenState by viewModel.screenState.collectAsState()
 
-    val systemUiController = rememberSystemUiController()
-
-    SideEffect {
-        systemUiController.setStatusBarColor(Color.White,darkIcons = true)
-    }
-
     ForgetPasswordContent(
         email = email,
         screenState = screenState,
@@ -82,6 +76,9 @@ fun ForgetPasswordContent(
     onInternetError : () -> Unit
 ){
 
+
+    val systemUiController = rememberSystemUiController()
+
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
@@ -94,6 +91,10 @@ fun ForgetPasswordContent(
                 .fillMaxSize()
                 .background(Color.White)
         ) {
+
+            SideEffect {
+                systemUiController.setStatusBarColor(Color.White,darkIcons = true)
+            }
 
             val (
                 logo,
