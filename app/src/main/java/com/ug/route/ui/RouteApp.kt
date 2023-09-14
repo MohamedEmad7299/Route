@@ -56,7 +56,7 @@ fun RouteApp(){
     ){
         NavHost(
             navController = navController,
-            startDestination = Screen.SplashScreen.route
+            startDestination = Screen.HomeScreen.route
         ){
             composable(Screen.SplashScreen.route){ SplashScreen(navController) }
             composable(Screen.SignInScreen.route){ SignInScreen(navController) }

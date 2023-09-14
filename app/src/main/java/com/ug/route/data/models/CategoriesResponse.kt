@@ -3,9 +3,9 @@ package com.ug.route.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class Categories(
+data class CategoriesResponse(
     @SerializedName("data")
-    val `data`: List<Data?>? = null,
+    val `data`: List<Category?>? = null,
     @SerializedName("metadata")
     val metadata: Metadata? = null,
     @SerializedName("results")

@@ -1,5 +1,6 @@
 package com.ug.route.data.repositories
 
+import com.ug.route.data.models.CategoriesResponse
 import com.ug.route.data.models.CodeValidationResponse
 import com.ug.route.data.models.ForgetPasswordResponse
 import com.ug.route.data.models.SuccessResponse
@@ -29,5 +30,8 @@ class Repository @Inject constructor (
     }
     suspend fun resetPassword(resetPasswordDTO: ResetPasswordDTO) : Response<SuccessResponse>{
         return routeApiService.resetPassword(resetPasswordDTO)
+    }
+    suspend fun getCategories() : Response<CategoriesResponse>{
+        return routeApiService.getCategories()
     }
 }
