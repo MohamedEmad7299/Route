@@ -14,7 +14,7 @@ import com.ug.route.ui.favourite_screen.FavouriteScreen
 import com.ug.route.ui.account_screen.AccountScreen
 import com.ug.route.ui.categories_screen.CategoriesScreen
 import com.ug.route.ui.code_validation_screen.CodeValidationScreen
-import com.ug.route.ui.design_matrials.text.SearchScreen
+import com.ug.route.ui.search_screen.SearchScreen
 import com.ug.route.ui.design_matrials.text.bottomNav.BottomNavScreen
 import com.ug.route.ui.design_matrials.text.bottomNav.BottomNavigationBar
 import com.ug.route.ui.forget_password_screen.ForgetPasswordScreen

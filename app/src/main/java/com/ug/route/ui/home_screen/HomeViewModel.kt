@@ -33,7 +33,12 @@ class HomeViewModel @Inject constructor(
 
     val screenState = _screenState.asStateFlow()
 
-    fun getCategories() {
+
+    init {
+        getCategories()
+    }
+
+    private fun getCategories() {
 
         viewModelScope.launch {
 

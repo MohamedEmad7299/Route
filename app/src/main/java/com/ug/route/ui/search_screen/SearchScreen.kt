@@ -1,4 +1,4 @@
-package com.ug.route.ui.design_matrials.text
+package com.ug.route.ui.search_screen
 
 import android.annotation.SuppressLint
 import android.content.Context

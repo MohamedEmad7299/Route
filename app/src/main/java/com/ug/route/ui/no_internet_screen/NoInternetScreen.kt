@@ -1,50 +1,39 @@
-package com.ug.route.ui.unused.no_internet_screen
+package com.ug.route.ui.no_internet_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
-import com.ug.route.ui.design_matrials.text.StandardButton
-import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
-import com.ug.route.utils.isInternetConnected
 
+@Preview(showSystemUi = true)
 @Composable
-fun NoInternetScreen(
-    navController: NavController,
-    viewModel: NoInternetViewModel = hiltViewModel()
-){
-
-    val context = LocalContext.current
+fun NoInternetScreen(){
 
     NoInternetContent{
 
-        if (isInternetConnected(context)){
-            navController.navigate(viewModel.previousRoute){
-                popUpTo(navController.graph.id){
-                    inclusive = true
-                }
-            }
-        }
     }
 }
 
@@ -53,6 +42,13 @@ fun NoInternetScreen(
 fun NoInternetContent(onClickTryAgain : () -> Unit){
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_internet))
+
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+
+        systemUiController.setStatusBarColor(Color.White,darkIcons = true)
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -67,10 +63,11 @@ fun NoInternetContent(onClickTryAgain : () -> Unit){
         LottieAnimation(
             modifier = Modifier
                 .size(400.dp)
-                .constrainAs(animation){
-                    top.linkTo(parent.top,128.dp)
+                .constrainAs(animation) {
+                    top.linkTo(parent.top, 64.dp)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end) },
+                    end.linkTo(parent.end)
+                },
             composition = composition,
             isPlaying = true
         )
@@ -91,24 +88,47 @@ fun NoInternetContent(onClickTryAgain : () -> Unit){
                 end.linkTo(parent.end,16.dp)}
         )
 
-        StandardButton(
-            buttonColor = DarkBlue,
-            onClick = onClickTryAgain,
-            modifier = Modifier.constrainAs(tryAgainButton){
-                top.linkTo(instructionsText.bottom,48.dp)},
-        ) {
-
-            Text(
-                text = "Try again",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(600),
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                )
+        ClickableText(
+            text = AnnotatedString("Try again!"),
+            modifier = Modifier
+                .constrainAs(tryAgainButton) {
+                    top.linkTo(instructionsText.bottom,32.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            style = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                fontWeight = FontWeight(600),
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                textDecoration = TextDecoration.Underline
             )
+        ){
+            onClickTryAgain()
         }
+
+//        StandardButton(
+//            buttonColor = Color(0xFFE0E0E0),
+//            onClick = onClickTryAgain,
+//            modifier = Modifier
+//                .padding(48.dp)
+//                .constrainAs(tryAgainButton){
+//                top.linkTo(instructionsText.bottom,48.dp)},
+//        ) {
+//
+//            Text(
+//                text = "Try again",
+//                style = TextStyle(
+//                    fontSize = 20.sp,
+//                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+//                    fontWeight = FontWeight(600),
+//                    color = Color.Black,
+//                    textAlign = TextAlign.Center,
+//                )
+//            )
+//        }
+
     }
 }
 

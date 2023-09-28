@@ -39,7 +39,7 @@ import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.CodeTextField
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
-import com.ug.route.ui.design_matrials.text.hideKeyboard
+import com.ug.route.ui.search_screen.hideKeyboard
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
 import com.ug.route.utils.Screen

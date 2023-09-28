@@ -27,7 +27,8 @@ fun StandardButton(
             .padding(horizontal = 16.dp),
         onClick = onClick ,
         colors = ButtonDefaults.buttonColors(
-            containerColor = buttonColor
+            containerColor = buttonColor,
+
         ),
         shape = RoundedCornerShape(16.dp),
         content = content
