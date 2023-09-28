@@ -3,6 +3,7 @@ package com.ug.route.ui.design_matrials.text
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,8 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +56,7 @@ fun HomeApplianceCard(
 
     Card(
         modifier = Modifier
-            .height(248.dp)
+            .height(264.dp)
             .width(224.dp)
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
@@ -66,9 +70,11 @@ fun HomeApplianceCard(
         ){
 
             val (image,
+                fav,
                 name,
                 review,
-                price) = createRefs()
+                price,
+                add) = createRefs()
 
             Image(
                 painter = painterResource(id = product.image),
@@ -81,6 +87,32 @@ fun HomeApplianceCard(
                 contentDescription = "",
                 contentScale = ContentScale.Crop
             )
+
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .size(40.dp)
+                    .constrainAs(fav) {
+                        top.linkTo(parent.top, 8.dp)
+                        end.linkTo(parent.end, 8.dp)
+                    }
+            ){
+                Box(
+                    Modifier
+                        .size(30.dp)
+                        .background(
+                            shape = CircleShape,
+                            color = Color.White)
+                ){
+
+                    Icon(
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        tint = DarkBlue,
+                        painter = painterResource(id = R.drawable.heart),
+                        contentDescription = "")
+                }
+            }
 
             Text18(
                 modifier = Modifier.constrainAs(name){
@@ -99,7 +131,7 @@ fun HomeApplianceCard(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text18(
-                    Modifier.padding(end = 16.dp),
+                    Modifier.padding(end = 8.dp),
                     text = "Review (${product.review})",
                     color = Color(0xFF06004F)
                 )
@@ -118,6 +150,24 @@ fun HomeApplianceCard(
                 text = "${product.price} EGP",
                 color = Color(0xFF06004F)
             )
+
+
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .size(40.dp)
+                    .constrainAs(add) {
+                        end.linkTo(parent.end, 8.dp)
+                        bottom.linkTo(parent.bottom, 8.dp)
+                    }
+            ){
+                Icon(
+                    modifier = Modifier
+                        .background(DarkBlue),
+                    tint = Color.White,
+                    painter = painterResource(id = R.drawable.baseline_add_24),
+                    contentDescription = "")
+            }
         }
     }
 }

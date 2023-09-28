@@ -10,10 +10,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ug.route.ui.FavouriteScreen.FavouriteScreen
+import com.ug.route.ui.favourite_screen.FavouriteScreen
 import com.ug.route.ui.account_screen.AccountScreen
 import com.ug.route.ui.categories_screen.CategoriesScreen
 import com.ug.route.ui.code_validation_screen.CodeValidationScreen
+import com.ug.route.ui.design_matrials.text.SearchScreen
 import com.ug.route.ui.design_matrials.text.bottomNav.BottomNavScreen
 import com.ug.route.ui.design_matrials.text.bottomNav.BottomNavigationBar
 import com.ug.route.ui.forget_password_screen.ForgetPasswordScreen
@@ -24,7 +25,7 @@ import com.ug.route.ui.sign_up_screen.SignUpScreen
 import com.ug.route.ui.splash_screen.SplashScreen
 import com.ug.route.utils.Screen
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun RouteApp(){
 
@@ -48,12 +49,17 @@ fun RouteApp(){
                 BottomNavigationBar(
                     currentScreen = currentDestination!!,
                     onNavigate = { screen ->
-                        navController.navigate(screen.route)
+                        navController.navigate(screen.route){
+                            popUpTo(navController.graph.id){
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             }
         }
     ){
+
         NavHost(
             navController = navController,
             startDestination = Screen.HomeScreen.route
@@ -74,6 +80,7 @@ fun RouteApp(){
             composable(Screen.CategoriesScreen.route){ CategoriesScreen(navController) }
             composable(Screen.FavouriteScreen.route){ FavouriteScreen(navController) }
             composable(Screen.AccountScreen.route){ AccountScreen(navController) }
+            composable(Screen.SearchScreen.route){ SearchScreen(navController) }
         }
     }
 }

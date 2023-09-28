@@ -17,12 +17,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -40,6 +39,7 @@ import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.CodeTextField
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
+import com.ug.route.ui.design_matrials.text.hideKeyboard
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
 import com.ug.route.utils.Screen
@@ -69,7 +69,6 @@ fun CodeValidationScreen(
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CodeValidationContent(
     screenState: CodeValidationState,
@@ -84,7 +83,7 @@ fun CodeValidationContent(
 
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
+    val currentView = LocalView.current
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
@@ -189,7 +188,7 @@ fun CodeValidationContent(
             StandardButton(
                 buttonColor = DarkBlue,
                 onClick = {
-                    keyboardController?.hide()
+                    hideKeyboard(currentView)
                     handelInternetError(context,codeValidation,onInternetError) },
                 modifier = Modifier.constrainAs(continueButton){
                     top.linkTo(code.bottom,48.dp)},

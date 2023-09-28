@@ -2,7 +2,6 @@ package com.ug.route.ui.home_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ug.route.data.models.Category
 import com.ug.route.data.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
@@ -18,30 +17,25 @@ class HomeViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel(){
 
-
     private val _screenState = MutableStateFlow(
+
         HomeState(
-            searchInput = "",
+            query = "",
             categories = emptyList(),
             message = "",
             launchedEffectKey = false,
-            isLoading = false
+            isSearchBarActive = true,
+            isLoading = true,
+            history = mutableListOf(),
+            focused = true
         )
     )
 
     val screenState = _screenState.asStateFlow()
 
-    init {
-        getCategories()
-    }
-
-    private fun getCategories() {
+    fun getCategories() {
 
         viewModelScope.launch {
-
-            _screenState.update { prevState ->
-                prevState.copy(isLoading = true)
-            }
 
             try {
 
@@ -50,7 +44,6 @@ class HomeViewModel @Inject constructor(
                 }
 
                 if (response.isSuccessful) {
-
 
                     _screenState.update { it.copy(categories = response.body()?.data ?: emptyList()) }
 
@@ -69,29 +62,28 @@ class HomeViewModel @Inject constructor(
                     prevState.copy(isLoading = false,launchedEffectKey = !prevState.launchedEffectKey)
                 }
             }
-
         }
     }
 
-    fun onChangeSearchInput(newSearchInput : String){
+    fun onQueryChange(newSearchInput : String){
 
-        _screenState.update { it.copy(searchInput = newSearchInput) }
+        _screenState.update { it.copy(query = newSearchInput) }
     }
 
-//    private fun checkInputError(): Boolean {
-//        val user = user.value
-//        _screenState.update { prevState ->
-//            prevState.copy(
-//                isPasswordError = user.password.isEmpty(),
-//                isEmailError = user.email.isEmpty() || !("@" in user.email && "." in user.email)
-//            )
-//        }
-//        return _screenState.value.isEmailError || _screenState.value.isPasswordError
-//    }
+    fun onClickClose(){
+        if (_screenState.value.query.isNotEmpty()) _screenState.update { it.copy(query = "") }
+    }
 
-//    fun makeMessageEmpty(){
-//        _screenState.update { it.copy(message = "") }
-//    }
+    fun onSearch(searchInput : String){
+
+        _screenState.update { it.copy(query = "") }
+        _screenState.value.history.add(searchInput)
+    }
+
+    fun onActiveChange(newActiveState : Boolean){
+
+        _screenState.update { it.copy(isSearchBarActive = newActiveState) }
+    }
 
     fun onInternetError(){
         _screenState.update { it.copy(

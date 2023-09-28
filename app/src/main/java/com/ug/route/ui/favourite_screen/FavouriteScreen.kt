@@ -1,4 +1,4 @@
-package com.ug.route.ui.FavouriteScreen
+package com.ug.route.ui.favourite_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable

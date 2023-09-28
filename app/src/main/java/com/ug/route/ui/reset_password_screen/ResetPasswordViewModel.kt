@@ -30,6 +30,7 @@ class ResetPasswordViewModel @Inject constructor(
         email = checkNotNull(savedStateHandle["email"]),
         ""
     ))
+
     val resetPasswordDto = _resetPasswordDto.asStateFlow()
 
     private val _rePassword = MutableStateFlow("")

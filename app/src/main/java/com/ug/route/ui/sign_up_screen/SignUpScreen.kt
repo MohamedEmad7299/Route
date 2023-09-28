@@ -45,7 +45,6 @@ fun SignUpScreen(
     val user by viewModel.user.collectAsState()
     val screenState by viewModel.screenState.collectAsState()
 
-
     SignUpContent(
         user = user,
         screenState = screenState,
@@ -61,7 +60,6 @@ fun SignUpScreen(
         onInternetError = viewModel::onInternetError
     )
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -156,7 +154,7 @@ fun SignUpContent(
                         hint = "enter your mobile number",
                         value = user.phone,
                         onValueChange = onChangePhone,
-                        textFieldModifier = Modifier.constrainAs(mobileNumberTextField) {
+                        textFieldModifier = Modifier.constrainAs(mobileNumberTextField){
                             top.linkTo(mobileNumberText.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
@@ -201,7 +199,7 @@ fun SignUpContent(
                         passwordVisibility = screenState.passwordVisibility,
                         updatePasswordVisibility = onClickPasswordVisibilityIcon,
                         onChangeVisibility = onChangePasswordVisibility,
-                        textFieldModifier = Modifier.constrainAs(passwordTextField) {
+                        textFieldModifier = Modifier.constrainAs(passwordTextField){
                             top.linkTo(passwordText.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
@@ -240,12 +238,13 @@ fun SignUpContent(
                         onClick = { handelInternetError(context,signUp,onInternetError) },
                         modifier = Modifier
                             .padding(bottom = 48.dp)
-                            .constrainAs(signUpButton) {
+                            .constrainAs(signUpButton){
                                 top.linkTo(rePasswordTextField.bottom, 48.dp)
                             }
                     ){
 
                         if (screenState.isLoading){
+
                             CircularProgressIndicator(
                                 modifier = Modifier.size(32.dp),
                                 color = DarkBlue,
