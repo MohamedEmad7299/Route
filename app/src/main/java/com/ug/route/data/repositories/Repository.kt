@@ -1,5 +1,7 @@
 package com.ug.route.data.repositories
 
+import com.ug.route.data.database.UserDatabase
+import com.ug.route.data.database.entities.User
 import com.ug.route.data.models.CategoriesResponse
 import com.ug.route.data.models.CodeValidationResponse
 import com.ug.route.data.models.ForgetPasswordResponse
@@ -14,7 +16,9 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class Repository @Inject constructor (
-    private val routeApiService: RouteApiService) {
+    private val routeApiService: RouteApiService,
+    private val databaseInstance : UserDatabase
+) {
     suspend fun signIn(userSignInDTO: UserSignInDTO) : Response<SuccessResponse>{
         return routeApiService.signIn(userSignInDTO)
     }
@@ -33,5 +37,9 @@ class Repository @Inject constructor (
     }
     suspend fun getCategories() : Response<CategoriesResponse>{
         return routeApiService.getCategories()
+    }
+
+    suspend fun insertUser(user : User){
+        databaseInstance.userDao().insertUser(user)
     }
 }

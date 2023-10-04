@@ -107,28 +107,6 @@ fun NoInternetContent(onClickTryAgain : () -> Unit){
         ){
             onClickTryAgain()
         }
-
-//        StandardButton(
-//            buttonColor = Color(0xFFE0E0E0),
-//            onClick = onClickTryAgain,
-//            modifier = Modifier
-//                .padding(48.dp)
-//                .constrainAs(tryAgainButton){
-//                top.linkTo(instructionsText.bottom,48.dp)},
-//        ) {
-//
-//            Text(
-//                text = "Try again",
-//                style = TextStyle(
-//                    fontSize = 20.sp,
-//                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-//                    fontWeight = FontWeight(600),
-//                    color = Color.Black,
-//                    textAlign = TextAlign.Center,
-//                )
-//            )
-//        }
-
     }
 }
 
