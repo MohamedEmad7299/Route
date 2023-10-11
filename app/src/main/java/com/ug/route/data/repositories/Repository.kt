@@ -1,7 +1,7 @@
 package com.ug.route.data.repositories
 
 import com.ug.route.data.database.UserDatabase
-import com.ug.route.data.database.entities.User
+import com.ug.route.data.database.entities.UserData
 import com.ug.route.data.models.CategoriesResponse
 import com.ug.route.data.models.CodeValidationResponse
 import com.ug.route.data.models.ForgetPasswordResponse
@@ -39,7 +39,15 @@ class Repository @Inject constructor (
         return routeApiService.getCategories()
     }
 
-    suspend fun insertUser(user : User){
-        databaseInstance.userDao().insertUser(user)
+    suspend fun insertUser(userData : UserData){
+        databaseInstance.userDao().insertUser(userData)
+    }
+
+    suspend fun updateUser(userData : UserData){
+        databaseInstance.userDao().updateUser(userData)
+    }
+
+    suspend fun getUserByEmail(email : String) : UserData? {
+        return databaseInstance.userDao().getUserByEmail(email)
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -73,7 +74,7 @@ fun NoInternetContent(onClickTryAgain : () -> Unit){
         )
 
         Text(
-            text = "Try Checking the network cables, modem and router",
+            text = stringResource(R.string.try_checking_the_network_cables_modem_and_router),
             style = TextStyle(
                 fontSize = 16.sp,
                 lineHeight = 18.sp,
@@ -89,7 +90,7 @@ fun NoInternetContent(onClickTryAgain : () -> Unit){
         )
 
         ClickableText(
-            text = AnnotatedString("Try again!"),
+            text = AnnotatedString(stringResource(R.string.try_again)),
             modifier = Modifier
                 .constrainAs(tryAgainButton) {
                     top.linkTo(instructionsText.bottom,32.dp)

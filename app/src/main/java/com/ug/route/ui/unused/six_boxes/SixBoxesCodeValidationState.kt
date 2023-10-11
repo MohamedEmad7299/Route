@@ -1,7 +1,5 @@
 package com.ug.route.ui.unused.six_boxes
 
-import com.ug.route.utils.ResetCode
-
 data class SixBoxesCodeValidationState(
 
     val resetCode: ResetCode,

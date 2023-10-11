@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -131,7 +132,7 @@ fun SearchContent(
                         .fillMaxSize()
                 ) {
                     Text(
-                        text = "what do you search for?",
+                        text = stringResource(R.string.what_do_you_search_for),
                         style = TextStyle(
                             fontSize = 15.sp,
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),

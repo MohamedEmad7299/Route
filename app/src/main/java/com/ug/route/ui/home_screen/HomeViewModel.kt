@@ -92,7 +92,6 @@ class HomeViewModel @Inject constructor(
 
     fun onInternetError(){
         _screenState.update { it.copy(
-            message = "No Internet Connection",
             launchedEffectKey = !_screenState.value.launchedEffectKey) }
     }
 }

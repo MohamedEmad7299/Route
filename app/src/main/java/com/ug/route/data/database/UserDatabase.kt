@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.ug.route.data.database.entities.User
+import com.ug.route.data.database.entities.UserData
 
-@Database(entities = [User::class], version = 1)
+@Database(entities = [UserData::class], version = 1)
 abstract class UserDatabase : RoomDatabase(){
     abstract fun userDao() : UserDao
 

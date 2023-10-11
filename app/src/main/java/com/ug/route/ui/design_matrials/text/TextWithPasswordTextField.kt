@@ -1,5 +1,7 @@
 package com.ug.route.ui.design_matrials.text
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,43 +13,50 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TextWithPasswordTextField(
+    modifier : Modifier = Modifier,
     text : String,
     textColor : Color = Color.White,
-    textModifier : Modifier = Modifier,
     hint : String,
     value : String,
     onValueChange : (String) -> Unit,
     passwordVisibility : Boolean,
     updatePasswordVisibility : () -> Unit,
     onChangeVisibility : (Boolean) -> Int,
-    textFieldModifier : Modifier = Modifier,
     isError : Boolean = false,
     errorMessage : String,
-    errorModifier : Modifier = Modifier,
     shape: Shape = RoundedCornerShape(16.dp)
 ){
 
-    Text18(
-        text = text,
-        modifier = textModifier,
-        color = textColor
-    )
+    Column(
+        modifier = modifier.padding(horizontal = 16.dp)
+    ){
 
-    PasswordTextField(
-        isError =isError,
-        hint = hint,
-        value = value,
-        onValueChange = onValueChange,
-        passwordVisibility = passwordVisibility,
-        onClickVisibilityIcon = updatePasswordVisibility,
-        onChangePasswordVisibility = onChangeVisibility,
-        modifier = textFieldModifier,
-        shape = shape
-    )
+        Text18(
+            text = text,
+            color = textColor
+        )
 
-    Text(
-        text = errorMessage,
-        color = Color.Red,
-        modifier = errorModifier.alpha(if (isError) 1f else 0f)
-    )
+        PasswordTextField(
+            isError = isError,
+            hint = hint,
+            value = value,
+            onValueChange = onValueChange,
+            passwordVisibility = passwordVisibility,
+            onClickVisibilityIcon = updatePasswordVisibility,
+            onChangePasswordVisibility = onChangeVisibility,
+            modifier = Modifier
+                .padding(top = 16.dp),
+            shape = shape
+        )
+
+        Text(
+            text = errorMessage,
+            color = Color.Red,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .alpha(if (isError) 1f else 0f)
+        )
+    }
+
+
 }

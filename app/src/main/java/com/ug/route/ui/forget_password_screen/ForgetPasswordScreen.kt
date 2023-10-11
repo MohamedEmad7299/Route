@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -100,9 +101,7 @@ fun ForgetPasswordContent(
                 logo,
                 forgetPasswordText,
                 instructionsText,
-                emailText,
-                emailTextField,
-                errorMessage,
+                emailField,
                 resetButton,
                 backButton
             ) = createRefs()
@@ -116,7 +115,7 @@ fun ForgetPasswordContent(
             )
 
             Text(
-                text = "Forgot Password?",
+                text = stringResource(R.string.forgot_password),
                 style = TextStyle(
                     fontSize = 32.sp,
                     lineHeight = 18.sp,
@@ -132,7 +131,7 @@ fun ForgetPasswordContent(
             )
 
             Text(
-                text = "No worries, we’ll send you reset instructions",
+                text = stringResource(R.string.no_worries_we_ll_send_you_reset_instructions),
                 style = TextStyle(
                     fontSize = 17.sp,
                     lineHeight = 18.sp,
@@ -149,23 +148,15 @@ fun ForgetPasswordContent(
 
 
             TextWithTextField(
-                text = "Email",
+                text = stringResource(R.string.e_mail),
                 textColor = Color(0xFF000000),
-                textModifier = Modifier.constrainAs(emailText){
-                    top.linkTo(instructionsText.bottom,32.dp)
-                    start.linkTo(parent.start,16.dp)},
+                modifier = Modifier.constrainAs(emailField){
+                    top.linkTo(instructionsText.bottom,32.dp) },
                 isError = screenState.isEmailError,
-                hint = "enter your email",
+                hint = stringResource(R.string.email_hint),
                 value = email,
                 onValueChange = onChangeEmail,
-                textFieldModifier = Modifier.constrainAs(emailTextField){
-                    top.linkTo(emailText.bottom,16.dp)},
-                errorMessage = "Incorrect or field is empty",
-                errorModifier = Modifier
-                    .constrainAs(errorMessage) {
-                        top.linkTo(emailTextField.bottom, 8.dp)
-                        start.linkTo(parent.start, 16.dp)
-                    },
+                errorMessage = stringResource(R.string.email_error_message),
                 shape = RoundedCornerShape(8.dp)
             )
 
@@ -173,7 +164,7 @@ fun ForgetPasswordContent(
                 buttonColor = DarkBlue,
                 onClick = { handelInternetError(context,onClickReset,onInternetError) },
                 modifier = Modifier.constrainAs(resetButton){
-                    top.linkTo(emailTextField.bottom,48.dp)},
+                    top.linkTo(emailField.bottom,16.dp)},
             ) {
 
                 if (screenState.isLoading){
@@ -186,7 +177,7 @@ fun ForgetPasswordContent(
                 } else {
 
                     Text(
-                        text = "Reset",
+                        text = stringResource(R.string.reset),
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -207,7 +198,7 @@ fun ForgetPasswordContent(
             )
         }
 
-        if (screenState.message != ""){
+        if (screenState.message.isNotEmpty()){
             LaunchedEffect(key1 = screenState.launchedEffectKey){
                 snackBarHostState.showSnackbar(screenState.message)
             }

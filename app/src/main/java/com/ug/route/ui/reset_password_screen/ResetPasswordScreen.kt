@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -102,12 +103,8 @@ fun ResetPasswordContent(
                 logo,
                 setNewPasswordText,
                 instructionsText,
-                passwordText,
-                passwordTextField,
-                passwordError,
-                rePasswordText,
-                rePasswordTextField,
-                rePasswordError,
+                password,
+                repassword,
                 resetButton,
                 backButton
             ) = createRefs()
@@ -121,7 +118,7 @@ fun ResetPasswordContent(
             )
 
             Text(
-                text = "Set new password",
+                text = stringResource(R.string.set_new_password),
                 style = TextStyle(
                     fontSize = 32.sp,
                     lineHeight = 18.sp,
@@ -137,7 +134,7 @@ fun ResetPasswordContent(
             )
 
             Text(
-                text = "Must be at least 6 characters",
+                text = stringResource(R.string.must_be_at_least_6_characters),
                 style = TextStyle(
                     fontSize = 17.sp,
                     lineHeight = 18.sp,
@@ -155,52 +152,34 @@ fun ResetPasswordContent(
             TextWithPasswordTextField(
                 textColor = Color(0xFF000000),
                 isError = screenState.isPasswordError,
-                text = "Password",
-                textModifier = Modifier.constrainAs(passwordText) {
+                text = stringResource(id = R.string.password),
+                modifier = Modifier.constrainAs(password) {
                     top.linkTo(instructionsText.bottom, 32.dp)
-                    start.linkTo(parent.start,16.dp)
                 },
-                hint = "enter your password",
+                hint = stringResource(id = R.string.password_hint),
                 value = resetPasswordDTO.newPassword,
                 onValueChange = onChangePassword,
                 passwordVisibility = screenState.passwordVisibility,
                 updatePasswordVisibility = updatePasswordVisibility,
                 onChangeVisibility = onChangeVisibility,
-                textFieldModifier = Modifier.constrainAs(passwordTextField) {
-                    top.linkTo(passwordText.bottom, 16.dp)
-                    start.linkTo(parent.start)
-                },
-                errorMessage = "empty or less than 6 characters",
-                errorModifier = Modifier.constrainAs(passwordError){
-                    top.linkTo(passwordTextField.bottom, 8.dp)
-                    start.linkTo(parent.start,16.dp)
-                },
+                errorMessage = stringResource(id = R.string.password_error_message),
                 shape = RoundedCornerShape(8.dp)
             )
 
             TextWithPasswordTextField(
                 textColor = Color(0xFF000000),
                 isError = screenState.isRePasswordError,
-                text = "Confirm Password",
-                textModifier = Modifier.constrainAs(rePasswordText) {
-                    top.linkTo(passwordTextField.bottom, 32.dp)
-                    start.linkTo(parent.start,16.dp)
+                text = stringResource(id = R.string.confirm_password),
+                modifier = Modifier.constrainAs(repassword) {
+                    top.linkTo(password.bottom, 8.dp)
                 },
-                hint = "repeat your password",
+                hint = stringResource(id = R.string.confirm_password_hint),
                 value = rePassword,
                 onValueChange = onChangeRePassword,
                 passwordVisibility = screenState.rePasswordVisibility,
                 updatePasswordVisibility = updateRePasswordVisibility,
                 onChangeVisibility = onChangeVisibility,
-                textFieldModifier = Modifier.constrainAs(rePasswordTextField) {
-                    top.linkTo(rePasswordText.bottom, 16.dp)
-                    start.linkTo(parent.start)
-                },
-                errorMessage = "field is empty or not the same as the password",
-                errorModifier = Modifier.constrainAs(rePasswordError){
-                    top.linkTo(rePasswordTextField.bottom, 8.dp)
-                    start.linkTo(parent.start,16.dp)
-                },
+                errorMessage = stringResource(id = R.string.confirm_password_error_message),
                 shape = RoundedCornerShape(8.dp)
             )
 
@@ -208,7 +187,7 @@ fun ResetPasswordContent(
                 buttonColor = DarkBlue,
                 onClick = { handelInternetError(context,resetPassword,onInternetError) },
                 modifier = Modifier.constrainAs(resetButton){
-                    top.linkTo(rePasswordTextField.bottom,48.dp)},
+                    top.linkTo(repassword.bottom,32.dp)},
             ) {
 
                 if (screenState.isLoading){
@@ -221,7 +200,7 @@ fun ResetPasswordContent(
                 } else {
 
                     Text(
-                        text = "Reset",
+                        text = stringResource(R.string.reset),
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -242,7 +221,7 @@ fun ResetPasswordContent(
             )
         }
 
-        if (screenState.message != ""){
+        if (screenState.message.isNotEmpty()){
             LaunchedEffect(key1 = screenState.launchedEffectKey){
                 snackBarHostState.showSnackbar(screenState.message)
             }

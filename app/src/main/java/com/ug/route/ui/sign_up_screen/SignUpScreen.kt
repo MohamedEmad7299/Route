@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -52,7 +53,9 @@ fun SignUpScreen(
         onChangeEmail = viewModel::onChangeEmail,
         onChangePassword = viewModel::onChangePassword,
         onChangePhone = viewModel::onChangePhone,
-        signUp = viewModel::signUp,
+        signUp = {
+            viewModel.signUp(navController)
+        },
         onClickPasswordVisibilityIcon = viewModel::updatePasswordVisibility,
         onChangePasswordVisibility = viewModel::onChangeVisibility,
         onClickRePasswordVisibilityIcon = viewModel::updateRePasswordVisibility,
@@ -94,24 +97,12 @@ fun SignUpContent(
                 ConstraintLayout {
 
                     val logo = createRef()
-                    val fullNameText = createRef()
-                    val mobileNumberText = createRef()
-                    val emailText = createRef()
-                    val passwordText = createRef()
-                    val rePasswordText = createRef()
+                    val fullName = createRef()
+                    val mobileNumber = createRef()
+                    val email = createRef()
+                    val password = createRef()
+                    val rePassword = createRef()
                     val signUpButton = createRef()
-
-                    val fullNameTextField = createRef()
-                    val mobileNumberTextField = createRef()
-                    val emailTextField = createRef()
-                    val passwordTextField = createRef()
-                    val rePasswordTextField = createRef()
-
-                    val nameError = createRef()
-                    val phoneError = createRef()
-                    val emailError = createRef()
-                    val passwordError = createRef()
-                    val rePasswordError = createRef()
 
                     Logo(
                         id = R.drawable.logo_white,
@@ -125,121 +116,76 @@ fun SignUpContent(
 
                     TextWithTextField(
                         isError = screenState.isNameError,
-                        text = "Full Name",
-                        textModifier = Modifier.constrainAs(fullNameText) {
+                        text = stringResource(R.string.full_name),
+                        modifier = Modifier.constrainAs(fullName) {
                             top.linkTo(logo.bottom, 48.dp)
-                            start.linkTo(parent.start,16.dp)
                         },
-                        hint = "enter your full name",
+                        hint = stringResource(R.string.name_hint),
                         value = user.name,
                         onValueChange = onChangeName,
-                        textFieldModifier = Modifier.constrainAs(fullNameTextField) {
-                            top.linkTo(fullNameText.bottom, 16.dp)
-                            start.linkTo(parent.start)
-                        },
-                        errorMessage = "field is empty or less than 3 characters",
-                        errorModifier = Modifier.constrainAs(nameError){
-                            top.linkTo(fullNameTextField.bottom, 8.dp)
-                            start.linkTo(parent.start,16.dp)
-                        }
-                    )
+                        errorMessage = stringResource(R.string.name_error_message))
+
 
                     TextWithTextField(
                         isError = screenState.isPhoneError,
-                        text = "Mobile Number",
-                        textModifier = Modifier.constrainAs(mobileNumberText) {
-                            top.linkTo(fullNameTextField.bottom, 32.dp)
-                            start.linkTo(parent.start,16.dp)
+                        text = stringResource(R.string.mobile_number),
+                        modifier = Modifier.constrainAs(mobileNumber) {
+                            top.linkTo(fullName.bottom, 8.dp)
                         },
-                        hint = "enter your mobile number",
+                        hint = stringResource(R.string.mobile_number_hint),
                         value = user.phone,
                         onValueChange = onChangePhone,
-                        textFieldModifier = Modifier.constrainAs(mobileNumberTextField){
-                            top.linkTo(mobileNumberText.bottom, 16.dp)
-                            start.linkTo(parent.start)
-                        },
-                        errorMessage = "field is empty",
-                        errorModifier = Modifier.constrainAs(phoneError){
-                            top.linkTo(mobileNumberTextField.bottom, 8.dp)
-                            start.linkTo(parent.start,16.dp)
-                        }
+                        errorMessage = stringResource(R.string.mobile_number_error_message)
                     )
 
                     TextWithTextField(
                         isError = screenState.isEmailError,
-                        text = "E-mail address",
-                        textModifier = Modifier.constrainAs(emailText) {
-                            top.linkTo(mobileNumberTextField.bottom, 32.dp)
-                            start.linkTo(parent.start,16.dp)
+                        text = stringResource(R.string.e_mail),
+                        modifier = Modifier.constrainAs(email) {
+                            top.linkTo(mobileNumber.bottom, 8.dp)
                         },
-                        hint = "enter your email address",
+                        hint = stringResource(R.string.email_hint),
                         value = user.email,
                         onValueChange = onChangeEmail,
-                        textFieldModifier = Modifier.constrainAs(emailTextField) {
-                            top.linkTo(emailText.bottom, 16.dp)
-                            start.linkTo(parent.start)
-                        },
-                        errorMessage = "incorrect or field is empty",
-                        errorModifier = Modifier.constrainAs(emailError){
-                            top.linkTo(emailTextField.bottom, 8.dp)
-                            start.linkTo(parent.start,16.dp)
-                        }
+                        errorMessage = stringResource(R.string.email_error_message)
                     )
 
                     TextWithPasswordTextField(
                         isError = screenState.isPasswordError,
-                        text = "Password",
-                        textModifier = Modifier.constrainAs(passwordText) {
-                            top.linkTo(emailTextField.bottom, 32.dp)
-                            start.linkTo(parent.start,16.dp)
+                        text = stringResource(R.string.password),
+                        modifier = Modifier.constrainAs(password) {
+                            top.linkTo(email.bottom, 8.dp)
                         },
-                        hint = "enter your password",
+                        hint = stringResource(R.string.password_hint),
                         value = user.password,
                         onValueChange = onChangePassword,
                         passwordVisibility = screenState.passwordVisibility,
                         updatePasswordVisibility = onClickPasswordVisibilityIcon,
                         onChangeVisibility = onChangePasswordVisibility,
-                        textFieldModifier = Modifier.constrainAs(passwordTextField){
-                            top.linkTo(passwordText.bottom, 16.dp)
-                            start.linkTo(parent.start)
-                        },
-                        errorMessage = "field is empty",
-                        errorModifier = Modifier.constrainAs(passwordError){
-                            top.linkTo(passwordTextField.bottom, 8.dp)
-                            start.linkTo(parent.start,16.dp)
-                        }
+                        errorMessage = stringResource(R.string.password_error_message)
                     )
 
                     TextWithPasswordTextField(
                         isError = screenState.isRePasswordError,
-                        text = "Confirm Password",
-                        textModifier = Modifier.constrainAs(rePasswordText) {
-                            top.linkTo(passwordTextField.bottom, 32.dp)
-                            start.linkTo(parent.start,16.dp)
+                        text = stringResource(R.string.confirm_password),
+                        modifier = Modifier.constrainAs(rePassword) {
+                            top.linkTo(password.bottom, 8.dp)
                         },
-                        hint = "repeat your password",
+                        hint = stringResource(R.string.confirm_password_hint),
                         value = user.rePassword,
                         onValueChange = onChangeRePassword,
                         passwordVisibility = screenState.rePasswordVisibility,
                         updatePasswordVisibility = onClickRePasswordVisibilityIcon,
                         onChangeVisibility = onChangePasswordVisibility,
-                        textFieldModifier = Modifier.constrainAs(rePasswordTextField) {
-                            top.linkTo(rePasswordText.bottom, 16.dp)
-                            start.linkTo(parent.start)
-                        },
-                        errorMessage = "field is empty or not the same as the password",
-                        errorModifier = Modifier.constrainAs(rePasswordError){
-                            top.linkTo(rePasswordTextField.bottom, 8.dp)
-                            start.linkTo(parent.start,16.dp)
-                        }
+                        errorMessage = stringResource(R.string.confirm_password_error_message)
                     )
 
                     StandardButton(
                         onClick = { handelInternetError(context,signUp,onInternetError) },
                         modifier = Modifier
                             .padding(bottom = 48.dp)
-                            .constrainAs(signUpButton){
-                                top.linkTo(rePasswordTextField.bottom, 48.dp)
+                            .constrainAs(signUpButton) {
+                                top.linkTo(rePassword.bottom, 48.dp)
                             }
                     ){
 
@@ -254,7 +200,7 @@ fun SignUpContent(
                         } else {
 
                             Text(
-                                text = "Sign Up",
+                                text = stringResource(R.string.sign_up),
                                 style = TextStyle(
                                     fontSize = 20.sp,
                                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -266,7 +212,7 @@ fun SignUpContent(
                         }
                     }
 
-                    if (screenState.message != ""){
+                    if (screenState.message.isNotEmpty()){
                         LaunchedEffect(key1 = screenState.launchedEffectKey){
                             snackBarHostState.showSnackbar(screenState.message)
                         }

@@ -13,7 +13,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
-import com.ug.route.utils.ResetCode
+import com.ug.route.ui.unused.six_boxes.ResetCode
 
 @SuppressLint("UnrememberedMutableState")
 @Composable

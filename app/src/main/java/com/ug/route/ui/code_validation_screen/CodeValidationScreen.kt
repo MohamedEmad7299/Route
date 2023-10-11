@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -44,6 +45,7 @@ import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
 import com.ug.route.utils.Screen
 import com.ug.route.utils.handelInternetError
+
 @Composable
 fun CodeValidationScreen(
     navController: NavController,
@@ -119,7 +121,7 @@ fun CodeValidationContent(
             )
 
             Text(
-                text = "Password reset code",
+                text = stringResource(R.string.password_reset_code),
                 style = TextStyle(
                     fontSize = 32.sp,
                     lineHeight = 18.sp,
@@ -142,7 +144,7 @@ fun CodeValidationContent(
                     end.linkTo(parent.end,16.dp)}
             ) {
                 Text(
-                    text = "We sent code to ",
+                    text = stringResource(R.string.we_sent_code_to),
                     style = TextStyle(
                         fontSize = 17.sp,
                         lineHeight = 18.sp,
@@ -175,7 +177,7 @@ fun CodeValidationContent(
             )
 
             Text(
-                text = "Field is empty",
+                text = stringResource(R.string.field_is_empty),
                 color = Color.Red,
                 modifier = Modifier
                     .constrainAs(errorMessage) {
@@ -205,7 +207,7 @@ fun CodeValidationContent(
                 } else {
 
                     Text(
-                        text = "Continue",
+                        text = stringResource(R.string.Continue),
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -226,7 +228,7 @@ fun CodeValidationContent(
                         end.linkTo(parent.end) }
             ) {
                 Text(
-                    text = "Don't receive the code? ",
+                    text = stringResource(R.string.don_t_receive_the_code),
                     style = TextStyle(
                         fontSize = 17.sp,
                         lineHeight = 18.sp,
@@ -238,7 +240,7 @@ fun CodeValidationContent(
                 )
 
                 ClickableText(
-                    text = AnnotatedString("Click here"),
+                    text = AnnotatedString(stringResource(R.string.click_here)),
                     style = TextStyle(
                         fontSize = 18.sp,
                         lineHeight = 18.sp,
@@ -267,7 +269,7 @@ fun CodeValidationContent(
 
         }
 
-        if (screenState.message != ""){
+        if (screenState.message.isNotEmpty()){
             LaunchedEffect(key1 = screenState.launchedEffectKey){
                 snackBarHostState.showSnackbar(screenState.message)
             }

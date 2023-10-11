@@ -9,6 +9,7 @@ import com.ug.route.data.models.FailResponse
 import com.ug.route.networking.dto_models.UserSignInDTO
 import com.ug.route.data.repositories.Repository
 import com.ug.route.utils.Screen
+import com.ug.route.utils.SharedPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,8 +66,10 @@ class SignInViewModel @Inject constructor(
 
                 val errorMessage = response.getErrorMessage()
 
-                if (response.isSuccessful) {
+                if (response.isSuccessful || ((repository.getUserByEmail(_user.value.email)?.password ?: "") == _user.value.password)) {
 
+                    SharedPreferences.loggedEmail = _user.value.email
+                    
                     navController.navigate(Screen.HomeScreen.route) {
                         popUpTo(navController.graph.id) {
                             inclusive = true

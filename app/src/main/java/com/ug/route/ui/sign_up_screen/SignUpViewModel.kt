@@ -2,13 +2,16 @@ package com.ug.route.ui.sign_up_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.ug.route.R
+import com.ug.route.data.database.entities.UserData
 import com.ug.route.data.models.FailResponse
 import com.ug.route.data.repositories.Repository
 import com.ug.route.networking.dto_models.UserSignUpDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -102,7 +105,7 @@ class SignUpViewModel @Inject constructor(
 
 
 
-    fun signUp() {
+    fun signUp(navController: NavController) {
 
         if (checkInputError()) return
 
@@ -120,6 +123,15 @@ class SignUpViewModel @Inject constructor(
 
                 _screenState.update { prevState ->
                     if (response.isSuccessful) {
+                        repository.insertUser(
+                            UserData(
+                                id = 0,
+                                name = _user.value.name,
+                                email = _user.value.email,
+                                password = _user.value.password,
+                                phone = _user.value.phone,
+                                address = "")
+                        )
                         prevState.copy(message = "Account Created Successfully")
                     } else {
                         prevState.copy(message = errorMessage ?: "An error occurred")
@@ -138,6 +150,10 @@ class SignUpViewModel @Inject constructor(
                     prevState.copy(isLoading = false)
                 }
             }
+
+            delay(1000)
+
+            navController.popBackStack()
         }
     }
 

@@ -1,4 +1,4 @@
-package com.ug.route.utils
+package com.ug.route.ui.unused.six_boxes
 
 data class ResetCode(
     val digit1: String,

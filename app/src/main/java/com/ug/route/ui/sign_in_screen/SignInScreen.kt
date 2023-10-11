@@ -111,15 +111,11 @@ fun SignInContent(
             val (
                 logo,
                 welcomeMessage,
-                usernameText,
-                userTextField,
-                passwordTextField,
+                email,
+                password,
                 forgetPasswordText,
                 loginButton,
-                createAccountText,
-                emailErrorMessage,
-                passwordErrorMessage,
-                passwordText) = createRefs()
+                createAccountText) = createRefs()
 
             Logo(
                 id = R.drawable.logo_white,
@@ -151,52 +147,33 @@ fun SignInContent(
 
             TextWithTextField(
                 isError = screenState.isEmailError,
-                text = "E-mail",
-                textModifier = Modifier.constrainAs(usernameText) {
+                text = stringResource(R.string.e_mail),
+                modifier = Modifier.constrainAs(email) {
                     top.linkTo(welcomeMessage.bottom, 48.dp)
-                    start.linkTo(parent.start, 16.dp)
                 },
-                hint = "enter your e-mail",
+                hint = stringResource(R.string.email_hint),
                 value = user.email,
                 onValueChange = onEmailChange,
-                textFieldModifier = Modifier.constrainAs(userTextField) {
-                    top.linkTo(usernameText.bottom, 16.dp)
-                    start.linkTo(parent.start)
-                },
-                errorMessage = "incorrect or field is empty",
-                errorModifier = Modifier.constrainAs(emailErrorMessage){
-                    top.linkTo(userTextField.bottom, 8.dp)
-                    start.linkTo(parent.start,16.dp)
-                }
+                errorMessage = stringResource(R.string.email_error_message)
             )
 
             TextWithPasswordTextField(
                 isError = screenState.isPasswordError,
-                text = "Password",
-                hint = "enter your password",
+                text = stringResource(R.string.password),
+                hint = stringResource(R.string.password_hint),
                 value =  user.password,
-                textModifier = Modifier.constrainAs(passwordText) {
-                    top.linkTo(userTextField.bottom, 32.dp)
-                    start.linkTo(parent.start , 16.dp)
+                modifier = Modifier.constrainAs(password) {
+                    top.linkTo(email.bottom, 8.dp)
                 },
                 onValueChange = onPasswordChange,
                 passwordVisibility = screenState.passwordVisibility,
                 updatePasswordVisibility = onClickVisibilityIcon,
                 onChangeVisibility = onChangePasswordVisibility,
-                textFieldModifier = Modifier
-                    .constrainAs(passwordTextField) {
-                        top.linkTo(passwordText.bottom, 16.dp)
-                        start.linkTo(parent.start)
-                    },
-                errorMessage = "field is empty",
-                errorModifier = Modifier.constrainAs(passwordErrorMessage){
-                    top.linkTo(passwordTextField.bottom, 8.dp)
-                    start.linkTo(parent.start,16.dp)
-                }
+                errorMessage = stringResource(R.string.password_error_message)
             )
 
             ClickableText(
-                text = AnnotatedString("Forgot password?"),
+                text = AnnotatedString(stringResource(R.string.forgot_password)),
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -206,7 +183,7 @@ fun SignInContent(
                 ),
                 modifier = Modifier
                     .constrainAs(forgetPasswordText){
-                        top.linkTo(passwordTextField.bottom,16.dp)
+                        top.linkTo(password.bottom)
                         end.linkTo(parent.end,16.dp)
                     }
             ){ handelInternetError(context,onClickForgotPassword,onInternetError) }
@@ -230,7 +207,7 @@ fun SignInContent(
                 } else {
 
                     Text(
-                        text = "Login",
+                        text = stringResource(R.string.login),
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -243,7 +220,7 @@ fun SignInContent(
             }
 
             ClickableText(
-                text = AnnotatedString("Don’t have an account? Create One"),
+                text = AnnotatedString(stringResource(R.string.don_t_have_an_account_create_one)),
                 style = TextStyle(
                     fontSize = 18.sp,
                     lineHeight = 18.sp,
@@ -261,7 +238,7 @@ fun SignInContent(
                     }
             )
 
-            if (screenState.message != ""){
+            if (screenState.message.isNotEmpty()){
                 LaunchedEffect(key1 = screenState.launchedEffectKey){
                     snackBarHostState.showSnackbar(screenState.message)
                 }

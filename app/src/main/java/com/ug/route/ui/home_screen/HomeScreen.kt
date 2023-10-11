@@ -1,6 +1,7 @@
 package com.ug.route.ui.home_screen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -49,6 +52,7 @@ import com.ug.route.ui.design_matrials.text.SmallLogo
 import com.ug.route.ui.design_matrials.text.Text18
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.no_internet_screen.NoInternetContent
+import com.ug.route.ui.theme.DarkPurple
 import com.ug.route.utils.Screen
 import com.ug.route.utils.handelInternetError
 import com.ug.route.utils.isInternetConnected
@@ -97,6 +101,12 @@ fun HomeContent(
 
     val systemUiController = rememberSystemUiController()
     val context = LocalContext.current
+
+    if (screenState.message.isNotEmpty()){
+        LaunchedEffect(key1 = screenState.launchedEffectKey){
+            Toast.makeText(context, screenState.message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -157,8 +167,8 @@ fun HomeContent(
                         start.linkTo(parent.start,16.dp)
                         top.linkTo(slider.bottom,24.dp)
                     },
-                    text = "Categories",
-                    color = Color(0xFF06004F)
+                    text = stringResource(R.string.categories),
+                    color = DarkPurple
                 )
 
                 LazyRow(
@@ -211,7 +221,7 @@ fun HomeContent(
                                         lineHeight = 18.sp,
                                         fontFamily = FontFamily(Font(R.font.poppins_regular)),
                                         fontWeight = FontWeight(400),
-                                        color = Color(0xFF06004F),
+                                        color = DarkPurple,
                                         textAlign = TextAlign.Center,
                                     )
                                 )
@@ -225,27 +235,30 @@ fun HomeContent(
                         start.linkTo(parent.start,16.dp)
                         top.linkTo(categoriesLazyRow.bottom,24.dp)
                     },
-                    text = "Home Appliance",
-                    color = Color(0xFF06004F)
+                    text = stringResource(R.string.home_appliance),
+                    color = DarkPurple
                 )
 
 
                 val homeAppliances = listOf(
                     HomeApplianceProduct(
                         image = R.drawable.ghasala,
-                        name = "Washing Machine",
-                        review = "4.8",
-                        price = "9000"),
+                        name = stringResource(R.string.washing_machine),
+                        review = stringResource(R.string._4_8),
+                        price = stringResource(R.string._9000)
+                    ),
                     HomeApplianceProduct(
                         image = R.drawable.botegaz,
-                        name = "New Cooker",
-                        review = "4.7",
-                        price = "8000"),
+                        name = stringResource(R.string.new_cooker),
+                        review = stringResource(R.string._4_7),
+                        price = stringResource(R.string._8000)
+                    ),
                     HomeApplianceProduct(
                         image = R.drawable.makya,
-                        name = "Steam Iron",
-                        review = "4.8",
-                        price = "2000")
+                        name = stringResource(R.string.steam_iron),
+                        review = stringResource(R.string._4_8),
+                        price = stringResource(R.string._2000)
+                    )
                 )
 
                 LazyRow(
