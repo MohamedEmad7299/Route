@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.data.database.entities.UserData
+import com.ug.route.data.database.entities.UserEntity
 import com.ug.route.data.repositories.Repository
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
@@ -24,8 +24,8 @@ class AccountViewModel @Inject constructor(
     private val _screenState = MutableStateFlow(
 
         AccountState(
-            firstName = "",
-            userData = UserData(0,"","","","",""),
+            fullName = "",
+            userEntity = UserEntity(0,"","","","",""),
             message = "",
             launchedEffectKey = false,
             isLoading = false,
@@ -39,7 +39,7 @@ class AccountViewModel @Inject constructor(
 
     val screenState = _screenState.asStateFlow()
 
-    private var savedUser : UserData? = null
+    private var savedUser : UserEntity? = null
 
     init {
 
@@ -48,8 +48,8 @@ class AccountViewModel @Inject constructor(
             savedUser = (repository.getUserByEmail(SharedPreferences.loggedEmail ?: ""))
             if (savedUser != null){
                 _screenState.update { it.copy(
-                    firstName = savedUser!!.name,
-                    userData = savedUser!!
+                    fullName = savedUser!!.name,
+                    userEntity = savedUser!!
                 ) }
             }
         }
@@ -57,27 +57,27 @@ class AccountViewModel @Inject constructor(
 
     fun onChangeName(newName : String){
 
-        _screenState.update { it.copy(userData = _screenState.value.userData.copy(name = newName)) }
+        _screenState.update { it.copy(userEntity = _screenState.value.userEntity.copy(name = newName)) }
     }
 
     fun onChangeEmail(newEmail : String){
 
-        _screenState.update { it.copy(userData = _screenState.value.userData.copy(email = newEmail)) }
+        _screenState.update { it.copy(userEntity = _screenState.value.userEntity.copy(email = newEmail)) }
     }
 
     fun onChangePassword(newPassword : String){
 
-        _screenState.update { it.copy(userData = _screenState.value.userData.copy(password = newPassword)) }
+        _screenState.update { it.copy(userEntity = _screenState.value.userEntity.copy(password = newPassword)) }
     }
 
     fun onChangePhone(newPhone : String){
 
-        _screenState.update { it.copy(userData = _screenState.value.userData.copy(phone = newPhone)) }
+        _screenState.update { it.copy(userEntity = _screenState.value.userEntity.copy(phone = newPhone)) }
     }
 
     fun onChangeAddress(newAddress : String){
 
-        _screenState.update { it.copy(userData = _screenState.value.userData.copy(address = newAddress)) }
+        _screenState.update { it.copy(userEntity = _screenState.value.userEntity.copy(address = newAddress)) }
     }
 
     fun onChangeVisibility(visibility : Boolean) : Int{
@@ -103,8 +103,8 @@ class AccountViewModel @Inject constructor(
 
             try {
 
-                if (savedUser != _screenState.value.userData){
-                    repository.updateUser(_screenState.value.userData)
+                if (savedUser != _screenState.value.userEntity){
+                    repository.updateUser(_screenState.value.userEntity)
                     _screenState.update { prevState ->
                         prevState.copy(message = "Done")
                     }
@@ -123,7 +123,7 @@ class AccountViewModel @Inject constructor(
     }
 
     private fun checkInputError(): Boolean {
-        val user = _screenState.value.userData
+        val user = _screenState.value.userEntity
         _screenState.update { prevState ->
             prevState.copy(
                 isPhoneError = user.phone.isEmpty(),
@@ -140,7 +140,7 @@ class AccountViewModel @Inject constructor(
 
     fun signOut(navController: NavController){
 
-        SharedPreferences.loggedEmail = ""
+        SharedPreferences.loggedEmail = null
         navController.navigate(Screen.SignInScreen.route){
             popUpTo(navController.graph.id){
                 inclusive = true

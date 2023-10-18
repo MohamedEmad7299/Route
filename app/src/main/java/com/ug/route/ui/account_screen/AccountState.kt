@@ -1,10 +1,10 @@
 package com.ug.route.ui.account_screen
 
-import com.ug.route.data.database.entities.UserData
+import com.ug.route.data.database.entities.UserEntity
 
 data class AccountState(
-    val firstName : String,
-    val userData : UserData,
+    val fullName : String,
+    val userEntity : UserEntity,
     val message : String,
     val launchedEffectKey : Boolean,
     val isLoading : Boolean,

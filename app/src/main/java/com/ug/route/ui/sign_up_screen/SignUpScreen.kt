@@ -30,7 +30,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.networking.dto_models.UserSignUpDTO
+import com.ug.route.networking.body_models.UserSignUpBody
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
@@ -67,7 +67,7 @@ fun SignUpScreen(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SignUpContent(
-    user : UserSignUpDTO,
+    user : UserSignUpBody,
     screenState: SignUpState,
     onChangeName : (String) -> Unit,
     onChangePhone : (String) -> Unit,

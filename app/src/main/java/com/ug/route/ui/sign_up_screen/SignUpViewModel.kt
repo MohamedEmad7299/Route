@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.ug.route.R
-import com.ug.route.data.database.entities.UserData
-import com.ug.route.data.models.FailResponse
+import com.ug.route.data.database.entities.UserEntity
+import com.ug.route.networking.dto_models.FailResponse
 import com.ug.route.data.repositories.Repository
-import com.ug.route.networking.dto_models.UserSignUpDTO
+import com.ug.route.networking.body_models.UserSignUpBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -25,7 +25,7 @@ class SignUpViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _user = MutableStateFlow(UserSignUpDTO("","","","",""))
+    private val _user = MutableStateFlow(UserSignUpBody("","","","",""))
     val user = _user.asStateFlow()
 
     private val _screenState = MutableStateFlow(SignUpState(
@@ -124,7 +124,7 @@ class SignUpViewModel @Inject constructor(
                 _screenState.update { prevState ->
                     if (response.isSuccessful) {
                         repository.insertUser(
-                            UserData(
+                            UserEntity(
                                 id = 0,
                                 name = _user.value.name,
                                 email = _user.value.email,

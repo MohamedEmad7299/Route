@@ -31,7 +31,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.data.database.entities.UserData
+import com.ug.route.data.database.entities.UserEntity
 import com.ug.route.ui.design_matrials.text.AccountField
 import com.ug.route.ui.design_matrials.text.SmallLogo
 import com.ug.route.ui.design_matrials.text.StandardButton
@@ -50,7 +50,7 @@ fun AccountScreen(
 
     AccountContent(
         screenState,
-        screenState.userData,
+        screenState.userEntity,
         onChangeName = viewModel::onChangeName,
         onChangeEmail = viewModel::onChangeEmail,
         onChangePassword = viewModel::onChangePassword,
@@ -68,7 +68,7 @@ fun AccountScreen(
 @Composable
 fun AccountContent(
     screenState: AccountState,
-    userData : UserData,
+    userEntity : UserEntity,
     onChangeName : (String) -> Unit,
     onChangeEmail : (String) -> Unit,
     onChangePassword : (String) -> Unit,
@@ -116,9 +116,9 @@ fun AccountContent(
                             top.linkTo(parent.top,16.dp)
                         }
                 )
-
+                
                 Text18(
-                    text = stringResource(R.string.welcome, screenState.firstName.split(" ")[0]),
+                    text = if (screenState.fullName.isEmpty()) "Welcome" else stringResource(R.string.welcome, screenState.fullName.split(" ")[0]),
                     modifier = Modifier.constrainAs(welcomeText){
                         start.linkTo(parent.start,16.dp)
                         top.linkTo(logo.bottom,24.dp)
@@ -147,7 +147,7 @@ fun AccountContent(
                             start.linkTo(parent.start)
                             top.linkTo(email.bottom,40.dp)
                         },
-                    value = userData.name,
+                    value = userEntity.name,
                     text = stringResource(R.string.full_name),
                     hint = stringResource(R.string.name_hint),
                     isError = screenState.isNameError,
@@ -161,7 +161,7 @@ fun AccountContent(
                             start.linkTo(parent.start)
                             top.linkTo(yourFullName.bottom,8.dp)
                         },
-                    value = userData.email,
+                    value = userEntity.email,
                     hint = stringResource(R.string.email_hint),
                     text = stringResource(R.string.e_mail),
                     isError = screenState.isEmailError,
@@ -175,7 +175,7 @@ fun AccountContent(
                             start.linkTo(parent.start)
                             top.linkTo(yourEmail.bottom,8.dp)
                         },
-                    value = userData.password,
+                    value = userEntity.password,
                     text = stringResource(R.string.password),
                     hint = stringResource(R.string.password_hint),
                     isError = screenState.isPasswordError,
@@ -193,7 +193,7 @@ fun AccountContent(
                             start.linkTo(parent.start)
                             top.linkTo(yourPassword.bottom,8.dp)
                         },
-                    value = userData.phone,
+                    value = userEntity.phone,
                     hint = stringResource(R.string.mobile_number_hint),
                     text = stringResource(R.string.mobile_number),
                     isError = screenState.isPhoneError,
@@ -207,7 +207,7 @@ fun AccountContent(
                             start.linkTo(parent.start)
                             top.linkTo(yourPhone.bottom,8.dp)
                         },
-                    value = userData.address,
+                    value = userEntity.address,
                     text = stringResource(R.string.address),
                     hint = stringResource(R.string.address_hint),
                     onValueChange = onChangeAddress,

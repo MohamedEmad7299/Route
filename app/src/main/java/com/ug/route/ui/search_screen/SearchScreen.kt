@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,7 +55,9 @@ fun SearchScreen(
 
     SearchContent(
         screenState = screenState,
-        onSearch = viewModel::onSearch,
+        onSearch = {
+            viewModel.onSearch(it, navController)
+        },
         onQueryChange = viewModel::onQueryChange,
         onActiveChange = {
             viewModel.onActiveChange(it)
@@ -150,22 +151,20 @@ fun SearchContent(
                 )
             )
         ){
-            screenState.history.reversed().forEach {
+
+            val categories = if (screenState.query.isBlank()) screenState.categories else screenState.matchSearchQuery()
+
+            categories.forEach{
 
                 Row(
                     Modifier
-                        .clickable { onQueryChange(it) }
+                        .clickable {
+                            onSearch(it.name)
+                        }
                         .fillMaxWidth()
                         .padding(16.dp)
                 ){
-                    Icon(
-                        modifier = Modifier.padding(end = 8.dp),
-                        tint = DarkBlue,
-                        imageVector = Icons.Default.History,
-                        contentDescription = ""
-                    )
-
-                    Text(text = it)
+                    Text(text = it.name)
                 }
             }
         }

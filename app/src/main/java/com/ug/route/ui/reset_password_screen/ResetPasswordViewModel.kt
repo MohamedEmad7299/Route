@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.ug.route.R
-import com.ug.route.data.models.ForgetPasswordResponse
+import com.ug.route.networking.dto_models.ForgetPasswordResponse
 import com.ug.route.data.repositories.Repository
-import com.ug.route.networking.dto_models.ResetPasswordDTO
+import com.ug.route.networking.body_models.ResetPasswordBody
 import com.ug.route.utils.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
@@ -26,12 +26,12 @@ class ResetPasswordViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    private val _resetPasswordDto = MutableStateFlow(ResetPasswordDTO(
+    private val _resetPasswordBody = MutableStateFlow(ResetPasswordBody(
         email = checkNotNull(savedStateHandle["email"]),
         ""
     ))
 
-    val resetPasswordDto = _resetPasswordDto.asStateFlow()
+    val resetPasswordDto = _resetPasswordBody.asStateFlow()
 
     private val _rePassword = MutableStateFlow("")
     val rePassword = _rePassword.asStateFlow()
@@ -65,7 +65,7 @@ class ResetPasswordViewModel @Inject constructor(
 
     fun onChangePassword(newPassword : String){
 
-        _resetPasswordDto.update { it.copy(newPassword = newPassword) }
+        _resetPasswordBody.update { it.copy(newPassword = newPassword) }
     }
 
     fun onChangeVisibility(visibility : Boolean) : Int{
@@ -76,7 +76,7 @@ class ResetPasswordViewModel @Inject constructor(
     }
     private fun checkInputError(): Boolean {
 
-        val resetPasswordState = _resetPasswordDto.value
+        val resetPasswordState = _resetPasswordBody.value
         _screenState.update { prevState ->
             prevState.copy(
                 isPasswordError = resetPasswordState.newPassword.isEmpty() || resetPasswordState.newPassword.length < 6,
@@ -99,7 +99,7 @@ class ResetPasswordViewModel @Inject constructor(
             try {
 
                 val response = withTimeout(5000L) {
-                    repository.resetPassword(_resetPasswordDto.value)
+                    repository.resetPassword(_resetPasswordBody.value)
                 }
 
                 val errorMessage = response.getErrorMessage()

@@ -17,6 +17,13 @@ object SharedPreferences {
             sharedPrefs?.edit()?.putString(LOGGED_EMAIL_KEY,value)?.apply()
         }
 
+    var selectedCategory : String?
+        get() = sharedPrefs?.getString(SELECTED_CATEGORY_KEY, null)
+        set(value) {
+            sharedPrefs?.edit()?.putString(SELECTED_CATEGORY_KEY,value)?.apply()
+        }
+
     private const val SHARED_PREFS_NAME = "RoutePreferences"
     private const val LOGGED_EMAIL_KEY = "LoggedEmailKey"
+    private const val SELECTED_CATEGORY_KEY = "SelectedCategoryKey"
 }

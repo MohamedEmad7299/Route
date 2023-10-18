@@ -62,7 +62,7 @@ fun RouteApp(){
 
         NavHost(
             navController = navController,
-            startDestination = Screen.SignInScreen.route
+            startDestination = Screen.SplashScreen.route
         ){
             composable(Screen.SplashScreen.route){ SplashScreen(navController) }
             composable(Screen.SignInScreen.route){ SignInScreen(navController) }
@@ -77,7 +77,7 @@ fun RouteApp(){
                 arguments = listOf(navArgument("email"){NavType.StringType})
             ){ ResetPasswordScreen(navController) }
             composable(Screen.HomeScreen.route){ HomeScreen(navController) }
-            composable(Screen.CategoriesScreen.route){ CategoriesScreen(navController) }
+            composable(Screen.CategoriesScreen.route) { CategoriesScreen(navController) }
             composable(Screen.FavouriteScreen.route){ FavouriteScreen(navController) }
             composable(Screen.AccountScreen.route){ AccountScreen(navController) }
             composable(Screen.SearchScreen.route){ SearchScreen(navController) }

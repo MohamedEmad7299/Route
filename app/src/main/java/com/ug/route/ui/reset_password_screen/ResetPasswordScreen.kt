@@ -30,7 +30,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.networking.dto_models.ResetPasswordDTO
+import com.ug.route.networking.body_models.ResetPasswordBody
 import com.ug.route.ui.design_matrials.text.BackToLogin
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
@@ -64,7 +64,7 @@ fun ResetPasswordScreen(
                 }
             }
         },
-        resetPasswordDTO = resetPasswordDTO,
+        resetPasswordBody = resetPasswordDTO,
         updatePasswordVisibility = viewModel::updatePasswordVisibility,
         updateRePasswordVisibility = viewModel::updateRePasswordVisibility,
         onChangeVisibility = viewModel::onChangeVisibility
@@ -74,7 +74,7 @@ fun ResetPasswordScreen(
 @Composable
 fun ResetPasswordContent(
     screenState : ResetPasswordState,
-    resetPasswordDTO: ResetPasswordDTO,
+    resetPasswordBody: ResetPasswordBody,
     onChangePassword : (String) -> Unit,
     onChangeRePassword : (String) -> Unit,
     updatePasswordVisibility : () -> Unit,
@@ -157,7 +157,7 @@ fun ResetPasswordContent(
                     top.linkTo(instructionsText.bottom, 32.dp)
                 },
                 hint = stringResource(id = R.string.password_hint),
-                value = resetPasswordDTO.newPassword,
+                value = resetPasswordBody.newPassword,
                 onValueChange = onChangePassword,
                 passwordVisibility = screenState.passwordVisibility,
                 updatePasswordVisibility = updatePasswordVisibility,

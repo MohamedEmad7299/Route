@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.ug.route.R
-import com.ug.route.data.models.HomeApplianceProduct
+import com.ug.route.networking.dto_models.HomeApplianceProduct
 import com.ug.route.ui.theme.DarkBlue
 
 

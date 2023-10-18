@@ -5,7 +5,7 @@
 //import androidx.lifecycle.viewModelScope
 //import com.google.gson.Gson
 //import com.ug.route.ui.unused.six_boxes.ResetCode
-//import com.ug.route.data.models.ForgetPasswordResponse
+//import com.ug.route.networking.dto_models.ForgetPasswordResponse
 //import com.ug.route.data.repositories.Repository
 //import com.ug.route.networking.dto_models.ResetPasswordDTO
 //import com.ug.route.networking.dto_models.ValidationCodeDTO

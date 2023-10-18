@@ -36,7 +36,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
@@ -59,7 +58,8 @@ fun AccountField(
     visibility : Boolean = true,
     onClickVisibilityIcon : () -> Unit = {},
     onChangePasswordVisibility : (Boolean) -> Int = { 0 },
-    errorMessage : String = ""
+    errorMessage : String = "",
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ){
 
     val focusRequester = remember { FocusRequester() }
@@ -70,7 +70,6 @@ fun AccountField(
     val textFieldValue = remember(value) {
         mutableStateOf(TextFieldValue(value, TextRange(value.length)))
     }
-
 
     LaunchedEffect(isTextFieldEnabled) {
         if (isTextFieldEnabled) {
@@ -87,7 +86,6 @@ fun AccountField(
             color = DarkPurple
         )
 
-
         OutlinedTextField(
             enabled = if (isError) true else isTextFieldEnabled,
             isError = isError,
@@ -101,7 +99,7 @@ fun AccountField(
                         fontFamily = FontFamily(Font(R.font.poppins_regular)),
                         fontWeight = FontWeight(300),
                         color = DarkPurple,
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Center
                     )
                 )
             },
@@ -113,15 +111,12 @@ fun AccountField(
             shape = RoundedCornerShape(16.dp),
             value = textFieldValue.value,
             onValueChange = {
-                textFieldValue.value = TextFieldValue(
-                    it.text,
-                    selection = it.selection
-                )
                 onValueChange(it.text)
+                textFieldValue.value = it
             },
             trailingIcon = {
 
-                if (isFocused){
+                if (isFocused || isTextFieldEnabled){
 
                     if (visualTransformation == VisualTransformation.None){
 
@@ -152,6 +147,7 @@ fun AccountField(
                             IconButton(onClick = {
                                 focusManager.clearFocus()
                                 isTextFieldEnabled = false
+                                if (visibility) onClickVisibilityIcon()
                             }) {
                                 Icon(
                                     modifier = Modifier.size(32.dp),
@@ -199,7 +195,7 @@ fun AccountField(
             else
                 PasswordVisualTransformation(),
             interactionSource = interactionSource,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
+            keyboardOptions = keyboardOptions
         )
 
         Text(

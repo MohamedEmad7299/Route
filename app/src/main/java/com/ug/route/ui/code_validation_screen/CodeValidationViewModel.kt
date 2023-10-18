@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.gson.Gson
-import com.ug.route.data.models.ForgetPasswordResponse
+import com.ug.route.networking.dto_models.ForgetPasswordResponse
 import com.ug.route.data.repositories.Repository
-import com.ug.route.networking.dto_models.ForgetPasswordDTO
-import com.ug.route.networking.dto_models.ValidationCodeDTO
+import com.ug.route.networking.body_models.ForgetPasswordBody
+import com.ug.route.networking.body_models.ValidationCodeBody
 import com.ug.route.utils.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
@@ -59,7 +59,7 @@ class CodeValidationViewModel  @Inject constructor(
 
             try {
                 withTimeout(5000L) {
-                    repository.forgetPassword(ForgetPasswordDTO(email = _screenState.value.email))
+                    repository.forgetPassword(ForgetPasswordBody(email = _screenState.value.email))
                 }
             } catch (e: TimeoutCancellationException) {
                 _screenState.update { it.copy(message = "Request timed out") }
@@ -79,7 +79,7 @@ class CodeValidationViewModel  @Inject constructor(
 
             try {
                 val response = withTimeout(5000L) {
-                    repository.codeValidation(ValidationCodeDTO(_screenState.value.resetCode))
+                    repository.codeValidation(ValidationCodeBody(_screenState.value.resetCode))
                 }
                 val errorMessage = response.getErrorMessage()
 

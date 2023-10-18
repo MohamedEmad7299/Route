@@ -1,4 +1,4 @@
-package com.ug.route.data.models
+package com.ug.route.networking.dto_models
 
 import com.google.gson.annotations.SerializedName
 

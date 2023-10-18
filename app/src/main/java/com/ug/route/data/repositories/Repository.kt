@@ -1,53 +1,69 @@
 package com.ug.route.data.repositories
 
-import com.ug.route.data.database.UserDatabase
-import com.ug.route.data.database.entities.UserData
-import com.ug.route.data.models.CategoriesResponse
-import com.ug.route.data.models.CodeValidationResponse
-import com.ug.route.data.models.ForgetPasswordResponse
-import com.ug.route.data.models.SuccessResponse
-import com.ug.route.networking.dto_models.UserSignInDTO
+import com.ug.route.data.database.RouteDatabase
+import com.ug.route.data.database.entities.CategoryEntity
+import com.ug.route.data.database.entities.UserEntity
+import com.ug.route.networking.dto_models.CodeValidationResponse
+import com.ug.route.networking.dto_models.ForgetPasswordResponse
+import com.ug.route.networking.dto_models.SuccessResponse
+import com.ug.route.networking.body_models.UserSignInBody
 import com.ug.route.networking.RouteApiService
-import com.ug.route.networking.dto_models.ForgetPasswordDTO
-import com.ug.route.networking.dto_models.ResetPasswordDTO
-import com.ug.route.networking.dto_models.UserSignUpDTO
-import com.ug.route.networking.dto_models.ValidationCodeDTO
+import com.ug.route.networking.body_models.ForgetPasswordBody
+import com.ug.route.networking.body_models.ResetPasswordBody
+import com.ug.route.networking.body_models.UserSignUpBody
+import com.ug.route.networking.body_models.ValidationCodeBody
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
 class Repository @Inject constructor (
     private val routeApiService: RouteApiService,
-    private val databaseInstance : UserDatabase
+    private val databaseInstance : RouteDatabase
 ) {
-    suspend fun signIn(userSignInDTO: UserSignInDTO) : Response<SuccessResponse>{
-        return routeApiService.signIn(userSignInDTO)
+    suspend fun signIn(userSignInBody: UserSignInBody) : Response<SuccessResponse>{
+        return routeApiService.signIn(userSignInBody)
     }
-    suspend fun signUp(userSignUpDTO: UserSignUpDTO) : Response<SuccessResponse>{
-        return routeApiService.signUp(userSignUpDTO)
+    suspend fun signUp(userSignUpBody: UserSignUpBody) : Response<SuccessResponse>{
+        return routeApiService.signUp(userSignUpBody)
     }
-    suspend fun forgetPassword(forgetPasswordDTO: ForgetPasswordDTO) : Response<ForgetPasswordResponse>{
-        return routeApiService.forgotPassword(forgetPasswordDTO)
-    }
-
-    suspend fun codeValidation(validationCodeDTO: ValidationCodeDTO) : Response<CodeValidationResponse>{
-        return routeApiService.verifyResetCode(validationCodeDTO)
-    }
-    suspend fun resetPassword(resetPasswordDTO: ResetPasswordDTO) : Response<SuccessResponse>{
-        return routeApiService.resetPassword(resetPasswordDTO)
-    }
-    suspend fun getCategories() : Response<CategoriesResponse>{
-        return routeApiService.getCategories()
+    suspend fun forgetPassword(forgetPasswordBody: ForgetPasswordBody) : Response<ForgetPasswordResponse>{
+        return routeApiService.forgotPassword(forgetPasswordBody)
     }
 
-    suspend fun insertUser(userData : UserData){
-        databaseInstance.userDao().insertUser(userData)
+    suspend fun codeValidation(validationCodeBody: ValidationCodeBody) : Response<CodeValidationResponse>{
+        return routeApiService.verifyResetCode(validationCodeBody)
+    }
+    suspend fun resetPassword(resetPasswordBody: ResetPasswordBody) : Response<SuccessResponse>{
+        return routeApiService.resetPassword(resetPasswordBody)
+    }
+    fun getCategories() : Flow<List<CategoryEntity>>{
+        return databaseInstance.categoryDao().getCategories()
     }
 
-    suspend fun updateUser(userData : UserData){
-        databaseInstance.userDao().updateUser(userData)
+    suspend fun insertUser(userEntity : UserEntity){
+        databaseInstance.userDao().insertUser(userEntity)
     }
 
-    suspend fun getUserByEmail(email : String) : UserData? {
+    suspend fun updateUser(userEntity : UserEntity){
+        databaseInstance.userDao().updateUser(userEntity)
+    }
+
+    suspend fun getUserByEmail(email : String) : UserEntity? {
         return databaseInstance.userDao().getUserByEmail(email)
     }
+    suspend fun refreshCategories(){
+
+       val categories = routeApiService.getCategories().body()?.data?.map {
+            CategoryEntity(
+                name = it?.name ?: "",
+                image = it?.image ?: "",
+                id = 0
+            )
+        }
+
+        if (categories != null) {
+            databaseInstance.categoryDao().replaceCategories(categories)
+        }
+    }
+
 }

@@ -34,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
-import com.ug.route.networking.dto_models.UserSignInDTO
+import com.ug.route.networking.body_models.UserSignInBody
 import com.ug.route.ui.design_matrials.text.Logo
 import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.TextWithPasswordTextField
@@ -77,7 +77,7 @@ fun SignInScreen(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SignInContent(
-    user: UserSignInDTO,
+    user: UserSignInBody,
     screenState: SignInState,
     onPasswordChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,

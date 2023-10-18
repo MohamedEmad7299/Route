@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.ug.route.R
-import com.ug.route.data.models.FailResponse
-import com.ug.route.networking.dto_models.UserSignInDTO
+import com.ug.route.data.database.entities.UserEntity
+import com.ug.route.networking.dto_models.FailResponse
+import com.ug.route.networking.body_models.UserSignInBody
 import com.ug.route.data.repositories.Repository
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
@@ -37,7 +38,7 @@ class SignInViewModel @Inject constructor(
 
     val screenState = _screenState.asStateFlow()
 
-    private val _user = MutableStateFlow(UserSignInDTO("",""))
+    private val _user = MutableStateFlow(UserSignInBody("",""))
     val user = _user.asStateFlow()
 
     fun onChangePassword(newPassword : String){
@@ -67,6 +68,17 @@ class SignInViewModel @Inject constructor(
                 val errorMessage = response.getErrorMessage()
 
                 if (response.isSuccessful || ((repository.getUserByEmail(_user.value.email)?.password ?: "") == _user.value.password)) {
+
+                    if (SharedPreferences.loggedEmail == null) repository.insertUser(
+                        UserEntity(
+                            id = 0,
+                            name = "",
+                            email = _user.value.email,
+                            password = _user.value.password,
+                            phone = "",
+                            address = ""
+                        )
+                    )
 
                     SharedPreferences.loggedEmail = _user.value.email
                     

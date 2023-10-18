@@ -1,6 +1,6 @@
-package com.ug.route.networking.dto_models
+package com.ug.route.networking.body_models
 
-data class UserSignUpDTO(
+data class UserSignUpBody(
 
     val name : String,
     val email : String,

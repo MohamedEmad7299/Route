@@ -44,7 +44,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
-import com.ug.route.data.models.HomeApplianceProduct
+import com.ug.route.networking.dto_models.HomeApplianceProduct
 import com.ug.route.ui.design_matrials.text.HomeApplianceCard
 import com.ug.route.ui.design_matrials.text.SearchBarAndCart
 import com.ug.route.ui.design_matrials.text.SliderBanner
@@ -205,7 +205,7 @@ fun HomeContent(
                                         .padding(horizontal = 16.dp)
                                         .clip(CircleShape)
                                         .size(100.dp),
-                                    model = category?.image,
+                                    model = category.image,
                                     contentDescription = "",
                                     contentScale = ContentScale.Crop
                                 )
@@ -215,7 +215,7 @@ fun HomeContent(
                                         .padding(top = 8.dp)
                                         .width(65.dp)
                                         .height(36.dp),
-                                    text = category?.name!!,
+                                    text = category.name,
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         lineHeight = 18.sp,
