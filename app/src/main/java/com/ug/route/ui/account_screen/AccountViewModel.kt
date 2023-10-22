@@ -30,7 +30,7 @@ class AccountViewModel @Inject constructor(
             launchedEffectKey = false,
             isLoading = false,
             visibility = false,
-            isNameError = false,
+            isNameError = false, 
             isEmailError = false,
             isPasswordError = false,
             isPhoneError = false
@@ -82,8 +82,8 @@ class AccountViewModel @Inject constructor(
 
     fun onChangeVisibility(visibility : Boolean) : Int{
 
-        return if (visibility) R.drawable.visibility
-        else R.drawable.visibility_off
+        return if (visibility) R.drawable.visibility_off
+        else R.drawable.visibility
 
     }
 
@@ -146,5 +146,10 @@ class AccountViewModel @Inject constructor(
                 inclusive = true
             }
         }
+    }
+
+    fun onInternetError(){
+        _screenState.update { it.copy(
+            launchedEffectKey = !_screenState.value.launchedEffectKey) }
     }
 }

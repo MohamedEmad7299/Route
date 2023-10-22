@@ -70,8 +70,8 @@ class ResetPasswordViewModel @Inject constructor(
 
     fun onChangeVisibility(visibility : Boolean) : Int{
 
-        return if (visibility) R.drawable.visibility
-        else R.drawable.visibility_off
+        return if (visibility) R.drawable.visibility_off
+        else R.drawable.visibility
 
     }
     private fun checkInputError(): Boolean {

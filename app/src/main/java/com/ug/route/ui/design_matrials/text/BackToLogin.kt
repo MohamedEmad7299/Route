@@ -54,8 +54,3 @@ fun BackToLogin(
         }
     }
 }
-
-//modifier = modifier.constrainAs(backButton){
-//    top.linkTo(resetButton.bottom,32.dp)
-//    start.linkTo(parent.start)
-//    end.linkTo(parent.end) }

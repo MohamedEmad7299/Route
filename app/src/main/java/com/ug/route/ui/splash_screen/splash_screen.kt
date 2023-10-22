@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -21,6 +22,7 @@ import com.ug.route.R
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
+import com.ug.route.utils.isInternetConnected
 import kotlinx.coroutines.delay
 
 
@@ -29,6 +31,7 @@ fun SplashScreen(navController : NavController){
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setStatusBarColor(DarkBlue)
+    val context = LocalContext.current
 
     val scale = remember{
 
@@ -48,17 +51,23 @@ fun SplashScreen(navController : NavController){
         )
 
         delay(750)
+
         val nextDestination =
             if (SharedPreferences.loggedEmail == null)
                 Screen.SignInScreen.route
             else
                 Screen.HomeScreen.route
 
-        navController.navigate(nextDestination){
-            popUpTo(navController.graph.id){
-                inclusive = true
+        if (isInternetConnected(context)){
+
+            navController.navigate(nextDestination){
+                popUpTo(navController.graph.id){
+                    inclusive = true
+                }
             }
         }
+
+        else navController.navigate(Screen.NoInternetScreen.route)
     }
 
     ConstraintLayout(

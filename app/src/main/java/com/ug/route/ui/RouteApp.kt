@@ -2,8 +2,10 @@ package com.ug.route.ui
 
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,11 +21,13 @@ import com.ug.route.ui.design_matrials.text.bottomNav.BottomNavScreen
 import com.ug.route.ui.design_matrials.text.bottomNav.BottomNavigationBar
 import com.ug.route.ui.forget_password_screen.ForgetPasswordScreen
 import com.ug.route.ui.home_screen.HomeScreen
+import com.ug.route.ui.no_internet_screen.NoInternetScreen
 import com.ug.route.ui.reset_password_screen.ResetPasswordScreen
 import com.ug.route.ui.sign_in_screen.SignInScreen
 import com.ug.route.ui.sign_up_screen.SignUpScreen
 import com.ug.route.ui.splash_screen.SplashScreen
 import com.ug.route.utils.Screen
+import com.ug.route.utils.isInternetConnected
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
@@ -32,6 +36,7 @@ fun RouteApp(){
     val navController = rememberNavController()
     val backStackEntry = navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry.value?.destination
+    val context = LocalContext.current
 
     val bottomBarScreens = listOf(
         BottomNavScreen.Home.route,
@@ -49,11 +54,10 @@ fun RouteApp(){
                 BottomNavigationBar(
                     currentScreen = currentDestination!!,
                     onNavigate = { screen ->
-                        navController.navigate(screen.route){
-                            popUpTo(navController.graph.id){
-                                inclusive = true
-                            }
+                        if (isInternetConnected(context)){
+                            navController.navigate(screen.route)
                         }
+                        else Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show()
                     }
                 )
             }
@@ -81,6 +85,7 @@ fun RouteApp(){
             composable(Screen.FavouriteScreen.route){ FavouriteScreen(navController) }
             composable(Screen.AccountScreen.route){ AccountScreen(navController) }
             composable(Screen.SearchScreen.route){ SearchScreen(navController) }
+            composable(Screen.NoInternetScreen.route){ NoInternetScreen(navController) }
         }
     }
 }

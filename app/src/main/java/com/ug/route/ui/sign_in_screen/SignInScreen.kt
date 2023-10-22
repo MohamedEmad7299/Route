@@ -2,6 +2,7 @@ package com.ug.route.ui.sign_in_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -56,7 +58,7 @@ fun SignInScreen(
         screenState = screenState,
         onPasswordChange = viewModel::onChangePassword,
         onEmailChange = viewModel::onChangeEmail,
-        onChangePasswordVisibility = viewModel::onChangePasswordVisibility,
+        onChangePasswordVisibility = viewModel::onChangeVisibility,
         onClickVisibilityIcon = viewModel::updatePasswordVisibility,
         onClickLogin = {
             viewModel.signIn(navController)
@@ -219,24 +221,42 @@ fun SignInContent(
                 }
             }
 
-            ClickableText(
-                text = AnnotatedString(stringResource(R.string.don_t_have_an_account_create_one)),
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    lineHeight = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(500),
-                    color = Color(0xFFFFFFFF),
-                    textAlign = TextAlign.Center,
-                ),
-                onClick = { handelInternetError(context,navigateToSignUp,onInternetError) },
+            Row(
                 modifier = Modifier
                     .constrainAs(createAccountText) {
                         top.linkTo(loginButton.bottom, 32.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-            )
+            ){
+
+
+                Text(
+                    text = stringResource(R.string.don_t_have_an_account),
+                    style = TextStyle(
+                        fontSize = 17.sp,
+                        lineHeight = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(300),
+                        color = Color(0xFFFFFFFF),
+                        textAlign = TextAlign.Center,
+                    )
+                )
+
+                ClickableText(
+                    text = AnnotatedString(stringResource(R.string.create_one)),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        lineHeight = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(700),
+                        color = Color(0xFFFFFFFF),
+                        textAlign = TextAlign.Center,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    onClick = { handelInternetError(context,navigateToSignUp,onInternetError) },
+                )
+            }
 
             if (screenState.message.isNotEmpty()){
                 LaunchedEffect(key1 = screenState.launchedEffectKey){

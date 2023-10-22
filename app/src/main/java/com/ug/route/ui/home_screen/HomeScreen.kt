@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,9 +72,17 @@ fun HomeScreen(
         HomeContent(
             screenState = screenState,
             navToSearch = {
-                navController.navigate(Screen.SearchScreen.route)
+                handelInternetError(context,
+                    {navController.navigate(Screen.SearchScreen.route)},
+                    viewModel::onInternetError)
             },
-            onInternetError = viewModel::onInternetError
+            onClickCategory = {
+                handelInternetError(
+                    context,
+                    {viewModel.onClickCategory(it,navController)},
+                    viewModel::onInternetError
+                )
+            }
         )
 
     } else NoInternetContent{
@@ -96,7 +105,7 @@ fun HomeScreen(
 fun HomeContent(
     screenState: HomeState,
     navToSearch : () -> Unit,
-    onInternetError : () -> Unit,
+    onClickCategory: (String) -> Unit
 ){
 
     val systemUiController = rememberSystemUiController()
@@ -150,9 +159,7 @@ fun HomeContent(
                         top.linkTo(logo.top,32.dp)
                     },
                     onClickCartIcon = {},
-                    navToSearch = {
-                        handelInternetError(context,navToSearch,onInternetError)
-                    }
+                    navToSearch = navToSearch
                 )
 
 
@@ -197,6 +204,9 @@ fun HomeContent(
                         items(screenState.categories){ category ->
 
                             Column(
+                                modifier = Modifier.clickable {
+                                    onClickCategory(category.name)
+                                },
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ){
 

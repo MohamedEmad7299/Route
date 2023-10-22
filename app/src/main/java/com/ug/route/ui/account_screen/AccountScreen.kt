@@ -36,9 +36,13 @@ import com.ug.route.ui.design_matrials.text.AccountField
 import com.ug.route.ui.design_matrials.text.SmallLogo
 import com.ug.route.ui.design_matrials.text.StandardButton
 import com.ug.route.ui.design_matrials.text.Text18
+import com.ug.route.ui.no_internet_screen.NoInternetContent
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.DarkPurple
+import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
+import com.ug.route.utils.handelInternetError
+import com.ug.route.utils.isInternetConnected
 
 @Composable
 fun AccountScreen(
@@ -47,22 +51,34 @@ fun AccountScreen(
 ){
 
     val screenState by viewModel.screenState.collectAsState()
+    val context = LocalContext.current
 
-    AccountContent(
-        screenState,
-        screenState.userEntity,
-        onChangeName = viewModel::onChangeName,
-        onChangeEmail = viewModel::onChangeEmail,
-        onChangePassword = viewModel::onChangePassword,
-        onChangePhone = viewModel::onChangePhone,
-        onChangeAddress = viewModel::onChangeAddress,
-        saveEdit = viewModel::saveEdit,
-        onClickVisibilityIcon = viewModel::updatePasswordVisibility,
-        onChangePasswordVisibility = viewModel::onChangeVisibility,
-        onSignOut = {
-            viewModel.signOut(navController)
+    if (isInternetConnected(context)){
+
+        AccountContent(
+            screenState,
+            screenState.userEntity,
+            onChangeName = viewModel::onChangeName,
+            onChangeEmail = viewModel::onChangeEmail,
+            onChangePassword = viewModel::onChangePassword,
+            onChangePhone = viewModel::onChangePhone,
+            onChangeAddress = viewModel::onChangeAddress,
+            saveEdit = {handelInternetError(context,{viewModel.saveEdit()},{viewModel.onInternetError()})},
+            onClickVisibilityIcon = viewModel::updatePasswordVisibility,
+            onChangePasswordVisibility = viewModel::onChangeVisibility,
+            onSignOut = {
+                handelInternetError(context,{viewModel.signOut(navController)},{viewModel.onInternetError()})
+            }
+        )
+
+    } else NoInternetContent {
+
+        navController.navigate(Screen.AccountScreen.route){
+            popUpTo(navController.graph.id){
+                inclusive = true
+            }
         }
-    )
+    }
 }
 
 @Composable

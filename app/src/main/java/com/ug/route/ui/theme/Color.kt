@@ -12,4 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val DarkBlue = Color(0xFF004182)
 val DarkPurple = Color(0xFF06004F)
+val CardStrokeColor = Color(0x4D004182)
 val Gray80 = Color(0xFF808080)

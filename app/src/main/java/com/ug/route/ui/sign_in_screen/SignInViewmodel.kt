@@ -106,10 +106,10 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    fun onChangePasswordVisibility(passwordVisibility : Boolean) : Int{
+    fun onChangeVisibility(visibility : Boolean) : Int{
 
-        return if (passwordVisibility) R.drawable.visibility
-        else R.drawable.visibility_off
+        return if (visibility) R.drawable.visibility_off
+        else R.drawable.visibility
 
     }
 

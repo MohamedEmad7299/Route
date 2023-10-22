@@ -80,8 +80,8 @@ class SignUpViewModel @Inject constructor(
 
     fun onChangeVisibility(visibility : Boolean) : Int{
 
-        return if (visibility) R.drawable.visibility
-        else R.drawable.visibility_off
+        return if (visibility) R.drawable.visibility_off
+        else R.drawable.visibility
 
     }
 
@@ -151,9 +151,9 @@ class SignUpViewModel @Inject constructor(
                 }
             }
 
-            delay(1000)
+            delay(1500)
 
-            navController.popBackStack()
+            if (_screenState.value.message == "Account Created Successfully") navController.popBackStack()
         }
     }
 

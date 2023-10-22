@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,6 +45,8 @@ import com.ug.route.R
 import com.ug.route.ui.home_screen.HomeState
 import com.ug.route.ui.home_screen.HomeViewModel
 import com.ug.route.ui.theme.DarkBlue
+import com.ug.route.utils.Screen
+import com.ug.route.utils.handelInternetError
 
 @Composable
 fun SearchScreen(
@@ -52,11 +55,16 @@ fun SearchScreen(
 ){
 
     val screenState by viewModel.screenState.collectAsState()
+    val context = LocalContext.current
 
     SearchContent(
         screenState = screenState,
         onSearch = {
-            viewModel.onSearch(it, navController)
+            handelInternetError(
+                context,
+                {viewModel.onClickCategory(it,navController)},
+                {navController.navigate(Screen.NoInternetScreen.route)}
+            )
         },
         onQueryChange = viewModel::onQueryChange,
         onActiveChange = {
@@ -66,7 +74,9 @@ fun SearchScreen(
         onClickClose = viewModel::onClickClose,
         backToHome = { navController.popBackStack() }
     )
+
 }
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,6 +169,7 @@ fun SearchContent(
                 Row(
                     Modifier
                         .clickable {
+                            hideKeyboard(currentView)
                             onSearch(it.name)
                         }
                         .fillMaxWidth()

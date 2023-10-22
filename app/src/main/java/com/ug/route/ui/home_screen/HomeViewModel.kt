@@ -73,17 +73,13 @@ class HomeViewModel @Inject constructor(
         if (_screenState.value.query.isNotEmpty()) _screenState.update { it.copy(query = "") }
     }
 
-    fun onSearch(searchInput: String , navController: NavController){
+    fun onClickCategory(searchInput: String, navController: NavController){
 
         if (searchInput in _screenState.value.categories.map { it.name }){
 
             SharedPreferences.selectedCategory = searchInput
 
-            navController.navigate(Screen.CategoriesScreen.route) {
-                popUpTo(navController.graph.id) {
-                    inclusive = true
-                }
-            }
+            navController.navigate(Screen.CategoriesScreen.route)
         }
     }
 
@@ -92,6 +88,7 @@ class HomeViewModel @Inject constructor(
         _screenState.update { it.copy(isSearchBarActive = newActiveState) }
     }
 
+    // to refresh the home screen and make it recognize that there is no internet connection
     fun onInternetError(){
         _screenState.update { it.copy(
             launchedEffectKey = !_screenState.value.launchedEffectKey) }

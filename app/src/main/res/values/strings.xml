@@ -48,4 +48,6 @@
     <string name="address_hint">Enter your address</string>
     <string name="save">Save</string>
     <string name="sign_out">Sign Out!</string>
+    <string name="don_t_have_an_account">"Don’t have an account? "</string>
+    <string name="create_one">Create One</string>
 </resources>
