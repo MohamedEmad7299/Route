@@ -264,7 +264,7 @@ fun HomeContent(
                         price = stringResource(R.string._8000)
                     ),
                     HomeApplianceProduct(
-                        image = R.drawable.makya,
+                        image = R.drawable.makwa,
                         name = stringResource(R.string.steam_iron),
                         review = stringResource(R.string._4_8),
                         price = stringResource(R.string._2000)
