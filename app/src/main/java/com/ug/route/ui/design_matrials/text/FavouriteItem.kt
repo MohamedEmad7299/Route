@@ -1,7 +1,9 @@
 package com.ug.route.ui.design_matrials.text
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,6 +24,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -34,17 +38,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImage
 import com.ug.route.R
 import com.ug.route.ui.theme.CardStrokeColor
+import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.DarkPurple
 
 
 @Composable
-fun FavouriteItem(){
+fun FavouriteItem(
+    modifier: Modifier = Modifier,
+    itemName: String,
+    imageURL: String,
+    circleColor: Color,
+    colorName: String,
+    itemPrice: Int,
+    onClickAdd: () -> Unit,
+    onClickFavButton: () -> Unit
+){
 
     Card(
-        modifier = Modifier
-            .height(136.dp)
+        modifier = modifier
+            .height(140.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(size = 16.dp),
         border = BorderStroke(
@@ -58,20 +73,11 @@ fun FavouriteItem(){
         ConstraintLayout(
             Modifier.fillMaxSize()
         ){
-//            AsyncImage(
-//                modifier = Modifier
-//                    .padding(horizontal = 8.dp)
-//                    .width(120.dp)
-//                    .fillMaxHeight(),
-//                model = "",
-//                contentDescription = "",
-//                contentScale = ContentScale.Crop
-//            )
 
             val (
                 image,
                 name,
-                circleColor,
+                circle,
                 color,
                 price,
                 oldPrice,
@@ -81,7 +87,7 @@ fun FavouriteItem(){
 
             Card(
                 modifier = Modifier
-                    .width(120.dp)
+                    .width(140.dp)
                     .padding(end = 8.dp)
                     .fillMaxHeight()
                     .constrainAs(image)
@@ -94,10 +100,10 @@ fun FavouriteItem(){
                     color = CardStrokeColor
                 )
             ){
-                Image(
+                AsyncImage(
                     modifier = Modifier
                         .fillMaxSize(),
-                    painter = painterResource(id = R.drawable.makwa),
+                    model = imageURL,
                     contentDescription = "",
                     contentScale = ContentScale.Crop
                 )
@@ -110,7 +116,7 @@ fun FavouriteItem(){
                         start.linkTo(image.end,8.dp)
                         top.linkTo(parent.top,8.dp)
                     },
-                text = "Nike Air Jordon",
+                text = itemName,
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -120,26 +126,28 @@ fun FavouriteItem(){
                 )
             )
 
-            Image(
+            Canvas(
                 modifier = Modifier
-                    .constrainAs(circleColor)
+                    .size(16.dp)
+                    .clip(shape = CircleShape)
+                    .background(color = circleColor).
+                    constrainAs(circle)
                     {
                         start.linkTo(image.end,8.dp)
                         top.linkTo(name.bottom,8.dp)
-                    },
-                painter = painterResource(id = R.drawable.color_circle),
-                contentDescription = "image description",
-                contentScale = ContentScale.None
-            )
+                    }
+            ){
+
+            }
 
             Text(
                 modifier = Modifier.constrainAs(color)
                 {
-                    start.linkTo(circleColor.end,8.dp)
-                    top.linkTo(circleColor.top)
-                    bottom.linkTo(circleColor.bottom)
+                    start.linkTo(circle.end,8.dp)
+                    top.linkTo(circle.top)
+                    bottom.linkTo(circle.bottom)
                 },
-                text = "Black color",
+                text = colorName,
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -157,7 +165,7 @@ fun FavouriteItem(){
                         start.linkTo(image.end, 8.dp)
                         top.linkTo(color.bottom, 8.dp)
                     },
-                text = "EGP 1,200",
+                text = "EGP $itemPrice",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -174,7 +182,7 @@ fun FavouriteItem(){
                     start.linkTo(image.end,8.dp)
                     top.linkTo(price.bottom)
                 },
-                text = "EGP 1,500",
+                text = "EGP ${itemPrice+300}",
                 style = TextStyle(
                     fontSize = 11.sp,
                     lineHeight = 18.sp,
@@ -193,7 +201,7 @@ fun FavouriteItem(){
                     end.linkTo(parent.end,8.dp)
                     top.linkTo(parent.top,8.dp)
                 },
-                onClick = { /*TODO*/ },
+                onClick = onClickFavButton,
                 colors= IconButtonDefaults.iconButtonColors(
                     containerColor = Color.White
                 )
@@ -205,9 +213,9 @@ fun FavouriteItem(){
             }
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = onClickAdd,
                 modifier = Modifier
-                    .width(120.dp)
+                    .width(100.dp)
                     .height(36.dp)
                     .constrainAs(addButton)
                     {
@@ -215,11 +223,12 @@ fun FavouriteItem(){
                         bottom.linkTo(parent.bottom, 8.dp)
                     },
                 contentPadding = PaddingValues(
-                    horizontal = 16.dp,
+                    horizontal = 8.dp,
                     vertical = 8.dp
                 ),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = DarkPurple
+                    containerColor = DarkBlue
                 )
             ) {
                 Text(
@@ -246,7 +255,16 @@ fun Preview(){
             .padding(16.dp)
             .fillMaxSize()
     ){
-        FavouriteItem()
+        FavouriteItem(
+            Modifier,
+            "koraa",
+            "",
+            Color.DarkGray,
+            "Gray",
+            1200,
+            {},
+            {}
+        )
     }
 
 }

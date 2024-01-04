@@ -5,16 +5,19 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ug.route.data.database.daos.CategoryDao
+import com.ug.route.data.database.daos.FavouriteDao
 import com.ug.route.data.database.daos.UserDao
 import com.ug.route.data.database.entities.CategoryEntity
+import com.ug.route.data.database.entities.FavouriteEntity
 import com.ug.route.data.database.entities.UserEntity
 
-@Database(entities = [UserEntity::class , CategoryEntity::class], version = 1)
+@Database(entities = [UserEntity::class , CategoryEntity::class , FavouriteEntity::class], version = 1)
 abstract class RouteDatabase : RoomDatabase(){
     abstract fun userDao() : UserDao
     abstract fun categoryDao() : CategoryDao
-    companion object{
+    abstract fun favouriteDao() : FavouriteDao
 
+    companion object{
 
         private const val DATABASE_NAME = "RouteDatabase"
 
