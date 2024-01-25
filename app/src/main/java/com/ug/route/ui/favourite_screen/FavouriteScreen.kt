@@ -10,7 +10,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -36,14 +35,14 @@ fun FavouriteScreen(
 
     if (isInternetConnected(context)){
 
-
         FavouriteContent(
             screenState = screenState,
             navToSearch = {
                 handelInternetError(context,
                     {navController.navigate(Screen.SearchScreen.route)},
                     viewModel::onInternetError)
-            }
+            },
+            onClickFavButton = viewModel::deleteFavouriteProduct
         )
 
     } else NoInternetContent{
@@ -57,34 +56,14 @@ fun FavouriteScreen(
             }
         }
     }
-
-
 }
 
 @Composable
 fun FavouriteContent(
     screenState: FavouriteState,
-    navToSearch : () -> Unit
+    navToSearch : () -> Unit,
+    onClickFavButton : (FavouriteEntity) -> Unit
 ){
-
-    val favs = listOf(
-        FavouriteEntity(
-            0,
-            "watch",
-            "https://www.watchtime.com/wp-content/uploads/2021/11/Armin-Strom-TRIBUTE-1_1000-801x1024.jpg",
-            1200,
-            Color.DarkGray.toArgb(),
-            "Gray"
-        ),
-        FavouriteEntity(
-            0,
-            "watch tany",
-            "https://cdn.shopify.com/s/files/1/0020/1896/7605/files/green_watch_600x600.jpg?v=1639002196",
-            1500,
-            Color.Green.toArgb(),
-            "Green"
-        )
-    )
 
     ConstraintLayout(
         Modifier
@@ -109,7 +88,7 @@ fun FavouriteContent(
                 top.linkTo(logo.top,32.dp)
             },
             onClickCartIcon = {},
-            navToSearch = {  }
+            navToSearch = navToSearch
         )
 
         LazyColumn(
@@ -120,7 +99,7 @@ fun FavouriteContent(
                 top.linkTo(searchBar.bottom,16.dp)
             }
         ){
-            items(favs){ favItem ->
+            items(screenState.favouriteProducts){ favItem ->
 
                 FavouriteItem(
                     modifier = Modifier.padding(bottom = 16.dp),
@@ -129,10 +108,12 @@ fun FavouriteContent(
                     circleColor = Color(favItem.colorValue),
                     colorName = favItem.colorName,
                     itemPrice = favItem.price,
-                    onClickAdd = { /*TODO*/ }) {
-                }
+                    onClickAdd = { /*TODO*/ },
+                    onClickFavButton = {
+                        onClickFavButton(favItem)
+                    }
+                )
             }
         }
-
     }
 }

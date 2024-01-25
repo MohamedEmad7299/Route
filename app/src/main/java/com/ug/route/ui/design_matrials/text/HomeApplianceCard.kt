@@ -70,11 +70,9 @@ fun HomeApplianceCard(
         ){
 
             val (image,
-                fav,
                 name,
                 review,
-                price,
-                add) = createRefs()
+                price) = createRefs()
 
             Image(
                 painter = painterResource(id = product.image),
@@ -87,32 +85,6 @@ fun HomeApplianceCard(
                 contentDescription = "",
                 contentScale = ContentScale.Crop
             )
-
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .size(40.dp)
-                    .constrainAs(fav) {
-                        top.linkTo(parent.top, 8.dp)
-                        end.linkTo(parent.end, 8.dp)
-                    }
-            ){
-                Box(
-                    Modifier
-                        .size(30.dp)
-                        .background(
-                            shape = CircleShape,
-                            color = Color.White)
-                ){
-
-                    Icon(
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        tint = DarkBlue,
-                        painter = painterResource(id = R.drawable.heart),
-                        contentDescription = "")
-                }
-            }
 
             Text18(
                 modifier = Modifier.constrainAs(name){
@@ -150,24 +122,6 @@ fun HomeApplianceCard(
                 text = "${product.price} EGP",
                 color = Color(0xFF06004F)
             )
-
-
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .size(40.dp)
-                    .constrainAs(add) {
-                        end.linkTo(parent.end, 8.dp)
-                        bottom.linkTo(parent.bottom, 8.dp)
-                    }
-            ){
-                Icon(
-                    modifier = Modifier
-                        .background(DarkBlue),
-                    tint = Color.White,
-                    painter = painterResource(id = R.drawable.baseline_add_24),
-                    contentDescription = "")
-            }
         }
     }
 }

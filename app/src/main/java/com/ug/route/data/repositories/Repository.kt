@@ -2,6 +2,7 @@ package com.ug.route.data.repositories
 
 import com.ug.route.data.database.RouteDatabase
 import com.ug.route.data.database.entities.CategoryEntity
+import com.ug.route.data.database.entities.FavouriteEntity
 import com.ug.route.data.database.entities.UserEntity
 import com.ug.route.networking.dto_models.CodeValidationResponse
 import com.ug.route.networking.dto_models.ForgetPasswordResponse
@@ -48,6 +49,18 @@ class Repository @Inject constructor (
         databaseInstance.userDao().updateUser(userEntity)
     }
 
+    suspend fun insertFavouriteProduct(favouriteEntity: FavouriteEntity){
+        databaseInstance.favouriteDao().insertFavouriteProduct(favouriteEntity)
+    }
+
+    suspend fun deleteFavouriteProduct(favouriteEntity: FavouriteEntity){
+        databaseInstance.favouriteDao().deleteFavouriteProduct(favouriteEntity)
+    }
+
+    fun getAllFavouriteProducts() : Flow<List<FavouriteEntity>> {
+        return databaseInstance.favouriteDao().getAllFavouriteProducts()
+    }
+
     suspend fun getUserByEmail(email : String) : UserEntity? {
         return databaseInstance.userDao().getUserByEmail(email)
     }
@@ -65,5 +78,4 @@ class Repository @Inject constructor (
             databaseInstance.categoryDao().replaceCategories(categories)
         }
     }
-
 }

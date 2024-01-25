@@ -245,10 +245,9 @@ fun HomeContent(
                         start.linkTo(parent.start,16.dp)
                         top.linkTo(categoriesLazyRow.bottom,24.dp)
                     },
-                    text = stringResource(R.string.home_appliance),
+                    text = stringResource(R.string.home_appliance_offers),
                     color = DarkPurple
                 )
-
 
                 val homeAppliances = listOf(
                     HomeApplianceProduct(

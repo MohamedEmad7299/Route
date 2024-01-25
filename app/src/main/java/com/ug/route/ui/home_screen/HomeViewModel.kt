@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.ug.route.data.database.entities.FavouriteEntity
 import com.ug.route.data.repositories.Repository
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
@@ -86,6 +87,13 @@ class HomeViewModel @Inject constructor(
     fun onActiveChange(newActiveState : Boolean){
 
         _screenState.update { it.copy(isSearchBarActive = newActiveState) }
+    }
+
+    fun insertFavouriteProduct(favouriteEntity: FavouriteEntity){
+
+        viewModelScope.launch {
+            repository.insertFavouriteProduct(favouriteEntity)
+        }
     }
 
     // to refresh the home screen and make it recognize that there is no internet connection
