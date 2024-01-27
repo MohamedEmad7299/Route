@@ -1,6 +1,7 @@
 package com.ug.route.data.repositories
 
 import com.ug.route.data.database.RouteDatabase
+import com.ug.route.data.database.entities.CartEntity
 import com.ug.route.data.database.entities.CategoryEntity
 import com.ug.route.data.database.entities.FavouriteEntity
 import com.ug.route.data.database.entities.UserEntity
@@ -77,5 +78,17 @@ class Repository @Inject constructor (
         if (categories != null) {
             databaseInstance.categoryDao().replaceCategories(categories)
         }
+    }
+
+
+    suspend fun insertCartItem(cartEntity: CartEntity){
+        databaseInstance.cartDao().insertCartItem(cartEntity)
+    }
+
+    suspend fun deleteCartItem(cartEntity: CartEntity){
+        databaseInstance.cartDao().deleteCartItem(cartEntity)
+    }
+    fun getAllCartItems() : Flow<List<CartEntity>> {
+        return databaseInstance.cartDao().getAllCartItems()
     }
 }

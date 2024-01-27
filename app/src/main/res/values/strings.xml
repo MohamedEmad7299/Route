@@ -50,4 +50,6 @@
     <string name="sign_out">Sign Out!</string>
     <string name="don_t_have_an_account">"Don’t have an account? "</string>
     <string name="create_one">Create One</string>
+    <string name="no_favourites_items_added">No Favourites Items Added</string>
+    <string name="check_out">Check Out</string>
 </resources>
