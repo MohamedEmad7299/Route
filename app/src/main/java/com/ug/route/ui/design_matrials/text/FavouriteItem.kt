@@ -43,6 +43,8 @@ import com.ug.route.R
 import com.ug.route.ui.theme.CardStrokeColor
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.DarkPurple
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @Composable
@@ -165,7 +167,7 @@ fun FavouriteItem(
                         start.linkTo(image.end, 8.dp)
                         top.linkTo(color.bottom, 8.dp)
                     },
-                text = "EGP $itemPrice",
+                text = "EGP ${NumberFormat.getNumberInstance(Locale.US).format(itemPrice)}",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -182,7 +184,7 @@ fun FavouriteItem(
                     start.linkTo(image.end,8.dp)
                     top.linkTo(price.bottom)
                 },
-                text = "EGP ${itemPrice+300}",
+                text = "EGP ${NumberFormat.getNumberInstance(Locale.US).format(itemPrice+300)}",
                 style = TextStyle(
                     fontSize = 11.sp,
                     lineHeight = 18.sp,

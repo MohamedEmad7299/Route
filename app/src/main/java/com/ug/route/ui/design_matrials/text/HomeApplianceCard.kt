@@ -29,6 +29,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.ug.route.R
 import com.ug.route.networking.dto_models.HomeApplianceProduct
 import com.ug.route.ui.theme.DarkBlue
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @Preview(showSystemUi = true)
@@ -119,7 +121,7 @@ fun HomeApplianceCard(
                     start.linkTo(parent.start,8.dp)
                     top.linkTo(review.bottom,8.dp)
                 },
-                text = "${product.price} EGP",
+                text = "${NumberFormat.getNumberInstance(Locale.US).format(product.price)} EGP",
                 color = Color(0xFF06004F)
             )
         }

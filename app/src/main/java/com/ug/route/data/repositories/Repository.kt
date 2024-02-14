@@ -88,7 +88,16 @@ class Repository @Inject constructor (
     suspend fun deleteCartItem(cartEntity: CartEntity){
         databaseInstance.cartDao().deleteCartItem(cartEntity)
     }
+
+    suspend fun updateCartItem(cartEntity: CartEntity){
+        databaseInstance.cartDao().updateCartItem(cartEntity)
+    }
+
     fun getAllCartItems() : Flow<List<CartEntity>> {
         return databaseInstance.cartDao().getAllCartItems()
+    }
+
+    suspend fun deleteAllCartItems(){
+        databaseInstance.cartDao().deleteAllCartItems()
     }
 }

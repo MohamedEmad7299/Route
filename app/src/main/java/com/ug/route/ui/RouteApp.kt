@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ug.route.ui.favourite_screen.FavouriteScreen
 import com.ug.route.ui.account_screen.AccountScreen
+import com.ug.route.ui.cart_screen.CartScreen
 import com.ug.route.ui.categories_screen.CategoriesScreen
 import com.ug.route.ui.code_validation_screen.CodeValidationScreen
 import com.ug.route.ui.search_screen.SearchScreen
@@ -86,6 +87,7 @@ fun RouteApp(){
             composable(Screen.AccountScreen.route){ AccountScreen(navController) }
             composable(Screen.SearchScreen.route){ SearchScreen(navController) }
             composable(Screen.NoInternetScreen.route){ NoInternetScreen(navController) }
+            composable(Screen.CartScreen.route){ CartScreen(navController) }
         }
     }
 }

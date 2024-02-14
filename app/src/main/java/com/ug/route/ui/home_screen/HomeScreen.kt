@@ -82,7 +82,8 @@ fun HomeScreen(
                     {viewModel.onClickCategory(it,navController)},
                     viewModel::onInternetError
                 )
-            }
+            },
+            onClickCartIcon = {navController.navigate(Screen.CartScreen.route)}
         )
 
     } else NoInternetContent{
@@ -105,6 +106,7 @@ fun HomeScreen(
 fun HomeContent(
     screenState: HomeState,
     navToSearch : () -> Unit,
+    onClickCartIcon : () -> Unit,
     onClickCategory: (String) -> Unit
 ){
 
@@ -158,7 +160,7 @@ fun HomeContent(
                         start.linkTo(parent.start)
                         top.linkTo(logo.top,32.dp)
                     },
-                    onClickCartIcon = {},
+                    onClickCartIcon = onClickCartIcon,
                     navToSearch = navToSearch
                 )
 

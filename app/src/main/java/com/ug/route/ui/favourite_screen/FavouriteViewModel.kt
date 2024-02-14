@@ -2,6 +2,7 @@ package com.ug.route.ui.favourite_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ug.route.data.database.entities.CartEntity
 import com.ug.route.data.database.entities.FavouriteEntity
 import com.ug.route.data.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,6 +46,14 @@ class FavouriteViewModel @Inject constructor(
         viewModelScope.launch {
 
             repository.deleteFavouriteProduct(favouriteEntity)
+        }
+    }
+
+    fun insertCartItem(cartEntity: CartEntity){
+
+        viewModelScope.launch {
+
+            repository.insertCartItem(cartEntity)
         }
     }
 

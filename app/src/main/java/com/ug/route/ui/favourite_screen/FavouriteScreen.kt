@@ -24,6 +24,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
+import com.ug.route.data.database.entities.CartEntity
 import com.ug.route.data.database.entities.FavouriteEntity
 import com.ug.route.ui.design_matrials.text.FavouriteItem
 import com.ug.route.ui.design_matrials.text.SearchBarAndCart
@@ -54,6 +55,16 @@ fun FavouriteScreen(
             },
             onClickFavButton = { favouriteItem ->
                 handelInternetError(context,{viewModel.deleteFavouriteProduct(favouriteItem)},viewModel::onInternetError)
+            },
+            onClickAddButton = {cartItem ->
+                handelInternetError(context,{
+                    viewModel.insertCartItem(cartItem)
+                },viewModel::onInternetError)
+            },
+            onClickCartIcon = {
+                handelInternetError(context,
+                    {navController.navigate(Screen.CartScreen.route)},
+                    viewModel::onInternetError)
             }
         )
 
@@ -74,7 +85,9 @@ fun FavouriteScreen(
 fun FavouriteContent(
     screenState: FavouriteState,
     navToSearch : () -> Unit,
-    onClickFavButton : (FavouriteEntity) -> Unit
+    onClickFavButton : (FavouriteEntity) -> Unit,
+    onClickAddButton : (CartEntity) -> Unit,
+    onClickCartIcon : () -> Unit
 ){
 
     ConstraintLayout(
@@ -100,7 +113,7 @@ fun FavouriteContent(
                 start.linkTo(parent.start)
                 top.linkTo(logo.top,32.dp)
             },
-            onClickCartIcon = {},
+            onClickCartIcon = onClickCartIcon,
             navToSearch = navToSearch
         )
 
@@ -142,7 +155,19 @@ fun FavouriteContent(
                         circleColor = Color(favItem.colorValue),
                         colorName = favItem.colorName,
                         itemPrice = favItem.price,
-                        onClickAdd = { /*TODO*/ },
+                        onClickAdd = {
+                            onClickAddButton(
+                                CartEntity(
+                                    id = 0,
+                                    name = favItem.name,
+                                    imageURL = favItem.imageURL,
+                                    price = favItem.price,
+                                    colorValue = favItem.colorValue,
+                                    colorName = favItem.colorName,
+                                    count = 1
+                                )
+                            )
+                        },
                         onClickFavButton = {
                             onClickFavButton(favItem)
                         }
