@@ -20,9 +20,7 @@ class FavouriteViewModel @Inject constructor(
     private val _screenState = MutableStateFlow(
 
         FavouriteState(
-            query = "",
             favouriteProducts = emptyList(),
-            message = "",
             launchedEffectKey = false,
             isSearchBarActive = true,
             focused = true

@@ -15,3 +15,6 @@ val DarkPurple = Color(0xFF06004F)
 val LightPurple = Color(0x9906004F)
 val CardStrokeColor = Color(0x4D004182)
 val Gray80 = Color(0xFF808080)
+val LightBlue = Color(0xFFDBE4ED)
+val ClearSky = Color(0xFFA2C1E0)
+

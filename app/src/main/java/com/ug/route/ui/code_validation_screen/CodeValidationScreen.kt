@@ -193,7 +193,7 @@ fun CodeValidationContent(
                     hideKeyboard(currentView)
                     handelInternetError(context,codeValidation,onInternetError) },
                 modifier = Modifier.constrainAs(continueButton){
-                    top.linkTo(code.bottom,48.dp)},
+                    top.linkTo(code.bottom,32.dp)},
             ) {
 
                 if (screenState.isLoading){

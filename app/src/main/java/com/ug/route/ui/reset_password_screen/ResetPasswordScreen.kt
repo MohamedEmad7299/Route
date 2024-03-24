@@ -112,7 +112,7 @@ fun ResetPasswordContent(
             Logo(
                 id = R.drawable.logo_dark_blue,
                 modifier = Modifier.constrainAs(logo){
-                    top.linkTo(parent.top,56.dp)
+                    top.linkTo(parent.top,40.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)}
             )
@@ -128,7 +128,7 @@ fun ResetPasswordContent(
                     textAlign = TextAlign.Center,
                 ),
                 modifier = Modifier.constrainAs(setNewPasswordText){
-                    top.linkTo(logo.bottom,56.dp)
+                    top.linkTo(logo.bottom,40.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)}
             )

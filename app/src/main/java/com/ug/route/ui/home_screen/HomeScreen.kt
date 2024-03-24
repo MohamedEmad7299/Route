@@ -76,10 +76,10 @@ fun HomeScreen(
                     {navController.navigate(Screen.SearchScreen.route)},
                     viewModel::onInternetError)
             },
-            onClickCategory = {
+            onClickCategory = { categoryName ->
                 handelInternetError(
                     context,
-                    {viewModel.onClickCategory(it,navController)},
+                    {viewModel.onClickCategory(categoryName,navController)},
                     viewModel::onInternetError
                 )
             },
@@ -225,7 +225,7 @@ fun HomeContent(
                                 Text(
                                     modifier = Modifier
                                         .padding(top = 8.dp)
-                                        .width(65.dp)
+                                        .width(75.dp)
                                         .height(36.dp),
                                     text = category.name,
                                     style = TextStyle(

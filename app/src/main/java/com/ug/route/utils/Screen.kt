@@ -15,4 +15,5 @@ sealed class Screen(val route: String){
     object SearchScreen : Screen("search_screen")
     object NoInternetScreen : Screen("no_internet_screen")
     object CartScreen : Screen("cart_screen")
+    object ProductScreen : Screen("product_screen")
 }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.ug.route.data.database.entities.FavouriteEntity
 import com.ug.route.data.repositories.Repository
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
@@ -23,7 +22,6 @@ class HomeViewModel @Inject constructor(
     private val _screenState = MutableStateFlow(
 
         HomeState(
-            query = "",
             categories = emptyList(),
             message = "",
             launchedEffectKey = false,
@@ -65,14 +63,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onQueryChange(newSearchInput : String){
-
-        _screenState.update { it.copy(query = newSearchInput) }
-    }
-
-    fun onClickClose(){
-        if (_screenState.value.query.isNotEmpty()) _screenState.update { it.copy(query = "") }
-    }
 
     fun onClickCategory(searchInput: String, navController: NavController){
 
@@ -81,18 +71,6 @@ class HomeViewModel @Inject constructor(
             SharedPreferences.selectedCategory = searchInput
 
             navController.navigate(Screen.CategoriesScreen.route)
-        }
-    }
-
-    fun onActiveChange(newActiveState : Boolean){
-
-        _screenState.update { it.copy(isSearchBarActive = newActiveState) }
-    }
-
-    fun insertFavouriteProduct(favouriteEntity: FavouriteEntity){
-
-        viewModelScope.launch {
-            repository.insertFavouriteProduct(favouriteEntity)
         }
     }
 

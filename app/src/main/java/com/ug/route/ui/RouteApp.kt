@@ -23,6 +23,7 @@ import com.ug.route.ui.design_matrials.text.bottomNav.BottomNavigationBar
 import com.ug.route.ui.forget_password_screen.ForgetPasswordScreen
 import com.ug.route.ui.home_screen.HomeScreen
 import com.ug.route.ui.no_internet_screen.NoInternetScreen
+import com.ug.route.ui.product_screen.ProductScreen
 import com.ug.route.ui.reset_password_screen.ResetPasswordScreen
 import com.ug.route.ui.sign_in_screen.SignInScreen
 import com.ug.route.ui.sign_up_screen.SignUpScreen
@@ -88,6 +89,7 @@ fun RouteApp(){
             composable(Screen.SearchScreen.route){ SearchScreen(navController) }
             composable(Screen.NoInternetScreen.route){ NoInternetScreen(navController) }
             composable(Screen.CartScreen.route){ CartScreen(navController) }
+            composable(Screen.ProductScreen.route){ ProductScreen(navController) }
         }
     }
 }

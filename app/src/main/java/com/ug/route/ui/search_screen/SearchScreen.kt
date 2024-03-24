@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -25,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -42,8 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.ui.home_screen.HomeState
-import com.ug.route.ui.home_screen.HomeViewModel
+import com.ug.route.data.fake.FakeData
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.utils.Screen
 import com.ug.route.utils.handelInternetError
@@ -51,7 +54,7 @@ import com.ug.route.utils.handelInternetError
 @Composable
 fun SearchScreen(
     navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel()
 ){
 
     val screenState by viewModel.screenState.collectAsState()
@@ -62,7 +65,7 @@ fun SearchScreen(
         onSearch = {
             handelInternetError(
                 context,
-                {viewModel.onClickCategory(it,navController)},
+                {navController.navigate(Screen.CategoriesScreen.route)},
                 {navController.navigate(Screen.NoInternetScreen.route)}
             )
         },
@@ -81,7 +84,7 @@ fun SearchScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchContent(
-    screenState : HomeState,
+    screenState : SearchState,
     onSearch :(String) -> Unit,
     onQueryChange : (String) -> Unit,
     onActiveChange :(Boolean) -> Unit,
@@ -162,20 +165,25 @@ fun SearchContent(
             )
         ){
 
-            val categories = if (screenState.query.isBlank()) screenState.categories else screenState.matchSearchQuery()
+            val categories = if (screenState.query.isBlank()) FakeData.products else screenState.matchSearchQuery()
 
-            categories.forEach{
+            LazyColumn{
 
-                Row(
-                    Modifier
-                        .clickable {
-                            hideKeyboard(currentView)
-                            onSearch(it.name)
-                        }
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ){
-                    Text(text = it.name)
+                items(categories){ product ->
+
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal =  16.dp , vertical = 8.dp)
+                            .height(32.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                hideKeyboard(currentView)
+                                onSearch(product)
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(text = product)
+                    }
                 }
             }
         }
