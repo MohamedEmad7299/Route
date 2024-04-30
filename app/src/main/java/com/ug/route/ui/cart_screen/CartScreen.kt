@@ -58,7 +58,6 @@ fun CartScreen(
     val context = LocalContext.current
     val screenState by viewModel.screenState.collectAsState()
 
-
     if (isInternetConnected(context)){
 
         CartContent(
@@ -79,6 +78,9 @@ fun CartScreen(
             screenState = screenState,
             updateCartItem = {
                 handelInternetError(context,{viewModel.updateCartItem(it)},viewModel::onInternetError)
+            },
+            onClickSearch = {
+                handelInternetError(context,{navController.navigate(Screen.SearchScreen.route)},viewModel::onInternetError)
             }
         )
 
@@ -100,11 +102,12 @@ fun CartScreen(
 
 @Composable
 fun CartContent(
-    onClickBackArrow : () -> Unit,
-    onClickCheckOut : () -> Unit,
-    updateCartItem : (CartEntity) -> Unit,
-    deleteCartItem : (CartEntity) -> Unit,
-    screenState : CartState
+    onClickBackArrow: () -> Unit,
+    onClickCheckOut: () -> Unit,
+    onClickSearch: () -> Unit,
+    updateCartItem: (CartEntity) -> Unit,
+    deleteCartItem: (CartEntity) -> Unit,
+    screenState: CartState
 ){
 
     ConstraintLayout(
@@ -115,6 +118,7 @@ fun CartContent(
 
         val (
             cartText,
+            searchIcon,
             backArrow,
             totalPriceText,
             priceText,
@@ -122,6 +126,24 @@ fun CartContent(
             items,
             noItemsText
         ) = createRefs()
+
+
+
+        IconButton(
+            modifier = Modifier.constrainAs(searchIcon){
+                end.linkTo(parent.end,8.dp)
+                top.linkTo(parent.top,8.dp)
+            },
+            onClick = onClickSearch
+        ) {
+            Icon(
+                tint = DarkBlue,
+                painter = painterResource(id = R.drawable.icon_search),
+                contentDescription = "")
+        }
+
+
+
 
         Text(
             modifier = Modifier
@@ -189,7 +211,7 @@ fun CartContent(
 
         Button(
             modifier = Modifier
-                .width(240.dp)
+                .width(200.dp)
                 .height(48.dp)
                 .constrainAs(checkOutButton) {
                     end.linkTo(parent.end, 16.dp)
@@ -243,8 +265,7 @@ fun CartContent(
 
             LazyColumn(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 164.dp)
                     .constrainAs(items) {
                         top.linkTo(cartText.bottom, 16.dp)
                     }
@@ -253,12 +274,16 @@ fun CartContent(
 
                     CartItem(
                         itemName = cartItem.name,
-                        imageURL = cartItem.imageURL,
+                        imageResource = cartItem.imageResource,
                         circleColor = Color(cartItem.colorValue),
                         colorName = cartItem.colorName,
                         itemPrice = cartItem.price,
                         count = cartItem.count,
-                        onClickAdd = {updateCartItem(cartItem.copy(count = cartItem.count+1))},
+                        onClickAdd = {
+                            if (cartItem.count < 99){
+                                updateCartItem(cartItem.copy(count = cartItem.count+1))
+                            }
+                        },
                         onClickMinus = {
                             if (cartItem.count > 1){
                                 updateCartItem(cartItem.copy(count = cartItem.count-1))

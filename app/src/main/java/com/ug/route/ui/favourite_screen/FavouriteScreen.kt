@@ -1,5 +1,6 @@
 package com.ug.route.ui.favourite_screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import com.ug.route.R
 import com.ug.route.data.database.entities.CartEntity
 import com.ug.route.data.database.entities.FavouriteEntity
+import com.ug.route.data.database.entities.ProductEntity
 import com.ug.route.ui.design_matrials.text.FavouriteItem
 import com.ug.route.ui.design_matrials.text.SearchBarAndCart
 import com.ug.route.ui.design_matrials.text.SmallLogo
@@ -54,11 +56,32 @@ fun FavouriteScreen(
                     viewModel::onInternetError)
             },
             onClickFavButton = { favouriteItem ->
-                handelInternetError(context,{viewModel.deleteFavouriteProduct(favouriteItem)},viewModel::onInternetError)
-            },
-            onClickAddButton = {cartItem ->
                 handelInternetError(context,{
-                    viewModel.insertCartItem(cartItem)
+                    viewModel.updateProduct(
+                        ProductEntity(
+                            id = favouriteItem.id,
+                            name = favouriteItem.name,
+                            price = favouriteItem.price,
+                            imageResource = favouriteItem.imageResource,
+                            isFavourite = false,
+                            review = favouriteItem.review
+                        )
+                    )
+                    viewModel.deleteFavouriteProduct(favouriteItem)
+                                            },viewModel::onInternetError)
+            },
+            onClickAddButton = { favItem ,  cartItem ->
+
+                handelInternetError(context,{
+
+                    if (viewModel.getCartItemExists(favItem.id))
+
+                        viewModel.getCartItemAndUpdateIt(favItem.id)
+
+                    else viewModel.insertCartItem(cartItem)
+
+                    Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
+
                 },viewModel::onInternetError)
             },
             onClickCartIcon = {
@@ -86,7 +109,7 @@ fun FavouriteContent(
     screenState: FavouriteState,
     navToSearch : () -> Unit,
     onClickFavButton : (FavouriteEntity) -> Unit,
-    onClickAddButton : (CartEntity) -> Unit,
+    onClickAddButton : (FavouriteEntity, CartEntity) -> Unit,
     onClickCartIcon : () -> Unit
 ){
 
@@ -140,10 +163,11 @@ fun FavouriteContent(
 
             LazyColumn(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 200.dp)
                     .constrainAs(items) {
                         top.linkTo(searchBar.bottom, 16.dp)
+                        start.linkTo(parent.start, 8.dp)
+                        end.linkTo(parent.end, 8.dp)
                     }
             ){
                 items(screenState.favouriteProducts){ favItem ->
@@ -151,16 +175,17 @@ fun FavouriteContent(
                     FavouriteItem(
                         modifier = Modifier.padding(bottom = 16.dp),
                         itemName = favItem.name,
-                        imageURL = favItem.imageURL,
+                        imageResource = favItem.imageResource,
                         circleColor = Color(favItem.colorValue),
                         colorName = favItem.colorName,
                         itemPrice = favItem.price,
                         onClickAdd = {
                             onClickAddButton(
+                                favItem,
                                 CartEntity(
-                                    id = 0,
+                                    id = favItem.id,
                                     name = favItem.name,
-                                    imageURL = favItem.imageURL,
+                                    imageResource = favItem.imageResource,
                                     price = favItem.price,
                                     colorValue = favItem.colorValue,
                                     colorName = favItem.colorName,

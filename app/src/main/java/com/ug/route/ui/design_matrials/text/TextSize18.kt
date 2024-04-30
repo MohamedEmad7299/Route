@@ -9,27 +9,32 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.ug.route.R
 
 @Composable
 fun Text18(
     modifier: Modifier = Modifier,
+    fontSize: Int = 18,
     weight: Int = 500,
     text : String,
-    color: Color = Color(0xFFFFFFFF)
+    color: Color = Color(0xFFFFFFFF),
+    textAlign: TextAlign = TextAlign.Center,
+    maxLines: Int = 1
 ){
 
     Text(
         text = text,
         color = color,
         style = TextStyle(
-            fontSize = 18.sp,
-            lineHeight = 18.sp,
+            fontSize = fontSize.sp,
             fontFamily = FontFamily(Font(R.font.poppins_regular)),
             fontWeight = FontWeight(weight),
-            textAlign = TextAlign.Center,
+            textAlign = textAlign,
         ),
-        modifier = modifier
+        modifier = modifier,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis
     )
 }

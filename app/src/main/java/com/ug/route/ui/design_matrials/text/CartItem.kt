@@ -2,6 +2,7 @@ package com.ug.route.ui.design_matrials.text
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,21 +31,23 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
 import com.ug.route.R
 import com.ug.route.ui.theme.CardStrokeColor
 import com.ug.route.ui.theme.DarkPurple
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @Composable
 fun CartItem(
     modifier: Modifier = Modifier,
     itemName: String,
-    imageURL: String,
+    imageResource: Int,
     circleColor: Color,
     colorName: String,
     itemPrice: Int,
@@ -56,6 +59,7 @@ fun CartItem(
 
     Card(
         modifier = modifier
+            .padding(vertical = 8.dp)
             .height(120.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(size = 16.dp),
@@ -95,10 +99,10 @@ fun CartItem(
                     color = CardStrokeColor
                 )
             ){
-                AsyncImage(
+                Image(
                     modifier = Modifier
                         .fillMaxSize(),
-                    model = imageURL,
+                    painter = painterResource(id = imageResource),
                     contentDescription = "",
                     contentScale = ContentScale.Crop
                 )
@@ -106,9 +110,10 @@ fun CartItem(
 
             Text(
                 modifier = Modifier
+                    .padding(start = 128.dp,end = 48.dp)
                     .constrainAs(name)
                     {
-                        start.linkTo(image.end,8.dp)
+                        start.linkTo(parent.start)
                         top.linkTo(parent.top,8.dp)
                     },
                 text = itemName,
@@ -117,8 +122,10 @@ fun CartItem(
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
                     fontWeight = FontWeight(500),
                     color = DarkPurple,
-                    textAlign = TextAlign.Center
-                )
+                    textAlign = TextAlign.Start
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Canvas(
@@ -160,7 +167,7 @@ fun CartItem(
                         start.linkTo(image.end, 8.dp)
                         top.linkTo(color.bottom, 8.dp)
                     },
-                text = "EGP $itemPrice",
+                text = "EGP ${NumberFormat.getNumberInstance(Locale.US).format(itemPrice)}",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -212,7 +219,7 @@ fun CartItemPreview(){
         CartItem(
             Modifier,
             "koraa",
-            "",
+            0,
             Color.DarkGray,
             "Gray",
             1200,
@@ -222,5 +229,4 @@ fun CartItemPreview(){
             {}
         )
     }
-
 }

@@ -37,6 +37,8 @@ class CartViewModel @Inject constructor(
 
             repository.getAllCartItems().collect { cartItems ->
                 _screenState.value = _screenState.value.copy(cartItems = cartItems)
+                _screenState.value = _screenState.value.copy(
+                    totalPrice = cartItems.sumOf {it.price*it.count})
             }
         }
     }

@@ -25,6 +25,7 @@ class CategoriesViewModel  @Inject constructor() : ViewModel() {
 
     fun onCategoryChange(newCategory : String){
 
+        SharedPreferences.selectedCategory = newCategory
         _screenState.update { it.copy(selectedCategory = newCategory) }
     }
 

@@ -55,6 +55,7 @@ import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.no_internet_screen.NoInternetContent
 import com.ug.route.ui.theme.DarkPurple
 import com.ug.route.utils.Screen
+import com.ug.route.utils.SharedPreferences
 import com.ug.route.utils.handelInternetError
 import com.ug.route.utils.isInternetConnected
 
@@ -83,7 +84,30 @@ fun HomeScreen(
                     viewModel::onInternetError
                 )
             },
-            onClickCartIcon = {navController.navigate(Screen.CartScreen.route)}
+            onClickCartIcon = {navController.navigate(Screen.CartScreen.route)},
+            onClickPagerOffer = {
+                handelInternetError(
+                    context,
+                    {
+                        when(it){
+                            1 -> SharedPreferences.selectedCategory = "Beauty & Health"
+                            else -> SharedPreferences.selectedCategory = "Electronics"
+                        }
+                        navController.navigate(Screen.CategoriesScreen.route)
+                    },
+                    viewModel::onInternetError
+                )
+            },
+            onClickHomeOffer = {
+                handelInternetError(
+                    context,
+                    {
+                        SharedPreferences.selectedCategory = "Home"
+                        navController.navigate(Screen.CategoriesScreen.route)
+                    },
+                    viewModel::onInternetError
+                )
+            }
         )
 
     } else NoInternetContent{
@@ -107,7 +131,9 @@ fun HomeContent(
     screenState: HomeState,
     navToSearch : () -> Unit,
     onClickCartIcon : () -> Unit,
-    onClickCategory: (String) -> Unit
+    onClickCategory: (String) -> Unit,
+    onClickPagerOffer: (Int) -> Unit,
+    onClickHomeOffer: () -> Unit
 ){
 
     val systemUiController = rememberSystemUiController()
@@ -166,6 +192,7 @@ fun HomeContent(
 
 
                 SliderBanner(
+                    onClickOffer = onClickPagerOffer,
                     modifier = Modifier.constrainAs(slider){
                         top.linkTo(searchBar.bottom)
                     }
@@ -225,12 +252,11 @@ fun HomeContent(
                                 Text(
                                     modifier = Modifier
                                         .padding(top = 8.dp)
-                                        .width(75.dp)
+                                        .width(88.dp)
                                         .height(36.dp),
                                     text = category.name,
                                     style = TextStyle(
                                         fontSize = 14.sp,
-                                        lineHeight = 18.sp,
                                         fontFamily = FontFamily(Font(R.font.poppins_regular)),
                                         fontWeight = FontWeight(400),
                                         color = DarkPurple,
@@ -256,19 +282,19 @@ fun HomeContent(
                         image = R.drawable.ghasala,
                         name = stringResource(R.string.washing_machine),
                         review = stringResource(R.string._4_8),
-                        price = stringResource(R.string._9000)
+                        price = 9000
                     ),
                     HomeApplianceProduct(
                         image = R.drawable.botegaz,
                         name = stringResource(R.string.new_cooker),
                         review = stringResource(R.string._4_7),
-                        price = stringResource(R.string._8000)
+                        price = 8000
                     ),
                     HomeApplianceProduct(
                         image = R.drawable.makwa,
                         name = stringResource(R.string.steam_iron),
                         review = stringResource(R.string._4_8),
-                        price = stringResource(R.string._2000)
+                        price = 2000
                     )
                 )
 
@@ -282,7 +308,7 @@ fun HomeContent(
 
                     items(homeAppliances){ homeAppliance ->
 
-                        HomeApplianceCard(product = homeAppliance)
+                        HomeApplianceCard(product = homeAppliance, onClickCard = onClickHomeOffer)
                     }
                 }
 

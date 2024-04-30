@@ -95,7 +95,6 @@ fun AccountField(
                     text = hint,
                     style = TextStyle(
                         fontSize = 18.sp,
-                        lineHeight = 18.sp,
                         fontFamily = FontFamily(Font(R.font.poppins_regular)),
                         fontWeight = FontWeight(300),
                         color = DarkPurple,

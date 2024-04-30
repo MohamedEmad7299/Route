@@ -62,10 +62,10 @@ fun SearchScreen(
 
     SearchContent(
         screenState = screenState,
-        onSearch = {
+        onSearch = { query ->
             handelInternetError(
                 context,
-                {navController.navigate(Screen.CategoriesScreen.route)},
+                {navController.navigate("${Screen.ProductsScreen.route}/${query}")},
                 {navController.navigate(Screen.NoInternetScreen.route)}
             )
         },

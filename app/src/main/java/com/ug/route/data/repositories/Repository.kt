@@ -4,7 +4,9 @@ import com.ug.route.data.database.RouteDatabase
 import com.ug.route.data.database.entities.CartEntity
 import com.ug.route.data.database.entities.CategoryEntity
 import com.ug.route.data.database.entities.FavouriteEntity
+import com.ug.route.data.database.entities.ProductEntity
 import com.ug.route.data.database.entities.UserEntity
+import com.ug.route.data.fake.FakeData
 import com.ug.route.networking.dto_models.CodeValidationResponse
 import com.ug.route.networking.dto_models.ForgetPasswordResponse
 import com.ug.route.networking.dto_models.SuccessResponse
@@ -80,7 +82,6 @@ class Repository @Inject constructor (
         }
     }
 
-
     suspend fun insertCartItem(cartEntity: CartEntity){
         databaseInstance.cartDao().insertCartItem(cartEntity)
     }
@@ -99,5 +100,21 @@ class Repository @Inject constructor (
 
     suspend fun deleteAllCartItems(){
         databaseInstance.cartDao().deleteAllCartItems()
+    }
+
+    suspend fun insertProducts(){
+        databaseInstance.productDao().insertProducts(FakeData.laptops)
+    }
+
+    suspend fun updateProduct(productEntity: ProductEntity){
+        databaseInstance.productDao().updateProduct(productEntity)
+    }
+
+    fun getCartItemById(itemId: Long): Flow<CartEntity>{
+        return databaseInstance.cartDao().getCartItemById(itemId)
+    }
+
+    fun getAllProducts() : Flow<List<ProductEntity>> {
+        return databaseInstance.productDao().getAllProducts()
     }
 }

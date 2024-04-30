@@ -96,7 +96,7 @@ class SignInViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _screenState.update { prevState ->
-                    prevState.copy(message = "An error occurred")
+                    prevState.copy(message = e.message.toString())
                 }
             } finally {
                 _screenState.update { prevState ->

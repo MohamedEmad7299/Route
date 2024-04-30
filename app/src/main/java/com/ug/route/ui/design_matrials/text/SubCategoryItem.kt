@@ -2,6 +2,7 @@ package com.ug.route.ui.design_matrials.text
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,18 +31,21 @@ import com.ug.route.ui.theme.DarkPurple
 @Composable
 fun SubcategoryItemPreview(){
 
-    SubcategoryItem()
+    SubcategoryItem(onClickItem = {})
 }
 
 @Composable
 fun SubcategoryItem(
     modifier: Modifier = Modifier,
     name: String = "Footwear",
-    imageResource: Int = R.drawable.footwear
+    imageResource: Int = R.drawable.footwear,
+    onClickItem : () -> Unit
 ){
 
     Column(
-        modifier = modifier,
+        modifier = modifier.clickable {
+            onClickItem()
+        },
         horizontalAlignment = Alignment.CenterHorizontally
     ){
 

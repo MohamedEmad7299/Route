@@ -34,11 +34,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
 import com.ug.route.R
 import com.ug.route.ui.theme.CardStrokeColor
 import com.ug.route.ui.theme.DarkBlue
@@ -51,7 +51,7 @@ import java.util.Locale
 fun FavouriteItem(
     modifier: Modifier = Modifier,
     itemName: String,
-    imageURL: String,
+    imageResource: Int,
     circleColor: Color,
     colorName: String,
     itemPrice: Int,
@@ -102,10 +102,10 @@ fun FavouriteItem(
                     color = CardStrokeColor
                 )
             ){
-                AsyncImage(
+                Image(
                     modifier = Modifier
                         .fillMaxSize(),
-                    model = imageURL,
+                    painter = painterResource(id = imageResource),
                     contentDescription = "",
                     contentScale = ContentScale.Crop
                 )
@@ -113,9 +113,10 @@ fun FavouriteItem(
 
             Text(
                 modifier = Modifier
+                    .padding(start = 148.dp,end = 48.dp)
                     .constrainAs(name)
                     {
-                        start.linkTo(image.end,8.dp)
+                        start.linkTo(parent.start)
                         top.linkTo(parent.top,8.dp)
                     },
                 text = itemName,
@@ -124,19 +125,21 @@ fun FavouriteItem(
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
                     fontWeight = FontWeight(500),
                     color = DarkPurple,
-                    textAlign = TextAlign.Center
-                )
+                    textAlign = TextAlign.Start
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Canvas(
                 modifier = Modifier
                     .size(16.dp)
                     .clip(shape = CircleShape)
-                    .background(color = circleColor).
-                    constrainAs(circle)
+                    .background(color = circleColor)
+                    .constrainAs(circle)
                     {
-                        start.linkTo(image.end,8.dp)
-                        top.linkTo(name.bottom,8.dp)
+                        start.linkTo(image.end, 8.dp)
+                        top.linkTo(name.bottom, 8.dp)
                     }
             ){
 
@@ -260,7 +263,7 @@ fun Preview(){
         FavouriteItem(
             Modifier,
             "koraa",
-            "",
+            0,
             Color.DarkGray,
             "Gray",
             1200,

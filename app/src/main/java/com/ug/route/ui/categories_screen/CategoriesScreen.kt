@@ -56,12 +56,23 @@ fun CategoriesScreen(
         CategoriesContent(
             screenState = screenState,
             onClickCartIcon = {navController.navigate(Screen.CartScreen.route)},
-            navToSearch = {},
+            navToSearch = {
+                handelInternetError(context,
+                    {navController.navigate(Screen.SearchScreen.route)},
+                    viewModel::onInternetError)
+            },
             onCategoryChange = {
                 handelInternetError(
                     context,
                     {viewModel.onCategoryChange(it)},
                     viewModel::onInternetError
+                )
+            },
+            onClickSubcategory = { subCategoryName ->
+                handelInternetError(
+                    context,
+                    {navController.navigate("${Screen.ProductsScreen.route}/${subCategoryName}")},
+                    {navController.navigate(Screen.NoInternetScreen.route)}
                 )
             }
         )
@@ -84,8 +95,9 @@ fun CategoriesScreen(
 fun CategoriesContent(
     screenState: CategoriesState,
     onClickCartIcon : () -> Unit,
-    navToSearch : () -> Unit,
-    onCategoryChange : (String) -> Unit
+    navToSearch: () -> Unit,
+    onCategoryChange : (String) -> Unit,
+    onClickSubcategory: (String) -> Unit
 ){
 
     val systemUiController = rememberSystemUiController()
@@ -121,6 +133,7 @@ fun CategoriesContent(
             modifier = Modifier
                 .constrainAs(logo) {
                     start.linkTo(parent.start, 16.dp)
+                    top.linkTo(parent.top,16.dp)
                 }
         )
 
@@ -179,7 +192,10 @@ fun CategoriesContent(
                 items(subcategories) { subcategory ->
                     SubcategoryItem(
                         name = subcategory.name,
-                        imageResource = subcategory.imageResource
+                        imageResource = subcategory.imageResource,
+                        onClickItem = {
+                            onClickSubcategory(subcategory.name)
+                        }
                     )
                 }
             }

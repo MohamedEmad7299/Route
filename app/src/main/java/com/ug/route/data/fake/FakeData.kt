@@ -1,6 +1,7 @@
 package com.ug.route.data.fake
 
 import com.ug.route.R
+import com.ug.route.data.database.entities.ProductEntity
 
 object FakeData {
 
@@ -324,6 +325,56 @@ object FakeData {
         ),
     )
 
+    val laptops = mutableListOf(
+        ProductEntity(
+            id = 0,
+            isFavourite = false,
+            imageResource = R.drawable.hp,
+            name = "HP OMEN 17t-cm200 - Gaming & Entertainment Laptop",
+            price = 56532,
+            review = "4.4"
+        ),
+        ProductEntity(
+            id = 0,
+            isFavourite = false,
+            imageResource = R.drawable.dell,
+            name = "Inspiron 15 Laptop - NVIDIA® GeForce RTX™ 4060 32 GB DDR5",
+            price = 66532,
+            review = "4.5"
+        ),
+        ProductEntity(
+            id = 0,
+            isFavourite = false,
+            imageResource = R.drawable.razer,
+            name = "Razer Blade 14 - AMD Ryzen™ 9 8945HS",
+            price = 53432,
+            review = "4.9"
+        ),
+        ProductEntity(
+            id = 0,
+            isFavourite = false,
+            imageResource = R.drawable.lenvo,
+            name = "Legion Slim 7i Gen 8 Intel (16″) - RTX 4060",
+            price = 51000,
+            review = "4.8"
+        ),
+        ProductEntity(
+            id = 0,
+            isFavourite = false,
+            imageResource = R.drawable.msi,
+            name = "MSI GF63 - RTX 3050 4GB DDR6",
+            price = 58532,
+            review = "4.7"
+        ),
+        ProductEntity(
+            id = 0,
+            isFavourite = false,
+            imageResource = R.drawable.asus,
+            name = "ROG Flow Z13 Gaming Laptop",
+            price = 56532,
+            review = "4.3"
+        ),
+    )
 }
 
 data class Subcategory(

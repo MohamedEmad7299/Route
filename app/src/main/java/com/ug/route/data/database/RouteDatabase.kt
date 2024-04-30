@@ -7,18 +7,21 @@ import androidx.room.RoomDatabase
 import com.ug.route.data.database.daos.CartDao
 import com.ug.route.data.database.daos.CategoryDao
 import com.ug.route.data.database.daos.FavouriteDao
+import com.ug.route.data.database.daos.ProductsDao
 import com.ug.route.data.database.daos.UserDao
 import com.ug.route.data.database.entities.CartEntity
 import com.ug.route.data.database.entities.CategoryEntity
 import com.ug.route.data.database.entities.FavouriteEntity
+import com.ug.route.data.database.entities.ProductEntity
 import com.ug.route.data.database.entities.UserEntity
 
-@Database(entities = [UserEntity::class , CategoryEntity::class , FavouriteEntity::class , CartEntity::class], version = 1)
+@Database(entities = [UserEntity::class , CategoryEntity::class , FavouriteEntity::class , CartEntity::class , ProductEntity::class], version = 1)
 abstract class RouteDatabase : RoomDatabase(){
     abstract fun userDao() : UserDao
     abstract fun categoryDao() : CategoryDao
     abstract fun favouriteDao() : FavouriteDao
     abstract fun cartDao() : CartDao
+    abstract fun productDao() : ProductsDao
 
     companion object{
 

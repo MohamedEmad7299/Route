@@ -3,7 +3,7 @@ package com.ug.route.ui.design_matrials.text
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,22 +19,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.ug.route.R
 import com.ug.route.networking.dto_models.HomeApplianceProduct
 import com.ug.route.ui.theme.DarkBlue
-
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @Composable
 fun HomeApplianceCard(
+    onClickCard: () -> Unit,
     product: HomeApplianceProduct
 ){
 
     Card(
         modifier = Modifier
+            .clickable {
+                onClickCard()
+            }
             .height(264.dp)
             .width(224.dp)
             .padding(horizontal = 16.dp),
@@ -98,7 +102,7 @@ fun HomeApplianceCard(
                     start.linkTo(parent.start,8.dp)
                     top.linkTo(review.bottom,8.dp)
                 },
-                text = "${product.price} EGP",
+                text = "${NumberFormat.getNumberInstance(Locale.US).format(product.price)} EGP",
                 color = Color(0xFF06004F)
             )
         }

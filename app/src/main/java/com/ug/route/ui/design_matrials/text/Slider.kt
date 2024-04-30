@@ -1,6 +1,7 @@
 package com.ug.route.ui.design_matrials.text
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -25,7 +26,8 @@ import kotlin.math.absoluteValue
 @ExperimentalPagerApi
 @Composable
 fun SliderBanner(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickOffer: (Int) -> Unit
 ) {
     val pagerState = rememberPagerState(initialPage = 0)
     val images = listOf(
@@ -58,6 +60,9 @@ fun SliderBanner(
             Card(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
+                    .clickable {
+                        onClickOffer(page)
+                    }
                     .graphicsLayer {
 
                         val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
@@ -116,5 +121,7 @@ fun SliderBanner(
 @Preview(showSystemUi = true)
 @Composable
 fun SliderBannerPreview() {
-    SliderBanner()
+    SliderBanner(){
+
+    }
 }

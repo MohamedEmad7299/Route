@@ -1,5 +1,6 @@
-package com.ug.route.ui.favourite_screen
+package com.ug.route.ui.product_screen
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ug.route.data.database.entities.CartEntity
@@ -15,29 +16,31 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FavouriteViewModel @Inject constructor(
-    private val repository: Repository
+class ProductsViewModel @Inject constructor(
+    private val repository: Repository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel(){
+
 
     private val _screenState = MutableStateFlow(
 
-        FavouriteState(
-            favouriteProducts = emptyList(),
+        ProductsState(
             launchedEffectKey = false,
-            isSearchBarActive = true,
-            focused = true,
+            productKey = checkNotNull(savedStateHandle["product"]),
+            products = emptyList(),
             cartItems = emptyList()
         )
     )
 
     val screenState = _screenState.asStateFlow()
-
     init {
 
         viewModelScope.launch {
 
-            repository.getAllFavouriteProducts().collect { favouriteProducts ->
-                _screenState.value = _screenState.value.copy(favouriteProducts = favouriteProducts)
+            repository.getAllProducts().collect { products ->
+
+                if (products.isEmpty()) repository.insertProducts()
+                _screenState.value = _screenState.value.copy(products = products)
             }
         }
 
@@ -50,11 +53,10 @@ class FavouriteViewModel @Inject constructor(
         }
     }
 
-    fun deleteFavouriteProduct(favouriteEntity : FavouriteEntity){
+    fun addToFavourite(favouriteEntity: FavouriteEntity){
 
         viewModelScope.launch {
-
-            repository.deleteFavouriteProduct(favouriteEntity)
+            repository.insertFavouriteProduct(favouriteEntity)
         }
     }
 
@@ -65,9 +67,17 @@ class FavouriteViewModel @Inject constructor(
         }
     }
 
-    fun insertCartItem(cartEntity: CartEntity){
+    fun deleteFavouriteProduct(favouriteEntity : FavouriteEntity){
 
         viewModelScope.launch {
+
+            repository.deleteFavouriteProduct(favouriteEntity)
+        }
+    }
+
+    fun insertCartItem(cartEntity: CartEntity){
+
+        viewModelScope.launch{
 
             repository.insertCartItem(cartEntity)
         }
@@ -94,9 +104,9 @@ class FavouriteViewModel @Inject constructor(
         }
     }
 
-    // to refresh the home screen and make it recognize that there is no internet connection
     fun onInternetError(){
         _screenState.update { it.copy(
             launchedEffectKey = !_screenState.value.launchedEffectKey) }
     }
 }
+

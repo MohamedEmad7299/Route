@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "CART_TABLE")
 data class CartEntity(
 
-    @PrimaryKey(autoGenerate = true) val id : Long,
+    @PrimaryKey val id : Long,
     val name : String,
-    val imageURL : String,
+    val imageResource : Int,
     val price : Int,
     val colorValue : Int,
     val colorName: String,
