@@ -80,6 +80,11 @@ fun ProductsScreen(
                         Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
 
                     }, viewModel::onInternetError)
+            },
+            onClickItem = {
+                handelInternetError(context,
+                    {navController.navigate("${Screen.ProductDetailsScreen.route}/$it")},
+                    viewModel::onInternetError)
             }
         )
 
@@ -102,7 +107,8 @@ fun ProductsContent(
     onClickCartIcon : () -> Unit,
     navToSearch : () -> Unit,
     onClickFavButton: (ProductEntity,FavouriteEntity) -> Unit,
-    onClickAddButton: (ProductEntity,CartEntity) -> Unit
+    onClickAddButton: (ProductEntity,CartEntity) -> Unit,
+    onClickItem: (Long) -> Unit
 ){
 
     val systemUiController = rememberSystemUiController()
@@ -185,6 +191,9 @@ fun ProductsContent(
                                     count = 1
                                 )
                             )
+                        },
+                        onClickItem = {
+                            onClickItem(product.id)
                         }
                     )
                 }

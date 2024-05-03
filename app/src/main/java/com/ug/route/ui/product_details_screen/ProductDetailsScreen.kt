@@ -373,7 +373,7 @@ fun ProductDetailsContent() {
         // req kaza 7aga
         FiveColors(
             modifier = Modifier.constrainAs(fiveColors){
-                start.linkTo(parent.start,16.dp)
+                start.linkTo(parent.start,8.dp)
                 top.linkTo(colorText.bottom,8.dp)
             }
         )
@@ -411,13 +411,14 @@ fun ProductDetailsContent() {
             )
         )
 
+
         Button(
             modifier = Modifier
                 .width(240.dp)
                 .height(48.dp)
                 .constrainAs(addToCartButton) {
                     end.linkTo(parent.end, 16.dp)
-                    bottom.linkTo(parent.bottom, 32.dp)
+                    top.linkTo(fiveColors.bottom, 32.dp)
                 },
             onClick = {},
             colors = ButtonDefaults.buttonColors(

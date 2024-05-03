@@ -16,6 +16,8 @@ import com.ug.route.networking.body_models.ForgetPasswordBody
 import com.ug.route.networking.body_models.ResetPasswordBody
 import com.ug.route.networking.body_models.UserSignUpBody
 import com.ug.route.networking.body_models.ValidationCodeBody
+import com.ug.route.networking.dto_models.categories.Category
+import com.ug.route.networking.dto_models.sub_categories.SubCategoriesResponse
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
@@ -69,15 +71,21 @@ class Repository @Inject constructor (
     }
     suspend fun refreshCategories(){
 
-       val categories = routeApiService.getCategories().body()?.data?.map {
-            CategoryEntity(
-                name = it?.name ?: "",
-                image = it?.image ?: "",
-                id = 0
-            )
-        }
+       val response = routeApiService.getCategories().body()?.data
+
+       val categories = response?.map {
+
+           CategoryEntity(
+               name = it?.name ?: "",
+               image = it?.image ?: "",
+               id = 0
+           )
+       }
+
+        FakeData.categories = response as List<Category>
 
         if (categories != null) {
+
             databaseInstance.categoryDao().replaceCategories(categories)
         }
     }
@@ -114,7 +122,15 @@ class Repository @Inject constructor (
         return databaseInstance.cartDao().getCartItemById(itemId)
     }
 
+    fun getProductById(itemId: Long): Flow<ProductEntity>{
+        return databaseInstance.productDao().getProductById(itemId)
+    }
+
     fun getAllProducts() : Flow<List<ProductEntity>> {
         return databaseInstance.productDao().getAllProducts()
+    }
+
+    suspend fun getSubCategories() : Response<SubCategoriesResponse>{
+        return routeApiService.getSubCategories()
     }
 }

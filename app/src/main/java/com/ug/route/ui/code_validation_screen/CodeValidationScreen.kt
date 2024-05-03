@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.CircularProgressIndicator
@@ -138,10 +139,11 @@ fun CodeValidationContent(
 
             Row(
                 modifier = Modifier
+                    .padding(horizontal = 16.dp)
                     .constrainAs(instructionsText){
                     top.linkTo(resetPasswordText.bottom)
-                    start.linkTo(parent.start,16.dp)
-                    end.linkTo(parent.end,16.dp)}
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)}
             ) {
                 Text(
                     text = stringResource(R.string.we_sent_code_to),

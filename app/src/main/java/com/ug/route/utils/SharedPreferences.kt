@@ -17,6 +17,12 @@ object SharedPreferences {
             sharedPrefs?.edit()?.putString(LOGGED_EMAIL_KEY,value)?.apply()
         }
 
+    var signInToken : String?
+        get() = sharedPrefs?.getString(SIGN_IN_TOKEN, null)
+        set(value) {
+            sharedPrefs?.edit()?.putString(SIGN_IN_TOKEN,value)?.apply()
+        }
+
     var selectedCategory : String?
         get() = sharedPrefs?.getString(SELECTED_CATEGORY_KEY, null)
         set(value) {
@@ -24,6 +30,7 @@ object SharedPreferences {
         }
 
     private const val SHARED_PREFS_NAME = "RoutePreferences"
+    private const val SIGN_IN_TOKEN = "SignInToken"
     private const val LOGGED_EMAIL_KEY = "LoggedEmailKey"
     private const val SELECTED_CATEGORY_KEY = "SelectedCategoryKey"
 }

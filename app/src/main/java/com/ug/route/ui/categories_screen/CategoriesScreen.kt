@@ -29,6 +29,8 @@ import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
 import com.ug.route.data.fake.FakeData
+import com.ug.route.networking.dto_models.categories.Category
+import com.ug.route.networking.dto_models.sub_categories.SubCategory
 import com.ug.route.ui.design_matrials.text.CategoriesSelection
 import com.ug.route.ui.design_matrials.text.CategoryBanner
 import com.ug.route.ui.design_matrials.text.SearchBarAndCart
@@ -64,7 +66,10 @@ fun CategoriesScreen(
             onCategoryChange = {
                 handelInternetError(
                     context,
-                    {viewModel.onCategoryChange(it)},
+                    {
+                        SharedPreferences.selectedCategory = it.name
+                        viewModel.onCategoryChange(it)
+                    },
                     viewModel::onInternetError
                 )
             },
@@ -74,7 +79,9 @@ fun CategoriesScreen(
                     {navController.navigate("${Screen.ProductsScreen.route}/${subCategoryName}")},
                     {navController.navigate(Screen.NoInternetScreen.route)}
                 )
-            }
+            },
+            categories = FakeData.categories,
+            subCategories = FakeData.subCategories
         )
 
     } else NoInternetContent{
@@ -96,9 +103,17 @@ fun CategoriesContent(
     screenState: CategoriesState,
     onClickCartIcon : () -> Unit,
     navToSearch: () -> Unit,
-    onCategoryChange : (String) -> Unit,
-    onClickSubcategory: (String) -> Unit
+    onCategoryChange : (Category) -> Unit,
+    onClickSubcategory: (String) -> Unit,
+    categories: List<Category>,
+    subCategories: List<SubCategory>
 ){
+
+    val ids = categories.map { it.id }
+    val selectedSubCategories = mutableMapOf<String, List<SubCategory>>()
+    for (id in ids) {
+        selectedSubCategories[id!!] = subCategories.filter { it.category == id }
+    }
 
     val systemUiController = rememberSystemUiController()
 
@@ -126,7 +141,8 @@ fun CategoriesContent(
                 top.linkTo(searchBar.bottom)
             },
             firstIndex = if (SharedPreferences.selectedCategory == null) "Music" else SharedPreferences.selectedCategory!!,
-            onCategoryChange = onCategoryChange
+            onCategoryChange = onCategoryChange,
+            categories = screenState.categories
         )
 
         SmallLogo(
@@ -146,9 +162,8 @@ fun CategoriesContent(
             navToSearch = navToSearch
         )
 
-
         Text(
-            text = screenState.selectedCategory,
+            text = screenState.selectedCategory.name!!,
             modifier = Modifier
                 .constrainAs(selectedCategoryText){
                     top.linkTo(searchBar.bottom)
@@ -164,8 +179,8 @@ fun CategoriesContent(
 
 
         CategoryBanner(
-            title = screenState.selectedCategory,
-            imageResource = FakeData.categoryImages[screenState.selectedCategory]!!,
+            title = screenState.selectedCategory.name,
+            imageResource = FakeData.categoryImages[screenState.selectedCategory.name]!!,
             modifier = Modifier
                 .width(250.dp)
                 .padding(horizontal = 16.dp)
@@ -179,25 +194,26 @@ fun CategoriesContent(
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier
-                .padding(horizontal = 80.dp)
                 .constrainAs(subcategoriesGrid) {
-                    top.linkTo(categoryBanner.bottom, 32.dp)
+                    top.linkTo(categoryBanner.bottom, 16.dp)
                     start.linkTo(categoriesSelection.end)
                     end.linkTo(parent.end)
-                },
+                }
+                .padding(start = 80.dp,
+                    end = 80.dp, bottom = 400.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            FakeData.subCategories[screenState.selectedCategory]?.let { subcategories ->
-                items(subcategories) { subcategory ->
-                    SubcategoryItem(
-                        name = subcategory.name,
-                        imageResource = subcategory.imageResource,
-                        onClickItem = {
-                            onClickSubcategory(subcategory.name)
-                        }
-                    )
-                }
+            items(
+                selectedSubCategories[screenState.selectedCategory.id]!!
+            ) { subcategory ->
+                SubcategoryItem(
+                    name = subcategory.name ?: "",
+                    imageResource = FakeData.subCategoryImages[subcategory.id]!!,
+                    onClickItem = {
+                        onClickSubcategory(subcategory.name ?: "")
+                    }
+                )
             }
         }
     }

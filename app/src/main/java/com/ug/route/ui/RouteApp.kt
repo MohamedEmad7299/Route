@@ -97,7 +97,10 @@ fun RouteApp(){
                 route = "${Screen.ProductsScreen.route}/{product}",
                 arguments = listOf(navArgument("product"){NavType.StringType}))
             { ProductsScreen(navController) }
-            composable(Screen.ProductDetailsScreen.route){ ProductDetailsScreen(navController) }
+            composable(
+                route = "${Screen.ProductDetailsScreen.route}/{id}",
+                arguments = listOf(navArgument("id"){NavType.LongType}))
+            { ProductDetailsScreen(navController) }
         }
     }
 }

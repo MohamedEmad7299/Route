@@ -1,8 +1,7 @@
-package com.ug.route.networking.dto_models
+package com.ug.route.networking.dto_models.categories
 
 
 import com.google.gson.annotations.SerializedName
-import com.ug.route.networking.dto_models.categories.Category
 
 data class CategoriesResponse(
     @SerializedName("data")

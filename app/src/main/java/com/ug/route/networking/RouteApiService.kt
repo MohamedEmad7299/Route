@@ -9,6 +9,7 @@ import com.ug.route.networking.body_models.ResetPasswordBody
 import com.ug.route.networking.body_models.UserSignInBody
 import com.ug.route.networking.body_models.UserSignUpBody
 import com.ug.route.networking.body_models.ValidationCodeBody
+import com.ug.route.networking.dto_models.sub_categories.SubCategoriesResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -44,4 +45,7 @@ interface RouteApiService {
 
     @GET ("categories")
     suspend fun getCategories() : Response<CategoriesResponse>
+
+    @GET ("subcategories")
+    suspend fun getSubCategories() : Response<SubCategoriesResponse>
 }

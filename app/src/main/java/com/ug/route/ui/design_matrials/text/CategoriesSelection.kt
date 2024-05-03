@@ -16,34 +16,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ug.route.networking.dto_models.categories.Category
 import com.ug.route.ui.theme.ClearSky
 import com.ug.route.ui.theme.LightBlue
-
-
-@Preview(showSystemUi = true)
-@Composable
-fun CategoriesSelectionPreview(){
-
-    CategoriesSelection(
-        firstIndex = "Music"
-    ){}
-}
 
 @Composable
 fun CategoriesSelection(
     modifier: Modifier = Modifier,
     firstIndex : String,
-    onCategoryChange : (String) -> Unit
+    onCategoryChange : (Category) -> Unit,
+    categories : List<Category>
 ){
 
     var selectedCategoryIndex by remember { mutableIntStateOf(firstIndex.hashCode()) }
-
-    val categoriesNames = listOf(
-        "Music", "Men's Fashion", "Women's Fashion", "Super Market", "Baby & Toys",
-        "Home", "Books", "Beauty & Health", "Mobiles", "Electronics"
-    )
 
     Box(
         modifier = modifier
@@ -56,16 +42,16 @@ fun CategoriesSelection(
         Column(
             Modifier.fillMaxSize()
         ){
-            categoriesNames.forEach{ categoryName ->
+            categories.forEach{ category ->
                 CategoryCard(
-                    categoryName = categoryName,
-                    isSelected = selectedCategoryIndex == categoryName.hashCode(),
+                    categoryName = category.name!!,
+                    isSelected = selectedCategoryIndex == category.name.hashCode(),
                     onCategoryClicked = { clickedIndex ->
                         if (selectedCategoryIndex != clickedIndex)
                             selectedCategoryIndex = clickedIndex
-                        onCategoryChange(categoryName)
+                        onCategoryChange(category)
                     },
-                    shape = if (categoryName == categoriesNames[0]) RoundedCornerShape(topStart = 16.dp) else RectangleShape
+                    shape = if (category.name == categories[0].name) RoundedCornerShape(topStart = 16.dp) else RectangleShape
                 )
             }
         }

@@ -59,7 +59,7 @@ class ForgetPasswordViewModel @Inject constructor(
             _screenState.update { it.copy(isLoading = true) }
 
             try {
-                val response = withTimeout(5000L) {
+                val response = withTimeout(10000L) {
                     repository.forgetPassword(ForgetPasswordBody(email = email.value))
                 }
                 val errorMessage = response.getErrorMessage()

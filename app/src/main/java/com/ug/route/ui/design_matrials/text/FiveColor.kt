@@ -78,7 +78,6 @@ fun CircleWithIcon(
         if (isSelected) {
 
             Icon(
-                modifier = Modifier.padding(end = 16.dp),
                 tint = Color.White,
                 painter = painterResource(id = R.drawable.right_sign),
                 contentDescription = "")

@@ -92,6 +92,7 @@ class ResetPasswordViewModel @Inject constructor(
         if (checkInputError()) return
 
         viewModelScope.launch {
+
             _screenState.update { prevState ->
                 prevState.copy(isLoading = true)
             }

@@ -1,6 +1,9 @@
 package com.ug.route.ui.categories_screen
 
 import androidx.lifecycle.ViewModel
+import com.ug.route.data.fake.FakeData
+import com.ug.route.data.repositories.Repository
+import com.ug.route.networking.dto_models.categories.Category
 import com.ug.route.utils.SharedPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,19 +19,22 @@ class CategoriesViewModel  @Inject constructor() : ViewModel() {
 
         CategoriesState(
             launchedEffectKey = false,
-            selectedCategory = if (SharedPreferences.selectedCategory == null) "Music" else SharedPreferences.selectedCategory!!
+            selectedCategory = if (SharedPreferences.selectedCategory == null) FakeData.categories[0] else FakeData.categories.filter { it.name == SharedPreferences.selectedCategory!!}[0],
+            categories = FakeData.categories,
+            subCategories = emptyList(),
+            isLoading = false,
+            message = ""
         )
     )
 
     val screenState = _screenState.asStateFlow()
 
 
-    fun onCategoryChange(newCategory : String){
+    fun onCategoryChange(newCategory : Category){
 
-        SharedPreferences.selectedCategory = newCategory
+        SharedPreferences.selectedCategory = newCategory.name
         _screenState.update { it.copy(selectedCategory = newCategory) }
     }
-
 
     fun onInternetError(){
         _screenState.update { it.copy(

@@ -9,6 +9,7 @@ import com.ug.route.data.database.entities.UserEntity
 import com.ug.route.networking.dto_models.FailResponse
 import com.ug.route.data.repositories.Repository
 import com.ug.route.networking.body_models.UserSignUpBody
+import com.ug.route.utils.SharedPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -122,7 +123,11 @@ class SignUpViewModel @Inject constructor(
                 val errorMessage = response.getErrorMessage()
 
                 _screenState.update { prevState ->
+
                     if (response.isSuccessful) {
+
+                        SharedPreferences.signInToken = response.body()!!.token
+
                         repository.insertUser(
                             UserEntity(
                                 id = 0,
@@ -151,7 +156,7 @@ class SignUpViewModel @Inject constructor(
                 }
             }
 
-            delay(1500)
+            delay(500)
 
             if (_screenState.value.message == "Account Created Successfully") navController.popBackStack()
         }

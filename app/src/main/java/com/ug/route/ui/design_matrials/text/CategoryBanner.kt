@@ -48,7 +48,7 @@ fun CategoryBannerPreview(){
 fun CategoryBanner(
     modifier : Modifier = Modifier,
     imageResource : Int = R.drawable.mens_fashion,
-    title : String = "Men's Fashion"
+    title : String = "SuperMarket"
 ){
 
     Card(
@@ -85,7 +85,7 @@ fun CategoryBanner(
             Text(
                 text = title,
                 modifier = Modifier
-                    .width(108.dp)
+                    .width(126.dp)
                     .constrainAs(titleText) {
                         top.linkTo(parent.top, 16.dp)
                         start.linkTo(parent.start, 16.dp)

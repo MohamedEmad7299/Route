@@ -3,6 +3,7 @@ package com.ug.route.ui.design_matrials.text
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,12 +46,16 @@ fun ProductCard(
     productPrice: Int = 8900,
     isFavourite: Boolean = false,
     onClickFavButton: () -> Unit,
-    onClickAddButton: () -> Unit
+    onClickAddButton: () -> Unit,
+    onClickItem: () -> Unit
 ){
 
     Card(
         modifier = Modifier
             .height(240.dp)
+            .clickable {
+                onClickItem()
+            }
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
@@ -193,9 +198,7 @@ fun ProductCardPreview(){
     ) {
 
         items(2) {
-            ProductCard(onClickFavButton = { /*TODO*/ }) {
-                
-            }
+            ProductCard(onClickFavButton = { /*TODO*/ }, onClickItem = {}, onClickAddButton = {})
         }
     }
 

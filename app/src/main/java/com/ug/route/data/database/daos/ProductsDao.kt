@@ -16,4 +16,7 @@ interface ProductsDao{
     suspend fun updateProduct(productEntity: ProductEntity)
     @Query("SELECT * FROM PRODUCT_TABLE")
     fun getAllProducts(): Flow<List<ProductEntity>>
+
+    @Query("SELECT * FROM PRODUCT_TABLE WHERE id = :itemId")
+    fun getProductById(itemId: Long): Flow<ProductEntity>
 }

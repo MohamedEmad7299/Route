@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.ug.route.data.fake.FakeData
 import com.ug.route.data.repositories.Repository
+import com.ug.route.networking.dto_models.sub_categories.SubCategory
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +42,7 @@ class HomeViewModel @Inject constructor(
             repository.refreshCategories()
         }
         getCategories()
+        getSubCategories()
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -50,9 +53,9 @@ class HomeViewModel @Inject constructor(
             try {
 
                 repository.getCategories().collect { categories ->
-                    if (categories.isNotEmpty())
-                    _screenState.update { it.copy(isLoading = false, launchedEffectKey = !it.launchedEffectKey, categories = categories) }
 
+                    if (categories.isNotEmpty())
+                        _screenState.update { it.copy(isLoading = false, launchedEffectKey = !it.launchedEffectKey, categories = categories) }
                 }
 
             } catch (e: Exception) {
@@ -69,10 +72,20 @@ class HomeViewModel @Inject constructor(
         if (searchInput in _screenState.value.categories.map { it.name }){
 
             SharedPreferences.selectedCategory = searchInput
-
             navController.navigate(Screen.CategoriesScreen.route)
         }
     }
+
+    private fun getSubCategories() {
+
+        viewModelScope.launch {
+
+            val response = repository.getSubCategories()
+
+            FakeData.subCategories = response.body()?.data as List<SubCategory>
+        }
+    }
+
 
     // to refresh the home screen and make it recognize that there is no internet connection
     fun onInternetError(){
