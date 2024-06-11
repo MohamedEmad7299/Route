@@ -200,7 +200,7 @@
 //                    top.linkTo(boxes.bottom,48.dp)},
 //            ) {
 //
-//                if (screenState.isLoading){
+//                if (screenState.isLoadingButton){
 //
 //                    CircularProgressIndicator(
 //                        modifier = Modifier.size(32.dp),

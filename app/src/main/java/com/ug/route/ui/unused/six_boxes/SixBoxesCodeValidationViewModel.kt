@@ -35,7 +35,7 @@
 //                digit6 = ""),
 //            message = "",
 //            isError = false,
-//            isLoading = false,
+//            isLoadingButton = false,
 //            email = checkNotNull(savedStateHandle["email"]),
 //            launchedEffectKey = false,
 //            isClickable = true)
@@ -78,7 +78,7 @@
 //        if (checkInputError()) return
 //        viewModelScope.launch {
 //
-//            _screenState.update { it.copy(isLoading = true) }
+//            _screenState.update { it.copy(isLoadingButton = true) }
 //
 //            val response = repository.codeValidation(ValidationCodeDTO(codeProvider()))
 //            val errorMessage = response.getErrorMessage()
@@ -86,7 +86,7 @@
 //            if (response.isSuccessful) _screenState.update { it.copy(message = "Done ya ro7y") }
 //            else _screenState.update { it.copy(message = errorMessage ?: "An error occurred") }
 //
-//            _screenState.update {it.copy(launchedEffectKey = !_screenState.value.launchedEffectKey,isLoading = false)}
+//            _screenState.update {it.copy(launchedEffectKey = !_screenState.value.launchedEffectKey,isLoadingButton = false)}
 //        }
 //    }
 //

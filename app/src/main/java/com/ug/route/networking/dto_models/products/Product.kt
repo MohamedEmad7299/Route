@@ -3,7 +3,7 @@ package com.ug.route.networking.dto_models.products
 
 import com.google.gson.annotations.SerializedName
 
-data class Data(
+data class Product(
     @SerializedName("availableColors")
     val availableColors: List<Any?>? = null,
     @SerializedName("brand")

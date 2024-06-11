@@ -10,9 +10,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -28,9 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
-import com.ug.route.data.database.entities.CartEntity
-import com.ug.route.data.database.entities.FavouriteEntity
-import com.ug.route.data.database.entities.ProductEntity
+import com.ug.route.data.fake.FakeData
 import com.ug.route.ui.design_matrials.text.ProductCard
 import com.ug.route.ui.design_matrials.text.SearchBarAndCart
 import com.ug.route.ui.design_matrials.text.SmallLogo
@@ -49,6 +51,13 @@ fun ProductsScreen(
     val screenState by viewModel.screenState.collectAsState()
     val context = LocalContext.current
 
+    if (screenState.message.isNotEmpty()){
+        LaunchedEffect(key1 = screenState.launchedEffectKey){
+            Toast.makeText(context, screenState.message, Toast.LENGTH_SHORT).show()
+            viewModel.stopLaunchedEffect()
+        }
+    }
+
     if (isInternetConnected(context)){
 
         ProductsContent(
@@ -59,25 +68,12 @@ fun ProductsScreen(
                     {navController.navigate(Screen.SearchScreen.route)},
                     viewModel::onInternetError)
             },
-            onClickFavButton = { product , favouriteProduct ->
+            onClickAddButton = { productID ->
                 handelInternetError(context,
                     {
-                        viewModel.updateProduct(product.copy(isFavourite = !product.isFavourite))
-                        if (product.isFavourite) viewModel.deleteFavouriteProduct(favouriteProduct)
-                        else viewModel.addToFavourite(favouriteProduct.copy(review = product.review))
-                    },
-                    viewModel::onInternetError)
-            },
-            onClickAddButton = { product , cartItem ->
-                handelInternetError(context,
-                    {
-                        if (viewModel.getCartItemExists(product.id))
-
-                            viewModel.getCartItemAndUpdateIt(product.id)
-
-                        else viewModel.insertCartItem(cartItem)
-
-                        Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
+                        viewModel.addProductToCart(
+                            productID = productID
+                        )
 
                     }, viewModel::onInternetError)
             },
@@ -85,6 +81,22 @@ fun ProductsScreen(
                 handelInternetError(context,
                     {navController.navigate("${Screen.ProductDetailsScreen.route}/$it")},
                     viewModel::onInternetError)
+            },
+            addToWishList = { productID ->
+                handelInternetError(context,
+                    {
+                        viewModel.addProductToWishList(
+                            productID = productID
+                        )
+                    }, viewModel::onInternetError)
+            },
+            deleteFromWishList = { productID ->
+                handelInternetError(context,
+                    {
+                        viewModel.deleteWishListItem(
+                            itemId = productID
+                        )
+                    }, viewModel::onInternetError)
             }
         )
 
@@ -106,9 +118,10 @@ fun ProductsContent(
     screenState: ProductsState,
     onClickCartIcon : () -> Unit,
     navToSearch : () -> Unit,
-    onClickFavButton: (ProductEntity,FavouriteEntity) -> Unit,
-    onClickAddButton: (ProductEntity,CartEntity) -> Unit,
-    onClickItem: (Long) -> Unit
+    onClickAddButton: (String) -> Unit,
+    addToWishList: (String) -> Unit,
+    deleteFromWishList: (String) -> Unit,
+    onClickItem: (String) -> Unit
 ){
 
     val systemUiController = rememberSystemUiController()
@@ -146,7 +159,12 @@ fun ProductsContent(
             navToSearch = navToSearch
         )
 
-        if (screenState.productKey == "Laptops"){
+
+        if (FakeData.products.any { it.subcategory!![0]!!.id == screenState.subCategoryId }){
+
+            var loadingProductId by remember { mutableStateOf<String?>(null) }
+
+            if (!screenState.isLoading) loadingProductId = null
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -160,40 +178,31 @@ fun ProductsContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                items(screenState.products) { product ->
+                items(FakeData.products.filter { it.subcategory!![0]!!.id ==  screenState.subCategoryId}) { product ->
 
                     ProductCard(
-                        isFavourite = product.isFavourite,
-                        imageResource = product.imageResource,
-                        productName = product.name,
-                        productPrice = product.price,
-                        productReview = product.review,
-                        onClickFavButton = {
-                            onClickFavButton(product,FavouriteEntity(
-                                id = product.id,
-                                name = product.name,
-                                imageResource = product.imageResource,
-                                price = product.price,
-                                colorValue = R.color.black,
-                                colorName = "Black"
-                            ))
-                        },
+                        imageURL = product.images!![0]!!,
+                        productName = product.title!!,
+                        productPrice = product.price!!,
+                        productReview = product.ratingsAverage.toString(),
                         onClickAddButton = {
-                            onClickAddButton(
-                                product,
-                                CartEntity(
-                                    id = product.id,
-                                    name = product.name,
-                                    imageResource = product.imageResource,
-                                    price = product.price,
-                                    colorValue = R.color.black,
-                                    colorName = "Black",
-                                    count = 1
-                                )
-                            )
+                            loadingProductId = product.id!!
+                            onClickAddButton(product.id)
                         },
                         onClickItem = {
-                            onClickItem(product.id)
+                            onClickItem(product.id!!)
+                        },
+                        isLoading = loadingProductId == product.id!!,
+                        isFavourite = FakeData.wishList.any{ it?.id == product.id},
+                        onClickFavButton = {
+                            if (FakeData.wishList.any{ it?.id == product.id}){
+
+                                deleteFromWishList(product.id)
+                            }
+                            else {
+
+                                addToWishList(product.id)
+                            }
                         }
                     )
                 }

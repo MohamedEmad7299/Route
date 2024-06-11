@@ -2,7 +2,6 @@ package com.ug.route.ui.categories_screen
 
 import androidx.lifecycle.ViewModel
 import com.ug.route.data.fake.FakeData
-import com.ug.route.data.repositories.Repository
 import com.ug.route.networking.dto_models.categories.Category
 import com.ug.route.utils.SharedPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel

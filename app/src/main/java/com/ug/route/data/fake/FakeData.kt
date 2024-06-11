@@ -1,74 +1,25 @@
 package com.ug.route.data.fake
 
 import com.ug.route.R
-import com.ug.route.data.database.entities.ProductEntity
+import com.ug.route.networking.dto_models.cart_items.CartItem
 import com.ug.route.networking.dto_models.categories.Category
+import com.ug.route.networking.dto_models.products.Product
 import com.ug.route.networking.dto_models.sub_categories.SubCategory
+import com.ug.route.networking.dto_models.wish_list.WishListItem
 
 object FakeData{
-
 
     var categories: List<Category> = emptyList()
 
     var subCategories : List<SubCategory> = emptyList()
 
-    val products = mutableListOf(
-        "T-shirts",
-        "Jeans",
-        "Pants",
-        "Footwear",
-        "Suits",
-        "Watches",
-        "Bags",
-        "Eyewears",
-        "Dresses",
-        "Skirts",
-        "Pyjamas",
-        "Women's Bags",
-        "Women's Jeans",
-        "Women's T-shirts",
-        "Women's Footwear",
-        "Women's Eyewear",
-        "Women's Watches",
-        "Drums",
-        "Violin",
-        "Guitar",
-        "Piano",
-        "Saxophone",
-        "Flute",
-        "Trombone",
-        "Harp",
-        "Accordion",
-        "Canned Food",
-        "Fruits",
-        "Milk Products",
-        "Soft Drinks",
-        "Clean Products",
-        "Oils",
-        "Seeds",
-        "Meat",
-        "Spices",
-        "Baby Clothes",
-        "Baby Footwear",
-        "Toys",
-        "Diaper",
-        "Beds",
-        "Baby Books",
-        "Furniture",
-        "Home Appliance",
-        "Carpets",
-        "Comedy Books",
-        "Cooking Books",
-        "Science Books",
-        "Skincare",
-        "Mackup",
-        "Xiaomi",
-        "Huawei",
-        "Iphone",
-        "Laptops",
-        "iPads",
-        "Cameras"
-    )
+    var cartItems : List<CartItem> = emptyList()
+
+    var wishList : List<WishListItem?> = emptyList()
+
+    var products: List<Product> = emptyList()
+
+    const val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MDdjZjZmNTE1YmRjZjM0N2MwOWYxNyIsIm5hbWUiOiJBaG1lZCBBYmQgQWwtTXV0aSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzE2NTk5MzU3LCJleHAiOjE3MjQzNzUzNTd9.NgL0zySmcUHyx0HCw7YLSURb1_j_gK1bVH5cdt77Sg8"
 
     val subCategoryImages: Map< String , Int> = mapOf(
 
@@ -126,56 +77,5 @@ object FakeData{
         "Beauty & Health" to R.drawable.beauty,
         "Mobiles" to R.drawable.mobiles,
         "Electronics" to R.drawable.electronics
-    )
-
-    val laptops = mutableListOf(
-        ProductEntity(
-            id = 0,
-            isFavourite = false,
-            imageResource = R.drawable.hp,
-            name = "HP OMEN 17t-cm200 - Gaming & Entertainment Laptop",
-            price = 56532,
-            review = "4.4"
-        ),
-        ProductEntity(
-            id = 0,
-            isFavourite = false,
-            imageResource = R.drawable.dell,
-            name = "Inspiron 15 Laptop - NVIDIA® GeForce RTX™ 4060 32 GB DDR5",
-            price = 66532,
-            review = "4.5"
-        ),
-        ProductEntity(
-            id = 0,
-            isFavourite = false,
-            imageResource = R.drawable.razer,
-            name = "Razer Blade 14 - AMD Ryzen™ 9 8945HS",
-            price = 53432,
-            review = "4.9"
-        ),
-        ProductEntity(
-            id = 0,
-            isFavourite = false,
-            imageResource = R.drawable.lenvo,
-            name = "Legion Slim 7i Gen 8 Intel (16″) - RTX 4060",
-            price = 51000,
-            review = "4.8"
-        ),
-        ProductEntity(
-            id = 0,
-            isFavourite = false,
-            imageResource = R.drawable.msi,
-            name = "MSI GF63 - RTX 3050 4GB DDR6",
-            price = 58532,
-            review = "4.7"
-        ),
-        ProductEntity(
-            id = 0,
-            isFavourite = false,
-            imageResource = R.drawable.asus,
-            name = "ROG Flow Z13 Gaming Laptop",
-            price = 56532,
-            review = "4.3"
-        ),
     )
 }

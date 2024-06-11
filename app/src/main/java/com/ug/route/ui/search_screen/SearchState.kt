@@ -7,8 +7,8 @@ data class SearchState(
     val isSearchBarActive: Boolean,
 ){
     fun matchSearchQuery() : List<String>{
-        return FakeData.products.filter{
-            it.contains(query,true)
-        }
+        return FakeData.products
+            .map { it.title!! }
+            .filter{ it.contains(query,true) }
     }
 }

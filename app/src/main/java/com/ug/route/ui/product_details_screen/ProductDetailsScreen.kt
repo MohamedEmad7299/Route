@@ -128,7 +128,7 @@ fun ProductDetailsContent() {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top,16.dp)
                 },
-            text = "Product Details",
+            text = "CartItem Details",
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 18.sp,
@@ -291,7 +291,7 @@ fun ProductDetailsContent() {
             },
             onClickMinus = { /*TODO*/ },
             onClickAdd = { /*TODO*/ },
-            value = "1")
+            value = 1)
 
 
         // req text

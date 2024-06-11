@@ -38,6 +38,7 @@ import com.ug.route.ui.design_matrials.text.SmallLogo
 import com.ug.route.ui.design_matrials.text.SubcategoryItem
 import com.ug.route.ui.no_internet_screen.NoInternetContent
 import com.ug.route.ui.theme.DarkPurple
+import com.ug.route.ui.theme.Gray80
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
 import com.ug.route.utils.handelInternetError
@@ -73,10 +74,10 @@ fun CategoriesScreen(
                     viewModel::onInternetError
                 )
             },
-            onClickSubcategory = { subCategoryName ->
+            onClickSubcategory = { subCategoryId ->
                 handelInternetError(
                     context,
-                    {navController.navigate("${Screen.ProductsScreen.route}/${subCategoryName}")},
+                    {navController.navigate("${Screen.ProductsScreen.route}/${subCategoryId}")},
                     {navController.navigate(Screen.NoInternetScreen.route)}
                 )
             },
@@ -128,7 +129,8 @@ fun CategoriesContent(
             categoriesSelection,
             categoryBanner,
             selectedCategoryText,
-            subcategoriesGrid) = createRefs()
+            subcategoriesGrid,
+            noItemsText) = createRefs()
 
         SideEffect {
 
@@ -191,30 +193,54 @@ fun CategoriesContent(
                 }
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier
-                .constrainAs(subcategoriesGrid) {
-                    top.linkTo(categoryBanner.bottom, 16.dp)
-                    start.linkTo(categoriesSelection.end)
-                    end.linkTo(parent.end)
-                }
-                .padding(start = 80.dp,
-                    end = 80.dp, bottom = 400.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
 
-            items(
-                selectedSubCategories[screenState.selectedCategory.id]!!
-            ) { subcategory ->
-                SubcategoryItem(
-                    name = subcategory.name ?: "",
-                    imageResource = FakeData.subCategoryImages[subcategory.id]!!,
-                    onClickItem = {
-                        onClickSubcategory(subcategory.name ?: "")
-                    }
+        if (selectedSubCategories[screenState.selectedCategory.id]!!.isEmpty()){
+
+            Text(
+                modifier = Modifier
+                    .width(172.dp)
+                    .constrainAs(noItemsText) {
+                    top.linkTo(categoryBanner.bottom,172.dp)
+                    start.linkTo(categoriesSelection.end)
+                    end.linkTo(parent.end) },
+                text = "No available data currently",
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                    fontWeight = FontWeight(300),
+                    color = Gray80,
+                    textAlign = TextAlign.Center,
                 )
+            )
+
+        } else {
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier
+                    .constrainAs(subcategoriesGrid) {
+                        top.linkTo(categoryBanner.bottom, 16.dp)
+                        start.linkTo(categoriesSelection.end)
+                        end.linkTo(parent.end)
+                    }
+                    .padding(start = 80.dp,
+                        end = 80.dp, bottom = 400.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+
+                items(
+                    selectedSubCategories[screenState.selectedCategory.id]!!
+                ) { subcategory ->
+                    SubcategoryItem(
+                        name = subcategory.name ?: "",
+                        imageResource = FakeData.subCategoryImages[subcategory.id]!!,
+                        onClickItem = {
+                            onClickSubcategory(subcategory.id!!)
+                        }
+                    )
+                }
             }
+
         }
     }
 }

@@ -165,11 +165,11 @@ fun SearchContent(
             )
         ){
 
-            val categories = if (screenState.query.isBlank()) FakeData.products else screenState.matchSearchQuery()
+            val productsNames = if (screenState.query.isBlank()) FakeData.products.map { it.title }.distinct() else screenState.matchSearchQuery().distinct()
 
             LazyColumn{
 
-                items(categories){ product ->
+                items(productsNames){ productName ->
 
                     Row(
                         modifier = Modifier
@@ -178,11 +178,11 @@ fun SearchContent(
                             .fillMaxWidth()
                             .clickable {
                                 hideKeyboard(currentView)
-                                onSearch(product)
+                                onSearch(productName!!)
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ){
-                        Text(text = product)
+                        Text(text = productName!!)
                     }
                 }
             }

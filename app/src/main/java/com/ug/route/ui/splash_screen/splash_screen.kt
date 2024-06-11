@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
@@ -27,12 +28,15 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun SplashScreen(navController : NavController){
+fun SplashScreen(
+    navController : NavController,
+    viewModel: SplashScreenViewModel = hiltViewModel()
+){
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setStatusBarColor(DarkBlue)
-    val context = LocalContext.current
 
+    val context = LocalContext.current
     val scale = remember{
 
         Animatable(3f)
@@ -50,7 +54,7 @@ fun SplashScreen(navController : NavController){
             )
         )
 
-        delay(750)
+        delay(1500)
 
         val nextDestination =
             if (SharedPreferences.loggedEmail == null)

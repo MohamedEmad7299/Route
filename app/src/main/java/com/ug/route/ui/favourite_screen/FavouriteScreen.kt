@@ -4,8 +4,10 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,13 +27,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.data.database.entities.CartEntity
-import com.ug.route.data.database.entities.FavouriteEntity
-import com.ug.route.data.database.entities.ProductEntity
 import com.ug.route.ui.design_matrials.text.FavouriteItem
 import com.ug.route.ui.design_matrials.text.SearchBarAndCart
 import com.ug.route.ui.design_matrials.text.SmallLogo
 import com.ug.route.ui.no_internet_screen.NoInternetContent
+import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.Gray80
 import com.ug.route.utils.Screen
 import com.ug.route.utils.handelInternetError
@@ -55,31 +55,15 @@ fun FavouriteScreen(
                     {navController.navigate(Screen.SearchScreen.route)},
                     viewModel::onInternetError)
             },
-            onClickFavButton = { favouriteItem ->
+            onClickFavButton = { favouriteItemId ->
                 handelInternetError(context,{
-                    viewModel.updateProduct(
-                        ProductEntity(
-                            id = favouriteItem.id,
-                            name = favouriteItem.name,
-                            price = favouriteItem.price,
-                            imageResource = favouriteItem.imageResource,
-                            isFavourite = false,
-                            review = favouriteItem.review
-                        )
-                    )
-                    viewModel.deleteFavouriteProduct(favouriteItem)
-                                            },viewModel::onInternetError)
+                    viewModel.deleteWishListItem(favouriteItemId) },viewModel::onInternetError)
             },
-            onClickAddButton = { favItem ,  cartItem ->
+            onClickAddButton = { itemId ->
 
                 handelInternetError(context,{
 
-                    if (viewModel.getCartItemExists(favItem.id))
-
-                        viewModel.getCartItemAndUpdateIt(favItem.id)
-
-                    else viewModel.insertCartItem(cartItem)
-
+                    viewModel.addProductToCart(itemId)
                     Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
 
                 },viewModel::onInternetError)
@@ -108,8 +92,8 @@ fun FavouriteScreen(
 fun FavouriteContent(
     screenState: FavouriteState,
     navToSearch : () -> Unit,
-    onClickFavButton : (FavouriteEntity) -> Unit,
-    onClickAddButton : (FavouriteEntity, CartEntity) -> Unit,
+    onClickFavButton : (String) -> Unit,
+    onClickAddButton : (String) -> Unit,
     onClickCartIcon : () -> Unit
 ){
 
@@ -121,6 +105,7 @@ fun FavouriteContent(
         val(logo,
             searchBar,
             noFavsText,
+            circularProgress,
             items)= createRefs()
 
         SmallLogo(
@@ -140,63 +125,71 @@ fun FavouriteContent(
             navToSearch = navToSearch
         )
 
-        if (screenState.favouriteProducts.isEmpty()){
+        if (screenState.isLoading){
 
-            Text(
-                modifier = Modifier.constrainAs(noFavsText){
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(searchBar.bottom,256.dp)
-                },
-                text = stringResource(R.string.no_favourites_items_added),
-                style = TextStyle(
-                    fontSize = 17.sp,
-                    lineHeight = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(300),
-                    color = Gray80,
-                    textAlign = TextAlign.Center,
-                )
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .constrainAs(circularProgress) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .size(32.dp),
+                color = DarkBlue,
+                strokeWidth = 5.dp
             )
 
         } else {
 
-            LazyColumn(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 200.dp)
-                    .constrainAs(items) {
-                        top.linkTo(searchBar.bottom, 16.dp)
-                        start.linkTo(parent.start, 8.dp)
-                        end.linkTo(parent.end, 8.dp)
-                    }
-            ){
-                items(screenState.favouriteProducts){ favItem ->
+            if (screenState.favouriteProducts.isEmpty()){
 
-                    FavouriteItem(
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        itemName = favItem.name,
-                        imageResource = favItem.imageResource,
-                        circleColor = Color(favItem.colorValue),
-                        colorName = favItem.colorName,
-                        itemPrice = favItem.price,
-                        onClickAdd = {
-                            onClickAddButton(
-                                favItem,
-                                CartEntity(
-                                    id = favItem.id,
-                                    name = favItem.name,
-                                    imageResource = favItem.imageResource,
-                                    price = favItem.price,
-                                    colorValue = favItem.colorValue,
-                                    colorName = favItem.colorName,
-                                    count = 1
-                                )
-                            )
-                        },
-                        onClickFavButton = {
-                            onClickFavButton(favItem)
-                        }
+                Text(
+                    modifier = Modifier.constrainAs(noFavsText){
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(searchBar.bottom,256.dp)
+                    },
+                    text = stringResource(R.string.no_favourites_items_added),
+                    style = TextStyle(
+                        fontSize = 17.sp,
+                        lineHeight = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(300),
+                        color = Gray80,
+                        textAlign = TextAlign.Center,
                     )
+                )
+
+            }
+            else {
+
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 200.dp)
+                        .constrainAs(items) {
+                            top.linkTo(searchBar.bottom, 16.dp)
+                            start.linkTo(parent.start, 8.dp)
+                            end.linkTo(parent.end, 8.dp)
+                        }
+                ){
+                    items(screenState.favouriteProducts){ favItem ->
+
+                        FavouriteItem(
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            itemName = favItem?.title!!,
+                            imageURL = favItem.imageCover!!,
+                            circleColor = Color.Black,
+                            colorName = "Black",
+                            itemPrice = favItem.price!!,
+                            onClickAdd = {
+                                onClickAddButton(favItem.id!!)
+                            },
+                            onClickFavButton = {
+                                onClickFavButton(favItem.id!!)
+                            }
+                        )
+                    }
                 }
             }
         }

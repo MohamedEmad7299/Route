@@ -4,20 +4,20 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,26 +29,30 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImage
 import com.ug.route.R
 import com.ug.route.ui.theme.ClearSky
+import com.ug.route.ui.theme.DarkBlue
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
 fun ProductCard(
-    imageResource: Int = R.drawable.laptops,
+    imageURL: String,
     productName: String = "UG7299 RTX4090",
     productReview: String = "4.9",
     productPrice: Int = 8900,
-    isFavourite: Boolean = false,
-    onClickFavButton: () -> Unit,
     onClickAddButton: () -> Unit,
-    onClickItem: () -> Unit
+    onClickFavButton: () -> Unit,
+    onClickItem: () -> Unit,
+    isLoading: Boolean,
+    isFavourite: Boolean
 ){
+
+    val inWishList = remember{ mutableStateOf(isFavourite) }
 
     Card(
         modifier = Modifier
@@ -62,7 +66,6 @@ fun ProductCard(
         border = BorderStroke(1.dp, ClearSky)
     ) {
 
-
         ConstraintLayout(
             modifier = Modifier
                 .background(Color.White)
@@ -73,18 +76,18 @@ fun ProductCard(
                 name,
                 review,
                 price,
-                favButton,
-                addButton) = createRefs()
+                addButton,
+                favButton) = createRefs()
 
 
-            Image(
-                painter = painterResource(id = imageResource),
+            AsyncImage(
                 modifier = Modifier
                     .constrainAs(image) {
                         top.linkTo(parent.top)
                     }
                     .height(120.dp)
                     .fillMaxWidth(),
+                model = imageURL,
                 contentDescription = "",
                 contentScale = ContentScale.Crop
             )
@@ -151,55 +154,51 @@ fun ProductCard(
             }
 
 
+            if (isLoading){
+
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .constrainAs(addButton) {
+                        end.linkTo(parent.end,8.dp)
+                        bottom.linkTo(parent.bottom,8.dp) }.
+                        size(32.dp),
+                    color = DarkBlue,
+                    strokeWidth = 5.dp
+                )
+
+            } else{
+
+                IconButton(
+                    modifier = Modifier.constrainAs(addButton) {
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    },
+                    onClick = onClickAddButton
+                ){
+                    Image(
+                        modifier = Modifier
+                            .size(30.dp),
+                        painter = painterResource(id = R.drawable.plus_icon),
+                        contentDescription = "")
+                }
+            }
+
             IconButton(
                 modifier = Modifier.constrainAs(favButton) {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                 },
-                onClick = onClickFavButton
+                onClick = {
+                    inWishList.value =! inWishList.value
+                    onClickFavButton()
+                }
             ){
                 Image(
                     modifier = Modifier
                         .size(40.dp),
-                    painter = if (isFavourite) painterResource(id = R.drawable.fav_focus) else painterResource(id = R.drawable.fav_unfocus),
-                    contentDescription = "")
-            }
-
-
-            IconButton(
-                modifier = Modifier.constrainAs(addButton) {
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                },
-                onClick = onClickAddButton
-            ){
-                Image(
-                    modifier = Modifier
-                        .size(30.dp),
-                    painter = painterResource(id = R.drawable.plus_icon),
+                    painter = if (inWishList.value) painterResource(id = R.drawable.fav_focus) else painterResource(id = R.drawable.fav_unfocus),
                     contentDescription = "")
             }
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun ProductCardPreview(){
-
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .background(Color.White)
-            .padding(8.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-
-        items(2) {
-            ProductCard(onClickFavButton = { /*TODO*/ }, onClickItem = {}, onClickAddButton = {})
-        }
-    }
-
 }

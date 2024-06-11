@@ -1,13 +1,15 @@
 package com.ug.route.ui.cart_screen
 
-import com.ug.route.data.database.entities.CartEntity
+import com.ug.route.networking.dto_models.cart_items.CartItem
 
 data class CartState(
 
-    val cartItems : List<CartEntity>,
+    val cartItems : List<CartItem>,
     val message: String,
-    val totalPrice: Int,
     val launchedEffectKey: Boolean,
+    val isLoadingButton: Boolean,
+    val isLoadingScreen: Boolean,
+    val totalPrice: Int,
     val isSearchBarActive: Boolean,
     val focused: Boolean
 )

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -35,7 +37,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ug.route.R
-import com.ug.route.data.database.entities.CartEntity
+import com.ug.route.networking.ProductCount
+import com.ug.route.networking.dto_models.cart_items.CartItem
 import com.ug.route.ui.design_matrials.text.CartItem
 import com.ug.route.ui.no_internet_screen.NoInternetContent
 import com.ug.route.ui.theme.DarkBlue
@@ -47,7 +50,6 @@ import com.ug.route.utils.handelInternetError
 import com.ug.route.utils.isInternetConnected
 import java.text.NumberFormat
 import java.util.Locale
-
 
 @Composable
 fun CartScreen(
@@ -64,23 +66,30 @@ fun CartScreen(
             onClickBackArrow = { navController.popBackStack() },
             onClickCheckOut = {
                 handelInternetError(context,{
+                    viewModel.updateTotalPrice(0)
                     if (screenState.cartItems.isNotEmpty()){
-                        viewModel.deleteAllCartItems()
-                        viewModel.makeTotalPriceZero()
+                        viewModel.clearCart()
                         Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
                     }
                 },viewModel::onInternetError)
             },
             deleteCartItem = {
                 handelInternetError(context,
-                    {viewModel.deleteCartItem(it)},viewModel::onInternetError)
+                    {
+                        viewModel.deleteCartItem(it)
+                    },viewModel::onInternetError
+                )
             },
             screenState = screenState,
-            updateCartItem = {
-                handelInternetError(context,{viewModel.updateCartItem(it)},viewModel::onInternetError)
+            updateCartItem = { id , productCount ->
+                handelInternetError(context,
+                    { viewModel.updateCartItem(id,productCount) },viewModel::onInternetError)
             },
             onClickSearch = {
                 handelInternetError(context,{navController.navigate(Screen.SearchScreen.route)},viewModel::onInternetError)
+            },
+            updateTotalPrice = {
+                handelInternetError(context,{viewModel.updateTotalPrice(it)},viewModel::onInternetError)
             }
         )
 
@@ -105,9 +114,10 @@ fun CartContent(
     onClickBackArrow: () -> Unit,
     onClickCheckOut: () -> Unit,
     onClickSearch: () -> Unit,
-    updateCartItem: (CartEntity) -> Unit,
-    deleteCartItem: (CartEntity) -> Unit,
-    screenState: CartState
+    updateCartItem: (String,ProductCount) -> Unit,
+    deleteCartItem: (CartItem) -> Unit,
+    screenState: CartState,
+    updateTotalPrice: (Int) -> Unit
 ){
 
     ConstraintLayout(
@@ -124,7 +134,8 @@ fun CartContent(
             priceText,
             checkOutButton,
             items,
-            noItemsText
+            noItemsText,
+            circularProgress
         ) = createRefs()
 
 
@@ -141,8 +152,6 @@ fun CartContent(
                 painter = painterResource(id = R.drawable.icon_search),
                 contentDescription = "")
         }
-
-
 
 
         Text(
@@ -169,8 +178,8 @@ fun CartContent(
                     start.linkTo(parent.start)
                     top.linkTo(parent.top,8.dp)
                 },
-            onClick = onClickBackArrow){
-
+            onClick = onClickBackArrow)
+        {
             Icon(
                 tint = DarkBlue,
                 imageVector = Icons.Filled.ArrowBack,
@@ -223,73 +232,111 @@ fun CartContent(
             ),
             shape = RoundedCornerShape(20.dp),
         ) {
-            Text(
-                text = stringResource(R.string.check_out),
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(500),
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                )
-            )
+            if (screenState.isLoadingButton){
 
-            Icon(
-                modifier = Modifier.padding(start = 16.dp),
-                tint = Color.White,
-                painter = painterResource(id = R.drawable.small_arrow),
-                contentDescription = "")
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp),
+                    color = Color.White,
+                    strokeWidth = 5.dp
+                )
+
+            } else {
+
+                Text(
+                    text = stringResource(R.string.check_out),
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(500),
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+
+                Icon(
+                    modifier = Modifier.padding(start = 16.dp),
+                    tint = Color.White,
+                    painter = painterResource(id = R.drawable.small_arrow),
+                    contentDescription = "")
+
+            }
         }
 
 
-        if (screenState.cartItems.isEmpty()){
+        if (screenState.isLoadingScreen){
 
-            Text(
-                modifier = Modifier.constrainAs(noItemsText){
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                },
-                text = stringResource(R.string.no_items_added),
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(300),
-                    color = Gray80,
-                    textAlign = TextAlign.Center,
-                )
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .constrainAs(circularProgress) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .size(32.dp),
+                color = DarkBlue,
+                strokeWidth = 5.dp
             )
 
         } else {
 
-            LazyColumn(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 164.dp)
-                    .constrainAs(items) {
-                        top.linkTo(cartText.bottom, 16.dp)
-                    }
-            ) {
-                items(screenState.cartItems){ cartItem ->
+            if (screenState.cartItems.isEmpty()){
 
-                    CartItem(
-                        itemName = cartItem.name,
-                        imageResource = cartItem.imageResource,
-                        circleColor = Color(cartItem.colorValue),
-                        colorName = cartItem.colorName,
-                        itemPrice = cartItem.price,
-                        count = cartItem.count,
-                        onClickAdd = {
-                            if (cartItem.count < 99){
-                                updateCartItem(cartItem.copy(count = cartItem.count+1))
-                            }
-                        },
-                        onClickMinus = {
-                            if (cartItem.count > 1){
-                                updateCartItem(cartItem.copy(count = cartItem.count-1))
-                            }
-                        },
-                        onClickDelete = { deleteCartItem(cartItem) })
+                Text(
+                    modifier = Modifier.constrainAs(noItemsText){
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    },
+                    text = stringResource(R.string.no_items_added),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(300),
+                        color = Gray80,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+
+            } else {
+
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 164.dp)
+                        .constrainAs(items) {
+                            top.linkTo(cartText.bottom, 16.dp)
+                        }
+                ) {
+                    items(screenState.cartItems){ cartItem ->
+
+                        CartItem(
+                            itemName = cartItem.product?.title!!,
+                            imageURL = cartItem.product.imageCover!!,
+                            circleColor = Color.Black,
+                            colorName = "Black",
+                            itemPrice = cartItem.price!!,
+                            count = cartItem.count!!,
+                            onClickAdd = {
+                                if (cartItem.count!! < 99){
+                                    cartItem.count = cartItem.count!! + 1
+                                    updateTotalPrice(screenState.totalPrice + cartItem.price)
+                                    updateCartItem(cartItem.product.id!!,
+                                        ProductCount(count = (cartItem.count!!).toString()))
+                                }
+                            },
+                            onClickMinus = {
+                                if (cartItem.count!! > 1){
+                                    cartItem.count = cartItem.count!! - 1
+                                    updateTotalPrice(screenState.totalPrice - cartItem.price)
+                                    updateCartItem(cartItem.product.id!!,
+                                        ProductCount(count = (cartItem.count!!).toString()))
+                                }
+                            },
+                            onClickDelete = {
+                                deleteCartItem(cartItem)
+                            })
+                    }
                 }
             }
         }

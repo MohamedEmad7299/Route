@@ -42,9 +42,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
+import com.ug.route.data.fake.FakeData
 import com.ug.route.networking.dto_models.HomeApplianceProduct
 import com.ug.route.ui.design_matrials.text.HomeApplianceCard
 import com.ug.route.ui.design_matrials.text.SearchBarAndCart
@@ -67,6 +70,18 @@ fun HomeScreen(
 
     val screenState by viewModel.screenState.collectAsState()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+
+        for (i in FakeData.categories.map { it.image }){
+
+            val request = ImageRequest.Builder(context)
+                .data(i)
+                .build()
+
+            context.imageLoader.enqueue(request)
+        }
+    }
 
     if (isInternetConnected(context)){
 
@@ -234,7 +249,7 @@ fun HomeContent(
 
                             Column(
                                 modifier = Modifier.clickable {
-                                    onClickCategory(category.name)
+                                    onClickCategory(category.name!!)
                                 },
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ){
@@ -254,7 +269,7 @@ fun HomeContent(
                                         .padding(top = 8.dp)
                                         .width(88.dp)
                                         .height(36.dp),
-                                    text = category.name,
+                                    text = category.name!!,
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         fontFamily = FontFamily(Font(R.font.poppins_regular)),

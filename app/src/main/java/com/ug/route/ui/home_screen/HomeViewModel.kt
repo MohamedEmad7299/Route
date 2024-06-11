@@ -1,19 +1,15 @@
 package com.ug.route.ui.home_screen
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.ug.route.data.fake.FakeData
 import com.ug.route.data.repositories.Repository
-import com.ug.route.networking.dto_models.sub_categories.SubCategory
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,48 +20,16 @@ class HomeViewModel @Inject constructor(
     private val _screenState = MutableStateFlow(
 
         HomeState(
-            categories = emptyList(),
+            categories = FakeData.categories,
             message = "",
             launchedEffectKey = false,
             isSearchBarActive = true,
-            isLoading = true,
+            isLoading = false,
             focused = true
         )
     )
 
     val screenState = _screenState.asStateFlow()
-
-
-    init {
-
-        viewModelScope.launch {
-            repository.refreshCategories()
-        }
-        getCategories()
-        getSubCategories()
-    }
-
-    @SuppressLint("SuspiciousIndentation")
-    private fun getCategories(){
-
-        viewModelScope.launch {
-
-            try {
-
-                repository.getCategories().collect { categories ->
-
-                    if (categories.isNotEmpty())
-                        _screenState.update { it.copy(isLoading = false, launchedEffectKey = !it.launchedEffectKey, categories = categories) }
-                }
-
-            } catch (e: Exception) {
-                _screenState.update { prevState ->
-                    prevState.copy(message = "An error occurred",launchedEffectKey = !prevState.launchedEffectKey)
-                }
-            }
-        }
-    }
-
 
     fun onClickCategory(searchInput: String, navController: NavController){
 
@@ -73,16 +37,6 @@ class HomeViewModel @Inject constructor(
 
             SharedPreferences.selectedCategory = searchInput
             navController.navigate(Screen.CategoriesScreen.route)
-        }
-    }
-
-    private fun getSubCategories() {
-
-        viewModelScope.launch {
-
-            val response = repository.getSubCategories()
-
-            FakeData.subCategories = response.body()?.data as List<SubCategory>
         }
     }
 

@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,10 +34,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImage
 import com.ug.route.R
 import com.ug.route.ui.theme.CardStrokeColor
 import com.ug.route.ui.theme.DarkBlue
@@ -51,7 +50,7 @@ import java.util.Locale
 fun FavouriteItem(
     modifier: Modifier = Modifier,
     itemName: String,
-    imageResource: Int,
+    imageURL: String,
     circleColor: Color,
     colorName: String,
     itemPrice: Int,
@@ -102,10 +101,10 @@ fun FavouriteItem(
                     color = CardStrokeColor
                 )
             ){
-                Image(
+                AsyncImage(
                     modifier = Modifier
                         .fillMaxSize(),
-                    painter = painterResource(id = imageResource),
+                    model = imageURL,
                     contentDescription = "",
                     contentScale = ContentScale.Crop
                 )
@@ -249,27 +248,4 @@ fun FavouriteItem(
             }
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun Preview(){
-
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize()
-    ){
-        FavouriteItem(
-            Modifier,
-            "koraa",
-            0,
-            Color.DarkGray,
-            "Gray",
-            1200,
-            {},
-            {}
-        )
-    }
-
 }

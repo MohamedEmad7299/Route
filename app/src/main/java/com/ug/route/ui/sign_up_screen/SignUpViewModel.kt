@@ -116,6 +116,7 @@ class SignUpViewModel @Inject constructor(
             }
 
             try {
+
                 val response = withTimeout(5000L) {
                     repository.signUp(user.value)
                 }
@@ -156,7 +157,7 @@ class SignUpViewModel @Inject constructor(
                 }
             }
 
-            delay(500)
+            delay(750)
 
             if (_screenState.value.message == "Account Created Successfully") navController.popBackStack()
         }

@@ -3,16 +3,16 @@ package com.ug.route.ui.product_screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ug.route.data.database.entities.CartEntity
-import com.ug.route.data.database.entities.FavouriteEntity
-import com.ug.route.data.database.entities.ProductEntity
+import com.ug.route.data.fake.FakeData
 import com.ug.route.data.repositories.Repository
+import com.ug.route.networking.dto_models.cart_items.ProductId
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,81 +26,124 @@ class ProductsViewModel @Inject constructor(
 
         ProductsState(
             launchedEffectKey = false,
-            productKey = checkNotNull(savedStateHandle["product"]),
+            subCategoryId = checkNotNull(savedStateHandle["product"]),
             products = emptyList(),
-            cartItems = emptyList()
+            message = "",
+            isLoading = false
         )
     )
 
     val screenState = _screenState.asStateFlow()
-    init {
+
+    private fun getWishList(){
 
         viewModelScope.launch {
 
-            repository.getAllProducts().collect { products ->
+            try {
 
-                if (products.isEmpty()) repository.insertProducts()
-                _screenState.value = _screenState.value.copy(products = products)
+                _screenState.update { prevState ->
+                    prevState.copy(isLoading = true)
+                }
+
+                val response = withTimeout(5000L) {
+                    repository.getWishList()
+                }
+
+                if (response.isSuccessful){
+
+                    val items = response.body()?.data!!
+                    FakeData.wishList = items
+                }
+
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { prevState ->
+                    prevState.copy(message = e.message.toString())
+                }
+            } finally {
+                _screenState.update { prevState ->
+                    prevState.copy(isLoading = false)
+                }
             }
         }
-
-        viewModelScope.launch {
-
-            repository.getAllCartItems().collect{ cartItems ->
-
-                _screenState.update { it.copy(cartItems = cartItems) }
-            }
-        }
     }
 
-    fun addToFavourite(favouriteEntity: FavouriteEntity){
-
-        viewModelScope.launch {
-            repository.insertFavouriteProduct(favouriteEntity)
-        }
-    }
-
-    fun updateProduct(productEntity: ProductEntity){
-
-        viewModelScope.launch {
-            repository.updateProduct(productEntity)
-        }
-    }
-
-    fun deleteFavouriteProduct(favouriteEntity : FavouriteEntity){
-
-        viewModelScope.launch {
-
-            repository.deleteFavouriteProduct(favouriteEntity)
-        }
-    }
-
-    fun insertCartItem(cartEntity: CartEntity){
+    fun addProductToCart(productID: String){
 
         viewModelScope.launch{
 
-            repository.insertCartItem(cartEntity)
-        }
-    }
+            _screenState.update { prevState ->
+                prevState.copy(isLoading = true)
+            }
 
-    fun getCartItemExists(id: Long): Boolean {
-        return screenState.value.cartItems.any { it.id == id }
-    }
-    private fun updateCartItem(cartEntity: CartEntity){
+            try {
 
-        viewModelScope.launch {
-            repository.updateCartItem(cartEntity)
-        }
-    }
-
-    fun getCartItemAndUpdateIt(itemId: Long){
-
-        viewModelScope.launch {
-            repository.getCartItemById(itemId)
-                .first()
-                .let {
-                    updateCartItem(it.copy(count = it.count+1))
+                val response = withTimeout(5000L) {
+                    repository.addProductToCart(ProductId(productID))
                 }
+
+                if (response.isSuccessful)
+                    _screenState.update { it.copy(message = "Done") }
+                else _screenState.update { it.copy(message = response.message()) }
+
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { it.copy(message = "Request timed out") }
+            } catch (e: Exception) {
+                _screenState.update { it.copy(message = "An error occurred") }
+            } finally {
+                _screenState.update { prevState ->
+                    prevState.copy(isLoading = false , launchedEffectKey = true)
+                }
+            }
+        }
+    }
+
+    fun addProductToWishList(productID: String){
+
+        viewModelScope.launch{
+
+            try {
+
+                val response = withTimeout(5000L) {
+                    repository.addProductToWishList(ProductId(productID))
+                }
+
+                if (!response.isSuccessful) _screenState.update { it.copy(message = response.message()) }
+
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { it.copy(message = "Request timed out") }
+            } catch (e: Exception) {
+                _screenState.update { it.copy(message = "An error occurred") }
+            } finally {
+                getWishList()
+            }
+        }
+    }
+
+    fun deleteWishListItem(itemId: String){
+
+        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == itemId }
+
+        viewModelScope.launch{
+
+            try {
+
+                withTimeout(5000L) {
+                    repository.deleteWishListItem(itemId)
+                }
+
+            } catch (e: TimeoutCancellationException) {
+                _screenState.update { it.copy(message = "Request timed out") }
+            } catch (e: Exception) {
+                _screenState.update { it.copy(message = "An error occurred") }
+            } finally {
+                getWishList()
+            }
+        }
+    }
+
+    fun stopLaunchedEffect(){
+        _screenState.update { prevState ->
+            prevState.copy(message = "")
         }
     }
 

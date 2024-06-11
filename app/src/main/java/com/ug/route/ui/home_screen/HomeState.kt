@@ -1,10 +1,10 @@
 package com.ug.route.ui.home_screen
 
-import com.ug.route.data.database.entities.CategoryEntity
+import com.ug.route.networking.dto_models.categories.Category
 
 data class HomeState(
 
-    val categories: List<CategoryEntity>,
+    val categories: List<Category>,
     val message: String,
     val launchedEffectKey: Boolean,
     val isLoading: Boolean,

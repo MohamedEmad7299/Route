@@ -1,12 +1,12 @@
 package com.ug.route.ui.product_screen
 
-import com.ug.route.data.database.entities.CartEntity
-import com.ug.route.data.database.entities.ProductEntity
+import com.ug.route.networking.dto_models.products.Product
 
 data class ProductsState(
 
     val launchedEffectKey: Boolean,
-    val productKey: String,
-    val products: List<ProductEntity>,
-    val cartItems: List<CartEntity>
+    val subCategoryId: String,
+    val products: List<Product>,
+    val message: String,
+    val isLoading: Boolean
 )

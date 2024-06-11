@@ -1,12 +1,8 @@
 package com.ug.route.data.repositories
 
 import com.ug.route.data.database.RouteDatabase
-import com.ug.route.data.database.entities.CartEntity
-import com.ug.route.data.database.entities.CategoryEntity
-import com.ug.route.data.database.entities.FavouriteEntity
-import com.ug.route.data.database.entities.ProductEntity
 import com.ug.route.data.database.entities.UserEntity
-import com.ug.route.data.fake.FakeData
+import com.ug.route.networking.ProductCount
 import com.ug.route.networking.dto_models.CodeValidationResponse
 import com.ug.route.networking.dto_models.ForgetPasswordResponse
 import com.ug.route.networking.dto_models.SuccessResponse
@@ -16,9 +12,16 @@ import com.ug.route.networking.body_models.ForgetPasswordBody
 import com.ug.route.networking.body_models.ResetPasswordBody
 import com.ug.route.networking.body_models.UserSignUpBody
 import com.ug.route.networking.body_models.ValidationCodeBody
-import com.ug.route.networking.dto_models.categories.Category
+import com.ug.route.networking.dto_models.cart_items.AddProductToCartResponse
+import com.ug.route.networking.dto_models.CategoriesResponse
+import com.ug.route.networking.dto_models.cart_items.ClearCartResponse
+import com.ug.route.networking.dto_models.cart_items.CartItemsResponse
+import com.ug.route.networking.dto_models.cart_items.ProductId
+import com.ug.route.networking.dto_models.products.ProductsResponse
 import com.ug.route.networking.dto_models.sub_categories.SubCategoriesResponse
-import kotlinx.coroutines.flow.Flow
+import com.ug.route.networking.dto_models.wish_list.AddProductToWishListResponse
+import com.ug.route.networking.dto_models.wish_list.DeleteWishListItem
+import com.ug.route.networking.dto_models.wish_list.WishListResponse
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -42,9 +45,6 @@ class Repository @Inject constructor (
     suspend fun resetPassword(resetPasswordBody: ResetPasswordBody) : Response<SuccessResponse>{
         return routeApiService.resetPassword(resetPasswordBody)
     }
-    fun getCategories() : Flow<List<CategoryEntity>>{
-        return databaseInstance.categoryDao().getCategories()
-    }
 
     suspend fun insertUser(userEntity : UserEntity){
         databaseInstance.userDao().insertUser(userEntity)
@@ -54,83 +54,51 @@ class Repository @Inject constructor (
         databaseInstance.userDao().updateUser(userEntity)
     }
 
-    suspend fun insertFavouriteProduct(favouriteEntity: FavouriteEntity){
-        databaseInstance.favouriteDao().insertFavouriteProduct(favouriteEntity)
-    }
-
-    suspend fun deleteFavouriteProduct(favouriteEntity: FavouriteEntity){
-        databaseInstance.favouriteDao().deleteFavouriteProduct(favouriteEntity)
-    }
-
-    fun getAllFavouriteProducts() : Flow<List<FavouriteEntity>> {
-        return databaseInstance.favouriteDao().getAllFavouriteProducts()
-    }
-
     suspend fun getUserByEmail(email : String) : UserEntity? {
         return databaseInstance.userDao().getUserByEmail(email)
-    }
-    suspend fun refreshCategories(){
-
-       val response = routeApiService.getCategories().body()?.data
-
-       val categories = response?.map {
-
-           CategoryEntity(
-               name = it?.name ?: "",
-               image = it?.image ?: "",
-               id = 0
-           )
-       }
-
-        FakeData.categories = response as List<Category>
-
-        if (categories != null) {
-
-            databaseInstance.categoryDao().replaceCategories(categories)
-        }
-    }
-
-    suspend fun insertCartItem(cartEntity: CartEntity){
-        databaseInstance.cartDao().insertCartItem(cartEntity)
-    }
-
-    suspend fun deleteCartItem(cartEntity: CartEntity){
-        databaseInstance.cartDao().deleteCartItem(cartEntity)
-    }
-
-    suspend fun updateCartItem(cartEntity: CartEntity){
-        databaseInstance.cartDao().updateCartItem(cartEntity)
-    }
-
-    fun getAllCartItems() : Flow<List<CartEntity>> {
-        return databaseInstance.cartDao().getAllCartItems()
-    }
-
-    suspend fun deleteAllCartItems(){
-        databaseInstance.cartDao().deleteAllCartItems()
-    }
-
-    suspend fun insertProducts(){
-        databaseInstance.productDao().insertProducts(FakeData.laptops)
-    }
-
-    suspend fun updateProduct(productEntity: ProductEntity){
-        databaseInstance.productDao().updateProduct(productEntity)
-    }
-
-    fun getCartItemById(itemId: Long): Flow<CartEntity>{
-        return databaseInstance.cartDao().getCartItemById(itemId)
-    }
-
-    fun getProductById(itemId: Long): Flow<ProductEntity>{
-        return databaseInstance.productDao().getProductById(itemId)
-    }
-
-    fun getAllProducts() : Flow<List<ProductEntity>> {
-        return databaseInstance.productDao().getAllProducts()
     }
 
     suspend fun getSubCategories() : Response<SubCategoriesResponse>{
         return routeApiService.getSubCategories()
+    }
+
+    suspend fun getProducts() : Response<ProductsResponse>{
+        return routeApiService.getProducts()
+    }
+
+    suspend fun getCategories(): Response<CategoriesResponse>{
+        return routeApiService.getCategories()
+    }
+
+    suspend fun addProductToCart(productID: ProductId): Response<AddProductToCartResponse>{
+        return routeApiService.addProductToCart(productID = productID)
+    }
+
+    suspend fun getCartItems(): Response<CartItemsResponse>{
+        return routeApiService.getCartItems()
+    }
+
+    suspend fun clearCart(): Response<ClearCartResponse>{
+        return routeApiService.clearCart()
+    }
+
+    suspend fun deleteCartItem(itemId: String): Response<ClearCartResponse>{
+        return routeApiService.deleteCartItem(itemId = itemId)
+    }
+
+    suspend fun updateCartItem(itemId: String, productCount: ProductCount): Response<ClearCartResponse>{
+        return routeApiService.updateCartItem(itemId = itemId, productCount = productCount)
+    }
+
+    suspend fun addProductToWishList(productID: ProductId): Response<AddProductToWishListResponse>{
+        return routeApiService.addProductToWishList(productID = productID)
+    }
+
+    suspend fun getWishList(): Response<WishListResponse>{
+        return routeApiService.getWishList()
+    }
+
+    suspend fun deleteWishListItem(itemId: String): Response<DeleteWishListItem>{
+        return routeApiService.deleteWishlistItem(itemId = itemId)
     }
 }
