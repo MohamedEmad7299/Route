@@ -90,6 +90,13 @@ fun CartScreen(
             },
             updateTotalPrice = {
                 handelInternetError(context,{viewModel.updateTotalPrice(it)},viewModel::onInternetError)
+            },
+            onClickItem = { id ->
+                handelInternetError(
+                    context,
+                    {navController.navigate("${Screen.ProductDetailsScreen.route}/${id}")},
+                    {navController.navigate(Screen.NoInternetScreen.route)}
+                )
             }
         )
 
@@ -117,7 +124,8 @@ fun CartContent(
     updateCartItem: (String,ProductCount) -> Unit,
     deleteCartItem: (CartItem) -> Unit,
     screenState: CartState,
-    updateTotalPrice: (Int) -> Unit
+    updateTotalPrice: (Int) -> Unit,
+    onClickItem: (String) -> Unit
 ){
 
     ConstraintLayout(
@@ -335,7 +343,11 @@ fun CartContent(
                             },
                             onClickDelete = {
                                 deleteCartItem(cartItem)
-                            })
+                            },
+                            onClickItem = {
+                                onClickItem(cartItem.product.id!!)
+                            }
+                        )
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.ug.route.ui.product_details_screen
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,11 +23,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,39 +38,117 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
+import com.ug.route.data.fake.FakeData
+import com.ug.route.networking.dto_models.products.Product
 import com.ug.route.ui.design_matrials.text.AddAndMinusButtons
 import com.ug.route.ui.design_matrials.text.FiveColors
+import com.ug.route.ui.no_internet_screen.NoInternetContent
 import com.ug.route.ui.theme.CardStrokeColor
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.ui.theme.DarkPurple
 import com.ug.route.ui.theme.DarkPurple60
 import com.ug.route.ui.theme.LightPurple
+import com.ug.route.utils.Screen
+import com.ug.route.utils.handelInternetError
+import com.ug.route.utils.isInternetConnected
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.random.Random
-
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.pager.*
+import com.ug.route.networking.ProductCount
+import com.ug.route.ui.design_matrials.text.SliderBannerAsync
 
 @Composable
 fun ProductDetailsScreen(
     navController : NavController,
+    viewModel: ProductDetailsViewModel = hiltViewModel()
 ){
 
     val context = LocalContext.current
+    val screenState by viewModel.screenState.collectAsState()
 
-    ProductDetailsContent()
+
+    if (screenState.message.isNotEmpty()){
+        LaunchedEffect(key1 = screenState.launchedEffectKey){
+            Toast.makeText(context, screenState.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (isInternetConnected(context)){
+
+        ProductDetailsContent(
+            onClickSearchIcon = {
+                handelInternetError(context,
+                    {navController.navigate(Screen.SearchScreen.route)},
+                    viewModel::onInternetError)
+            },
+            onClickBackArrow = {
+                handelInternetError(context,
+                    {navController.popBackStack() },
+                    viewModel::onInternetError)
+            },
+            onClickCartIcon = {
+                handelInternetError(context,
+                    {navController.navigate(Screen.CartScreen.route)},
+                    viewModel::onInternetError)
+            },
+            onClickFavouriteIcon = { product ->
+                handelInternetError(context,
+                    {
+                        viewModel.onClickFavIcon()
+                        if (screenState.isFavourite) viewModel.deleteWishListItem(product.id!!)
+                        else viewModel.addProductToWishList(product.id!!)
+
+                    },
+                    viewModel::onInternetError)
+            } ,
+            onClickAddToCart = { product ->
+                handelInternetError(context,
+                    {viewModel.addProductToCart(product.id!!,{ navController.popBackStack() } , ProductCount(screenState.counter.toString())) },
+                    viewModel::onInternetError)
+            },
+            screenState = screenState,
+            onClickPlus = viewModel::onClickPlus,
+            onClickMinus = viewModel::onClickMinus
+        )
+
+    } else NoInternetContent{
+
+        if (isInternetConnected(context)){
+
+            navController.navigate(Screen.HomeScreen.route){
+                popUpTo(navController.graph.id){
+                    inclusive = true
+                }
+            }
+        }
+    }
+
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ProductDetailsContent() {
+fun ProductDetailsContent(
+    screenState: ProductDetailsState,
+    onClickCartIcon: () -> Unit,
+    onClickPlus: () -> Unit,
+    onClickMinus: () -> Unit,
+    onClickSearchIcon: () -> Unit,
+    onClickBackArrow: () -> Unit,
+    onClickAddToCart: (Product) -> Unit,
+    onClickFavouriteIcon:(Product) -> Unit
+) {
 
     val systemUiController = rememberSystemUiController()
+
+    val product = FakeData.products.filter { it.id == screenState.productId }[0]
 
     ConstraintLayout(
         modifier = Modifier
@@ -106,14 +186,13 @@ fun ProductDetailsContent() {
             addToCartButton
         ) = createRefs()
 
-        // req fun
         IconButton(
             modifier = Modifier
                 .constrainAs(backArrow){
                     start.linkTo(parent.start)
                     top.linkTo(parent.top,8.dp)
                 },
-            onClick = { }){
+            onClick = onClickBackArrow){
 
             Icon(
                 tint = DarkBlue,
@@ -128,7 +207,7 @@ fun ProductDetailsContent() {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top,16.dp)
                 },
-            text = "CartItem Details",
+            text = "Product Details",
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 18.sp,
@@ -139,13 +218,12 @@ fun ProductDetailsContent() {
             )
         )
 
-        // req fun
         IconButton(
             modifier = Modifier.constrainAs(cartIcon){
                 end.linkTo(parent.end,8.dp)
                 top.linkTo(parent.top,8.dp)
             },
-            onClick = {  }
+            onClick = onClickCartIcon
         ) {
             Icon(
                 tint = DarkBlue,
@@ -153,13 +231,13 @@ fun ProductDetailsContent() {
                 contentDescription = "")
         }
 
-        // req fun
+
         IconButton(
             modifier = Modifier.constrainAs(searchIcon){
                 end.linkTo(cartIcon.start)
                 top.linkTo(parent.top,8.dp)
             },
-            onClick = {  }
+            onClick = onClickSearchIcon
         ) {
             Icon(
                 tint = DarkBlue,
@@ -167,76 +245,60 @@ fun ProductDetailsContent() {
                 contentDescription = "")
         }
 
-        // req image
-        Card(
-            modifier = Modifier
-                .height(300.dp)
-                .constrainAs(productImage) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(productDetailsText.bottom, 16.dp)
-                }
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(size = 16.dp),
-            border = BorderStroke(
-                width = 1.dp,
-                color = CardStrokeColor
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
-        ){
-            Image(
-                modifier = Modifier
-                    .fillMaxSize(),
-                painter = painterResource(id = R.drawable.dell),
-                contentDescription = "product image",
-                contentScale = ContentScale.Crop)
-        }
+        SliderBannerAsync(
+            modifier = Modifier.constrainAs(productImage){
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(productDetailsText.bottom, 16.dp)
+            },
+            onClickOffer = {},
+            models = product.images!!)
 
 
-        // req fun and boolean value
         IconButton(
             modifier = Modifier
                 .constrainAs(favButton) {
                 end.linkTo(productImage.end, 16.dp)
                 top.linkTo(productImage.top)
             },
-            onClick = { }
+            onClick = {
+                onClickFavouriteIcon(product)
+            }
         ){
             Image(
                 modifier = Modifier
                     .size(40.dp),
-                painter = if (false) painterResource(id = R.drawable.fav_focus) else painterResource(id = R.drawable.fav_unfocus),
+                painter = if (screenState.isFavourite) painterResource(id = R.drawable.fav_focus) else painterResource(id = R.drawable.fav_unfocus),
                 contentDescription = "")
         }
 
-        // req text
+
         Text(
             modifier = Modifier
+                .padding(start = 16.dp , end = 116.dp)
                 .constrainAs(productName){
-                    start.linkTo(parent.start,16.dp)
+                    start.linkTo(parent.start)
                     top.linkTo(productImage.bottom,16.dp)
                 },
-            text = "Dell Laptop",
+            text = product.title!!,
             style = TextStyle(
                 fontSize = 18.sp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
                 fontWeight = FontWeight(500),
                 color = DarkPurple,
                 textAlign = TextAlign.Center,
-            )
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
 
-        // req text
         Text(
             modifier = Modifier
                 .constrainAs(productPrice){
                     end.linkTo(parent.end,16.dp)
                     top.linkTo(productImage.bottom,16.dp)
                 },
-            text = "EGP ${NumberFormat.getNumberInstance(Locale.US).format(60000)}",
+            text = "EGP ${NumberFormat.getNumberInstance(Locale.US).format(product.price!!)}",
             style = TextStyle(
                 fontSize = 18.sp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -271,7 +333,7 @@ fun ProductDetailsContent() {
             ){
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
-                    text = "${NumberFormat.getNumberInstance(Locale.US).format(Random.nextInt(0, 10001))} sold",
+                    text = "${NumberFormat.getNumberInstance(Locale.US).format(product.sold)} sold",
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -283,18 +345,21 @@ fun ProductDetailsContent() {
             }
         }
 
-        // req 2 fun and value
         AddAndMinusButtons(
             modifier = Modifier.constrainAs(countButton){
                 end.linkTo(parent.end,16.dp)
                 top.linkTo(productPrice.bottom,16.dp)
             },
-            onClickMinus = { /*TODO*/ },
-            onClickAdd = { /*TODO*/ },
-            value = 1)
+            onClickMinus = {
+                if (screenState.counter > 1) onClickMinus()
+            },
+            onClickAdd = {
+                if (screenState.counter < 99) onClickPlus()
+            },
+            value = screenState.counter
+        )
 
 
-        // req text
         Row(
             Modifier.constrainAs(rate){
                 start.linkTo(soldNum.end,8.dp)
@@ -310,7 +375,7 @@ fun ProductDetailsContent() {
                 contentDescription = "")
 
             Text(
-                text = "4.8 (${NumberFormat.getNumberInstance(Locale.US).format(Random.nextInt(0, 10001))})",
+                text = "${product.ratingsAverage} (${NumberFormat.getNumberInstance(Locale.US).format(product.ratingsQuantity)})",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -339,19 +404,21 @@ fun ProductDetailsContent() {
 
         Text(
             modifier = Modifier
+                .padding(end = 24.dp)
                 .constrainAs(descriptionContent) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+                    start.linkTo(parent.start , 16.dp)
                     top.linkTo(descriptionText.bottom, 8.dp)
-                }
-                .padding(start = 16.dp, end = 32.dp),
-            text = "I don't have more time to spend on creating another set of fake data, so I won't write a brief description. Please consider these words as a placeholder.",
+                },
+            text = if (product.description!!.length > 150)
+                "${product.description.take(150)}..."
+            else product.description,
             style = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
                 fontWeight = FontWeight(500),
                 color = DarkPurple60,
-            )
+            ),
+            textAlign = TextAlign.Start
         )
 
         Text(
@@ -370,7 +437,7 @@ fun ProductDetailsContent() {
             )
         )
 
-        // req kaza 7aga
+
         FiveColors(
             modifier = Modifier.constrainAs(fiveColors){
                 start.linkTo(parent.start,8.dp)
@@ -394,14 +461,14 @@ fun ProductDetailsContent() {
             )
         )
 
-        // req
+
         Text(
             modifier = Modifier
                 .constrainAs(priceText){
                     start.linkTo(parent.start,16.dp)
                     top.linkTo(totalPriceText.bottom)
                 },
-            text = "EGP ${NumberFormat.getNumberInstance(Locale.US).format(60000)}",
+            text = "EGP ${NumberFormat.getNumberInstance(Locale.US).format(product.price*screenState.counter)}",
             style = TextStyle(
                 fontSize = 18.sp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -420,7 +487,9 @@ fun ProductDetailsContent() {
                     end.linkTo(parent.end, 16.dp)
                     top.linkTo(fiveColors.bottom, 32.dp)
                 },
-            onClick = {},
+            onClick = {
+                onClickAddToCart(product)
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = DarkBlue
             ),
@@ -445,11 +514,4 @@ fun ProductDetailsContent() {
             )
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun Prevv(){
-
-    ProductDetailsContent()
 }

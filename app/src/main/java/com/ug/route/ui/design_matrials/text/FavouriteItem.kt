@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,11 +56,15 @@ fun FavouriteItem(
     colorName: String,
     itemPrice: Int,
     onClickAdd: () -> Unit,
-    onClickFavButton: () -> Unit
+    onClickFavButton: () -> Unit,
+    onClickItem: () -> Unit
 ){
 
     Card(
         modifier = modifier
+            .clickable {
+                onClickItem()
+            }
             .height(140.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(size = 16.dp),

@@ -62,10 +62,10 @@ fun SearchScreen(
 
     SearchContent(
         screenState = screenState,
-        onSearch = { query ->
+        onSearch = { id ->
             handelInternetError(
                 context,
-                {navController.navigate("${Screen.ProductsScreen.route}/${query}")},
+                {navController.navigate("${Screen.ProductDetailsScreen.route}/${id}")},
                 {navController.navigate(Screen.NoInternetScreen.route)}
             )
         },
@@ -165,11 +165,11 @@ fun SearchContent(
             )
         ){
 
-            val productsNames = if (screenState.query.isBlank()) FakeData.products.map { it.title }.distinct() else screenState.matchSearchQuery().distinct()
+            val productsNames = if (screenState.query.isBlank()) FakeData.products else screenState.matchSearchQuery().distinct()
 
             LazyColumn{
 
-                items(productsNames){ productName ->
+                items(productsNames){ product ->
 
                     Row(
                         modifier = Modifier
@@ -178,11 +178,11 @@ fun SearchContent(
                             .fillMaxWidth()
                             .clickable {
                                 hideKeyboard(currentView)
-                                onSearch(productName!!)
+                                onSearch(product.id!!)
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ){
-                        Text(text = productName!!)
+                        Text(text = product.title!!)
                     }
                 }
             }

@@ -94,7 +94,7 @@ fun ProductsScreen(
                 handelInternetError(context,
                     {
                         viewModel.deleteWishListItem(
-                            itemId = productID
+                            productID = productID
                         )
                     }, viewModel::onInternetError)
             }

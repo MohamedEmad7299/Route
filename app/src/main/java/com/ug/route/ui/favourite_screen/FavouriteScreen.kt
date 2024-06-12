@@ -72,6 +72,13 @@ fun FavouriteScreen(
                 handelInternetError(context,
                     {navController.navigate(Screen.CartScreen.route)},
                     viewModel::onInternetError)
+            },
+            onClickItem = { id ->
+                handelInternetError(
+                    context,
+                    {navController.navigate("${Screen.ProductDetailsScreen.route}/${id}")},
+                    {navController.navigate(Screen.NoInternetScreen.route)}
+                )
             }
         )
 
@@ -94,7 +101,8 @@ fun FavouriteContent(
     navToSearch : () -> Unit,
     onClickFavButton : (String) -> Unit,
     onClickAddButton : (String) -> Unit,
-    onClickCartIcon : () -> Unit
+    onClickCartIcon : () -> Unit,
+    onClickItem: (String) -> Unit
 ){
 
     ConstraintLayout(
@@ -187,6 +195,9 @@ fun FavouriteContent(
                             },
                             onClickFavButton = {
                                 onClickFavButton(favItem.id!!)
+                            },
+                            onClickItem = {
+                                onClickItem(favItem.id!!)
                             }
                         )
                     }

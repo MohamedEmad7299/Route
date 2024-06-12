@@ -119,16 +119,16 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    fun deleteWishListItem(itemId: String){
+    fun deleteWishListItem(productID: String){
 
-        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == itemId }
+        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == productID }
 
         viewModelScope.launch{
 
             try {
 
                 withTimeout(5000L) {
-                    repository.deleteWishListItem(itemId)
+                    repository.deleteWishListItem(productID)
                 }
 
             } catch (e: TimeoutCancellationException) {
