@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -111,7 +112,7 @@ fun ProductDetailsScreen(
             } ,
             onClickAddToCart = { product ->
                 handelInternetError(context,
-                    {viewModel.addProductToCart(product.id!!,{ navController.popBackStack() } , ProductCount(screenState.counter.toString())) },
+                    {viewModel.addProductToCart(product.id!!, ProductCount(screenState.counter.toString())) },
                     viewModel::onInternetError)
             },
             screenState = screenState,
@@ -496,22 +497,34 @@ fun ProductDetailsContent(
             shape = RoundedCornerShape(20.dp),
         ) {
 
-            Icon(
-                modifier = Modifier.padding(end = 16.dp),
-                tint = Color.White,
-                painter = painterResource(id = R.drawable.cart_2),
-                contentDescription = "")
 
-            Text(
-                text = "Add to Cart",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontWeight = FontWeight(500),
+            if (screenState.isLoading){
+
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp),
                     color = Color.White,
-                    textAlign = TextAlign.Center,
+                    strokeWidth = 5.dp
                 )
-            )
+
+            } else {
+
+                Icon(
+                    modifier = Modifier.padding(end = 16.dp),
+                    tint = Color.White,
+                    painter = painterResource(id = R.drawable.cart_2),
+                    contentDescription = "")
+
+                Text(
+                    text = "Add to Cart",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                        fontWeight = FontWeight(500),
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
         }
     }
 }

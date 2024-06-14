@@ -9,7 +9,6 @@ import com.ug.route.networking.ProductCount
 import com.ug.route.networking.dto_models.cart_items.ProductId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -32,6 +31,7 @@ class ProductDetailsViewModel @Inject constructor(
             message = "",
             launchedEffectKey = false,
             counter = 1,
+            isLoading = false,
             isFavourite = FakeData.wishList.any{ it?.id == checkNotNull(savedStateHandle["id"])}
         )
     )
@@ -111,9 +111,11 @@ class ProductDetailsViewModel @Inject constructor(
             }
         }
     }
-    fun addProductToCart(productID: String , popBack: () -> Unit = {}, productCount: ProductCount){
+    fun addProductToCart(productID: String, productCount: ProductCount){
 
         viewModelScope.launch{
+
+            _screenState.update { it.copy(isLoading = true) }
 
             try {
 
@@ -129,12 +131,12 @@ class ProductDetailsViewModel @Inject constructor(
                 _screenState.update { it.copy(message = "Request timed out") }
             } catch (e: Exception) {
                 _screenState.update { it.copy(message = "An error occurred") }
+            } finally {
+                _screenState.update { it.copy(isLoading = false, launchedEffectKey = !it.launchedEffectKey) }
             }
 
             updateCartItem(productID,productCount)
             getWishList()
-            delay(500)
-            popBack()
         }
     }
 

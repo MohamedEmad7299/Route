@@ -7,5 +7,6 @@ data class ProductDetailsState(
     val message: String,
     val launchedEffectKey: Boolean,
     val counter: Int,
-    val isFavourite: Boolean
+    val isFavourite: Boolean,
+    val isLoading: Boolean
 )
