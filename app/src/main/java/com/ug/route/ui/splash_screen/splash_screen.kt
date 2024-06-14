@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ug.route.R
+import com.ug.route.data.fake.FakeData
 import com.ug.route.ui.theme.DarkBlue
 import com.ug.route.utils.Screen
 import com.ug.route.utils.SharedPreferences
@@ -54,7 +55,13 @@ fun SplashScreen(
             )
         )
 
-        delay(1500)
+        while (
+            FakeData.categories.isEmpty() ||
+            FakeData.subCategories.isEmpty() ||
+            FakeData.products.isEmpty()
+        ) {
+            delay(100) // Short delay to avoid busy-waiting
+        }
 
         val nextDestination =
             if (SharedPreferences.loggedEmail == null)
