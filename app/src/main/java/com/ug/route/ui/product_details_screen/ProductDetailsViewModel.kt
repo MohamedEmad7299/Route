@@ -76,7 +76,7 @@ class ProductDetailsViewModel @Inject constructor(
 
     fun deleteWishListItem(productID: String){
 
-        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == productID }
+        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == productID }.toMutableList()
 
         viewModelScope.launch{
 
@@ -153,7 +153,7 @@ class ProductDetailsViewModel @Inject constructor(
                 if (response.isSuccessful){
 
                     val items = response.body()?.data!!
-                    FakeData.wishList = items
+                    FakeData.wishList = items.toMutableList()
                 }
 
             } catch (e: TimeoutCancellationException) {

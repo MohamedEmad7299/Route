@@ -15,7 +15,7 @@ object FakeData{
 
     var cartItems : List<CartItem> = emptyList()
 
-    var wishList : List<WishListItem?> = emptyList()
+    var wishList : MutableList<WishListItem?> = mutableListOf()
 
     var products: List<Product> = emptyList()
 

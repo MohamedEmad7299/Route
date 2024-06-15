@@ -42,7 +42,7 @@ class FavouriteViewModel @Inject constructor(
 
     fun deleteWishListItem(itemId: String){
 
-        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == itemId }
+        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == itemId }.toMutableList()
 
         _screenState.update { prevState ->
             prevState.copy(favouriteProducts = FakeData.wishList)
@@ -81,7 +81,7 @@ class FavouriteViewModel @Inject constructor(
                 if (response.isSuccessful){
 
                     val items = response.body()?.data!!
-                    FakeData.wishList = items
+                    FakeData.wishList = items.toMutableList()
                     _screenState.update { it.copy(favouriteProducts = items) }
                 }
 

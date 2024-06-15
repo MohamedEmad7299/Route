@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.ug.route.data.fake.FakeData
 import com.ug.route.data.repositories.Repository
 import com.ug.route.networking.dto_models.cart_items.ProductId
+import com.ug.route.networking.dto_models.wish_list.WishListItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,31 +40,8 @@ class ProductsViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            try {
-
-                _screenState.update { prevState ->
-                    prevState.copy(isLoading = true)
-                }
-
-                val response = withTimeout(5000L) {
-                    repository.getWishList()
-                }
-
-                if (response.isSuccessful){
-
-                    val items = response.body()?.data!!
-                    FakeData.wishList = items
-                }
-
-            } catch (e: TimeoutCancellationException) {
-                _screenState.update { prevState ->
-                    prevState.copy(message = e.message.toString())
-                }
-            } finally {
-                _screenState.update { prevState ->
-                    prevState.copy(isLoading = false)
-                }
-            }
+            val response = repository.getWishList()
+            FakeData.wishList = (response.body()?.data as MutableList<WishListItem?>?)!!
         }
     }
 
@@ -99,6 +77,12 @@ class ProductsViewModel @Inject constructor(
 
     fun addProductToWishList(productID: String){
 
+        FakeData.wishList.add(
+            WishListItem(
+                id = productID
+            )
+        )
+
         viewModelScope.launch{
 
             try {
@@ -113,15 +97,16 @@ class ProductsViewModel @Inject constructor(
                 _screenState.update { it.copy(message = "Request timed out") }
             } catch (e: Exception) {
                 _screenState.update { it.copy(message = "An error occurred") }
-            } finally {
-                getWishList()
             }
+
+            getWishList()
         }
+
     }
 
     fun deleteWishListItem(productID: String){
 
-        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == productID }
+        FakeData.wishList = FakeData.wishList.filterNot { it?.id!! == productID }.toMutableList()
 
         viewModelScope.launch{
 
@@ -135,9 +120,9 @@ class ProductsViewModel @Inject constructor(
                 _screenState.update { it.copy(message = "Request timed out") }
             } catch (e: Exception) {
                 _screenState.update { it.copy(message = "An error occurred") }
-            } finally {
-                getWishList()
             }
+
+            getWishList()
         }
     }
 
