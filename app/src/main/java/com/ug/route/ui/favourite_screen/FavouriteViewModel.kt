@@ -64,7 +64,7 @@ class FavouriteViewModel @Inject constructor(
         }
     }
 
-    private fun getWishList(){
+    fun getWishList(){
 
         viewModelScope.launch {
 

@@ -419,7 +419,8 @@ fun ProductDetailsContent(
                 fontWeight = FontWeight(500),
                 color = DarkPurple60,
             ),
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
+            maxLines = 5
         )
 
         Text(

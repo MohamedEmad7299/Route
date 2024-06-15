@@ -67,7 +67,7 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    private fun getCartItems(){
+    fun getCartItems(){
 
         viewModelScope.launch {
 

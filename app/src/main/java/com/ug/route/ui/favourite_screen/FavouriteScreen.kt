@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -45,6 +46,10 @@ fun FavouriteScreen(
 
     val screenState by viewModel.screenState.collectAsState()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.getWishList()
+    }
 
     if (isInternetConnected(context)){
 
