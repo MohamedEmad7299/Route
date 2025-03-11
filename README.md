@@ -37,9 +37,20 @@ Route is a feature-rich e-commerce Android application designed to provide users
 
 ---
 
-### 🎥 Demo
+### 🎥 Some Screens
 
-[![Watch the video](https://via.placeholder.com/800x450.png?text=Click+to+Watch+on+LinkedIn)](https://www.linkedin.com/feed/update/urn:li:activity:7207773231439654912/)
+
+![Route Screenshot 1](./assets/p(1).jpg)  
+![Route Screenshot 2](./assets/p(2).jpg)  
+![Route Screenshot 3](./assets/p(3).jpg)  
+![Route Screenshot 4](./assets/p(4).jpg)  
+![Route Screenshot 5](./assets/p(5).jpg)  
+![Route Screenshot 6](./assets/p(6).jpg)  
+![Route Screenshot 7](./assets/p(7).jpg)  
+![Route Screenshot 8](./assets/p(8).jpg)  
+![Route Screenshot 9](./assets/p(9).jpg)
+
+
 
 
 ---
